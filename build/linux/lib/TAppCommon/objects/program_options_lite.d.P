@@ -1,0 +1,5 @@
+objects/program_options_lite.d.o: \
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TAppCommon/../../../../source/Lib/TAppCommon/program_options_lite.cpp \
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TAppCommon/../../../../source/Lib/TAppCommon/program_options_lite.h
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TAppCommon/../../../../source/Lib/TAppCommon/program_options_lite.cpp :
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TAppCommon/../../../../source/Lib/TAppCommon/program_options_lite.h :

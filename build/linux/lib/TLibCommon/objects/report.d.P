@@ -1,0 +1,3 @@
+objects/report.d.o: \
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibCommon/../../../../source/Lib/libc5/report.c
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibCommon/../../../../source/Lib/libc5/report.c :

@@ -1,0 +1,15 @@
+#pragma once
+#include "main.h"
+
+//! \ingroup libMD5
+//! \{
+
+class C5
+{
+public:
+  void hello()
+  {
+    printHelloWorld();
+  }
+}
+//! \}

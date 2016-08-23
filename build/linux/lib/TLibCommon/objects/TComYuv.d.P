@@ -1,0 +1,15 @@
+objects/TComYuv.d.o: \
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibCommon/../../../../source/Lib/TLibCommon/TComYuv.cpp \
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibCommon/../../../../source/Lib/TLibCommon/CommonDef.h \
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibCommon/../../../../source/Lib/TLibCommon/TypeDef.h \
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibCommon/../../../../source/Lib/TLibCommon/TComYuv.h \
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibCommon/../../../../source/Lib/TLibCommon/TComPicYuv.h \
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibCommon/../../../../source/Lib/TLibCommon/TComRom.h \
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibCommon/../../../../source/Lib/TLibCommon/TComInterpolationFilter.h
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibCommon/../../../../source/Lib/TLibCommon/TComYuv.cpp :
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibCommon/../../../../source/Lib/TLibCommon/CommonDef.h :
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibCommon/../../../../source/Lib/TLibCommon/TypeDef.h :
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibCommon/../../../../source/Lib/TLibCommon/TComYuv.h :
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibCommon/../../../../source/Lib/TLibCommon/TComPicYuv.h :
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibCommon/../../../../source/Lib/TLibCommon/TComRom.h :
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibCommon/../../../../source/Lib/TLibCommon/TComInterpolationFilter.h :

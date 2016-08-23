@@ -1,0 +1,14 @@
+@relation relation
+
+@attribute RDcost_MSM numeric
+@attribute RDcost_2Nx2N numeric
+@attribute RDcost_2NxN numeric
+@attribute RDcost_Nx2N numeric
+@attribute part {0,1,2,3,4,5,6,7}
+@attribute MergeFlag {0,1}
+@attribute SkipMergeFlag {0,1}
+@attribute med_med numeric
+@attribute neighDepth_diff numeric
+@attribute SplitQuadtree {0,1}
+
+@data

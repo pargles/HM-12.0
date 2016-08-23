@@ -1,0 +1,11 @@
+SplitQuadtree.                     | the target attribute
+RDcost_MSM:                           continuous.
+RDcost_2Nx2N:                           continuous.
+RDcost_2NxN:                           continuous.
+RDcost_Nx2N:                           continuous.
+part:                           0,1,2,3,4,5,6,7.
+MergeFlag:                          0,1.
+SkipMergeFlag:                  0,1.
+med_med:          	 continuous.
+neighDepth_diff:     	continuous.
+SplitQuadtree:                          0,1.
