@@ -42,9 +42,7 @@
 
 #include <cmath>
 #include <algorithm>
-
 using namespace std;
-
 
 //gcorrea 17/10/2013
 extern ofstream CU64x64data;
@@ -446,11 +444,6 @@ Void TEncCu::xCompressCU( TComDataCU*& rpcBestCU, TComDataCU*& rpcTempCU, UInt u
   Int lowestQP = -rpcTempCU->getSlice()->getSPS()->getQpBDOffsetY();
   
   //gcorrea: 17/10/2013
-
-  UInt CUAddr = rpcBestCU->getAddr();
-  UInt FrameWidthInLCUs = rpcBestCU->getPic()->getPicSym()->getFrameWidthInCU();
-  int CUPelX = rpcBestCU->getCUPelX();
-  int CUPelY = rpcBestCU->getCUPelY();
   int n;		// CU dimension
 
   curr_uiDepth = uiDepth;
@@ -1068,66 +1061,6 @@ Void TEncCu::xCompressCU( TComDataCU*& rpcBestCU, TComDataCU*& rpcTempCU, UInt u
 
   }
 
-
-
-
-  ////gcorrea: 18/11/2013
-  //if(mode==0) {
-	 // int partDir = -1;
-	 // if ((part == 1) || (part == 4) || (part == 5))		// horizontal partitioning
-		//  partDir = 0;
-	 // else if ((part == 2) || (part == 6) || (part == 7))	// vertical partitioning
-		//  partDir = 1;
-	 // else if  (part == 3)									//hor+ver partitioning 
-		//  partDir = 2;
-
-
-	 // if(uiDepth == 0) {
-		//  CU64x64data.open(filename_64x64, ios::out | ios::app);
-		//  if(CU64x64data.is_open()) {
-		//	  CU64x64data << RDcost_MSM << '\t' << RDcost_2Nx2N << '\t' << RDcost_2NxN  << '\t' <<  RDcost_Nx2N  << '\t' <<  RDcost_NxN  << '\t' <<  RDcost_2NxnU  << '\t' <<  RDcost_2NxnD  << '\t' <<  RDcost_nLx2N  << '\t' <<  RDcost_nRx2N  << '\t';
-		//	  CU64x64data << part << '\t' << rpcBestCU->getMergeFlag( 0 ) << '\t' << (rpcBestCU->isSkipped( 0 ) && rpcBestCU->getMergeFlag( 0 )) << endl;
-		//	  CU64x64data.close();
-		//  }
-	 // }
-
-
-	  //else if(uiDepth == 1) {
-		 // CU32x32data.open(filename_32x32, ios::out | ios::app);
-		 // if(CU32x32data.is_open()) {
-			//  CU32x32data << RDcost_MSM << '\t' << RDcost_2Nx2N << '\t' << RDcost_2NxN  << '\t' <<  RDcost_Nx2N  << '\t' <<  RDcost_NxN  << '\t' <<  RDcost_2NxnU  << '\t' <<  RDcost_2NxnD  << '\t' <<  RDcost_nLx2N  << '\t' <<  RDcost_nRx2N  << '\t';
-			//  CU32x32data << part << '\t' << rpcBestCU->getMergeFlag( 0 ) << '\t' << (rpcBestCU->isSkipped( 0 ) && rpcBestCU->getMergeFlag( 0 )) << endl;
-			//  CU32x32data.close();
-			//  CU32x32data.close();
-		 // }
-	  //}
-
-	  //else if(uiDepth == 2) {
-		 // CU16x16data.open(filename_16x16, ios::out | ios::app);
-		 // if(CU16x16data.is_open()) {
-			//  CU16x16data << RDcost_MSM << '\t' << RDcost_2Nx2N << '\t' << RDcost_2NxN  << '\t' <<  RDcost_Nx2N  << '\t' <<  RDcost_NxN  << '\t' <<  RDcost_2NxnU  << '\t' <<  RDcost_2NxnD  << '\t' <<  RDcost_nLx2N  << '\t' <<  RDcost_nRx2N  << '\t';
-			//  CU16x16data << part << '\t' << rpcBestCU->getMergeFlag( 0 ) << '\t' << (rpcBestCU->isSkipped( 0 ) && rpcBestCU->getMergeFlag( 0 )) << endl;
-			//  CU16x16data.close();
-			//  CU16x16data.close();
-		 // }
-	  //}
-
-	  //else if(uiDepth == 3) {
-		 // CU8x8data.open(filename_8x8, ios::out | ios::app);
-		 // if(CU8x8data.is_open()) {
-			//  CU8x8data << RDcost_MSM << '\t' << RDcost_2Nx2N << '\t' << RDcost_2NxN  << '\t' <<  RDcost_Nx2N  << '\t' <<  RDcost_NxN  << '\t' <<  RDcost_2NxnU  << '\t' <<  RDcost_2NxnD  << '\t' <<  RDcost_nLx2N  << '\t' <<  RDcost_nRx2N  << '\t';
-			//  CU8x8data << part << '\t' << rpcBestCU->getMergeFlag( 0 ) << '\t' << (rpcBestCU->isSkipped( 0 ) && rpcBestCU->getMergeFlag( 0 )) << endl;
-			//  CU8x8data.close();
-			//  CU8x8data.close();
-		 // }
-	  //}
-
-  //}
-  //gcorrea 18/11/2013 END
-
-
-
-
   for (Int iQP=iMinQP; iQP<=iMaxQP; iQP++)
   {
     if (isAddLowestQP && (iQP == iMinQP))
@@ -1280,12 +1213,7 @@ Void TEncCu::xCompressCU( TComDataCU*& rpcBestCU, TComDataCU*& rpcTempCU, UInt u
 
   xCopyYuv2Pic( rpcBestCU->getPic(), rpcBestCU->getAddr(), rpcBestCU->getZorderIdxInCU(), uiDepth, uiDepth, rpcBestCU, uiLPelX, uiTPelY );   // Copy Yuv data to picture Yuv
 
-
-
-
   //gcorrea: 17/02/2014
-
-
 
   if(mode==0) {
 	  int partDir = -1;
@@ -1295,16 +1223,6 @@ Void TEncCu::xCompressCU( TComDataCU*& rpcBestCU, TComDataCU*& rpcTempCU, UInt u
 		  partDir = 1;
 	  else if  (part == 3)									//hor+ver partitioning 
 		  partDir = 2;
-
-	  //if(uiDepth == 1)
-		 // cout << '\t';
-	  //if(uiDepth == 2)
-		 // cout << '\t' << '\t';
-	  //if(uiDepth == 3)
-		 // cout << '\t' << '\t' << '\t';
-	  
-	 // cout << (int) rpcBestCU->getZorderIdxInCU() << '\t' << (int) rpcBestCU->getDepth(0) << '\t' << (int) rpcBestCU->getWidth(0) << endl;
-
 
 	double med_Above = -1;
 	double med_AboveLeft = -1;
@@ -1525,133 +1443,9 @@ Void TEncCu::xCompressCU( TComDataCU*& rpcBestCU, TComDataCU*& rpcTempCU, UInt u
         }
         
         // END pargles April 28th, 2015
-        
-        /*
-        if(uiDepth == 0) {
-		  CU64x64data.open(filename_64x64, ios::out | ios::app);
-		  if(CU64x64data.is_open()) {
-                      
-                        stringstream convert;
-                        convert << RDcost_MSM;
-                        cu64x64forC5 += convert.str() + ',';
-                        convert.str("");
-                        convert << RDcost_2Nx2N;
-                        cu64x64forC5 += convert.str() + ',';
-                        convert.str("");
-                        convert << RDcost_2NxN;
-                        cu64x64forC5 += convert.str() + ',' ;
-                        convert.str("");
-                        convert << RDcost_Nx2N;
-                        cu64x64forC5 +=convert.str()  + ',';
-                        convert.str("");
-                        convert << part;
-                        cu64x64forC5 +=convert.str()+ ',';
-                        convert.str("");
-                        convert << rpcBestCU->getMergeFlag( 0 );
-                        cu64x64forC5 += convert.str() + ',';
-                        convert.str("");
-                        convert << (rpcBestCU->isSkipped( 0 ) && rpcBestCU->getMergeFlag( 0 ));
-                        cu64x64forC5 +=  convert.str()+ ',';
-                        convert.str("");
-                        convert << med_med;
-                        cu64x64forC5 +=  convert.str()+ ',';
-                        convert.str("");
-                        convert << diff_NeiDepth;
-                        cu64x64forC5 += convert.str() + ',';
-                        convert.str("");
-                        convert << div;
-                        cu64x64forC5 += convert.str()+'\n';
-                        //cout << cu64x64forC5;
-                      
-                      CU64x64data << RDcost_MSM << ',' << RDcost_2Nx2N << ',' << RDcost_2NxN  << ',' <<  RDcost_Nx2N  << ',';
-                      CU64x64data << part << ',' << rpcBestCU->getMergeFlag( 0 ) << ',' << (rpcBestCU->isSkipped( 0 ) && rpcBestCU->getMergeFlag( 0 )) << ',' << med_med << ',' << diff_NeiDepth << ',' << div << endl;
-                      CU64x64data.close();
-		  }
-	  }
-
-	  else if(uiDepth == 1) {
-		  CU32x32data.open(filename_32x32, ios::out | ios::app);
-		  if(CU32x32data.is_open()) {
-			  CU32x32data << RDcost_MSM << ',' << RDcost_2Nx2N << ',' << RDcost_2NxN  << ',' <<  RDcost_Nx2N  << ',';
-			  CU32x32data << part << ',' << rpcBestCU->getMergeFlag( 0 ) << ',' << (rpcBestCU->isSkipped( 0 ) && rpcBestCU->getMergeFlag( 0 )) << ',' << med_med << ',' << diff_NeiDepth << ',' << div << endl;
-			  CU32x32data.close();
-		  }
-	  }
-
-	  else if(uiDepth == 2) {
-		  CU16x16data.open(filename_16x16, ios::out | ios::app);
-		  if(CU16x16data.is_open()) {
-			  CU16x16data << RDcost_MSM << ',' << RDcost_2Nx2N << ',' << RDcost_2NxN  << ',' <<  RDcost_Nx2N  << ',';
-			  CU16x16data << part << ',' << rpcBestCU->getMergeFlag( 0 ) << ',' << (rpcBestCU->isSkipped( 0 ) && rpcBestCU->getMergeFlag( 0 )) << ',' << med_med << ',' << diff_NeiDepth << ',' << div << endl;
-			  CU16x16data.close();
-		  }
-	  }
-        */
-        
-        /*
-	  if(uiDepth == 0) {
-		  CU64x64data.open(filename_64x64, ios::out | ios::app);
-		  if(CU64x64data.is_open()) {
-                      if(count_frame<GOPforC5){
-                          stringstream convert;
-                          convert << RDcost_MSM;
-                        cu64x64forC5 += convert.str() + ',';
-                        convert.str("");
-                        convert << RDcost_2Nx2N;
-                        cu64x64forC5 += convert.str() + ',';
-                        convert.str("");
-                        convert << RDcost_2NxN;
-                        cu64x64forC5 += convert.str() + ',' ;
-                        convert.str("");
-                        convert << RDcost_Nx2N;
-                        cu64x64forC5 +=convert.str()  + ',';
-                        convert.str("");
-                        convert << part;
-                        cu64x64forC5 +=convert.str()+ ',';
-                        convert.str("");
-                        convert << rpcBestCU->getMergeFlag( 0 );
-                        cu64x64forC5 += convert.str() + ',';
-                        convert.str("");
-                        convert << (rpcBestCU->isSkipped( 0 ) && rpcBestCU->getMergeFlag( 0 ));
-                        cu64x64forC5 +=  convert.str()+ ',';
-                        convert.str("");
-                        convert << med_med;
-                        cu64x64forC5 +=  convert.str()+ ',';
-                        convert.str("");
-                        convert << diff_NeiDepth;
-                        cu64x64forC5 += convert.str() + ',';
-                        convert.str("");
-                        convert << div;
-                        cu64x64forC5 += convert.str()+'\n';
-                        //cout << cu64x64forC5;
-                      }
-                      CU64x64data << RDcost_MSM << ',' << RDcost_2Nx2N << ',' << RDcost_2NxN  << ',' <<  RDcost_Nx2N  << ',';
-                      CU64x64data << part << ',' << rpcBestCU->getMergeFlag( 0 ) << ',' << (rpcBestCU->isSkipped( 0 ) && rpcBestCU->getMergeFlag( 0 )) << ',' << med_med << ',' << diff_NeiDepth << ',' << div << endl;
-                      CU64x64data.close();
-		  }
-	  }
-
-	  else if(uiDepth == 1) {
-		  CU32x32data.open(filename_32x32, ios::out | ios::app);
-		  if(CU32x32data.is_open()) {
-			  CU32x32data << RDcost_MSM << ',' << RDcost_2Nx2N << ',' << RDcost_2NxN  << ',' <<  RDcost_Nx2N  << ',';
-			  CU32x32data << part << ',' << rpcBestCU->getMergeFlag( 0 ) << ',' << (rpcBestCU->isSkipped( 0 ) && rpcBestCU->getMergeFlag( 0 )) << ',' << med_med << ',' << diff_NeiDepth << ',' << div << endl;
-			  CU32x32data.close();
-		  }
-	  }
-
-	  else if(uiDepth == 2) {
-		  CU16x16data.open(filename_16x16, ios::out | ios::app);
-		  if(CU16x16data.is_open()) {
-			  CU16x16data << RDcost_MSM << ',' << RDcost_2Nx2N << ',' << RDcost_2NxN  << ',' <<  RDcost_Nx2N  << ',';
-			  CU16x16data << part << ',' << rpcBestCU->getMergeFlag( 0 ) << ',' << (rpcBestCU->isSkipped( 0 ) && rpcBestCU->getMergeFlag( 0 )) << ',' << med_med << ',' << diff_NeiDepth << ',' << div << endl;
-			  CU16x16data.close();
-		  }
-	  }*/
+      
 
   }
-  //gcorrea: 17/02/2014 END
-
   if( bBoundary ||(bSliceEnd && bInsidePicture))
   {
     return;
