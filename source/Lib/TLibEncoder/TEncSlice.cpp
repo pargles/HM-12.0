@@ -46,7 +46,7 @@ extern int count_frame;
 extern C5 c5_64;
 extern C5 c5_32;
 extern C5 c5_16;
-extern bool canStartUsingDecisionTrees;
+extern bool onlineTrainingIsDone;
 extern string cu64x64forC5;
 extern string cu32x32forC5;
 extern string cu16x16forC5;
@@ -1301,7 +1301,7 @@ Void TEncSlice::compressSlice( TComPic*& rpcPic )
 
         // pargles April 28th, 2015
   if (count_frame == GOPforC5 ) {
-            canStartUsingDecisionTrees = true; //because it wont save data to the file anymore
+            onlineTrainingIsDone = true; //because it wont save data to the file anymore
             C5dataFileCU64x64.open(filename_C5data_64x64, ios::out);
             if (C5dataFileCU64x64.is_open()) {
                 C5dataFileCU64x64 <<  cu64x64forC5;

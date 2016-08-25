@@ -59,8 +59,7 @@ C5 c5_64;
 C5 c5_32;
 C5 c5_16;
 
-bool canStartRunningRunC5;
-bool canStartUsingDecisionTrees;
+bool onlineTrainingIsDone;
 char filename_64x64[100];
 char filename_32x32[100];
 char filename_16x16[100];
@@ -121,8 +120,7 @@ long int count_8x8_MSM, count_8x8_MERGE, count_8x8_2Nx2N_MERGE, count_8x8_SKIP, 
 
 int main(int argc, char* argv[])
 {
-    canStartRunningRunC5 = false;//set to true on TEncCu after N frames
-    canStartUsingDecisionTrees= false;//set to true on TEncCu after N frames
+    onlineTrainingIsDone= false;//set to true on TEncCu after N frames
     
     GOPforC5 = 5;//TODO - get this number as a parameter
     string C5header;
