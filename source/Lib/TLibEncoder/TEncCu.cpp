@@ -1,4 +1,4 @@
-/* The copyexright in this software is being made available under the BSD
+/* The copyright in this software is being made available under the BSD
  * License, included below. This software may be subject to other third party
  * and contributor rights, including patent rights, and no such rights are
  * granted under this license.  
@@ -851,220 +851,225 @@ else
         divide = 1;
 //gcorrea: 17/10/2013 END
     
-if(onlineTrainingIsDone==false){
-       
-    if(mode==0) {
+if(onlineTrainingIsDone){
+     //gcorrea 03/03/2014
+     RDcost_MSM = RDcost_2Nx2N = RDcost_2NxN = RDcost_Nx2N = RDcost_NxN = RDcost_2NxnU = RDcost_2NxnD = RDcost_nLx2N = RDcost_nRx2N = 0;		
+  //gcorrea 03/03/2014 END
+            
+}else{
+//collect data
+  if(mode==0) {
 
-            if(uiDepth==0) {
-                    if(part==0) {
-                            count_64x64_2Nx2N++;
-                            if(rpcBestCU->getMergeFlag( 0 )) {
-                                    count_64x64_MSM++;  
-                                    if(rpcBestCU->isSkipped( 0 )) {
-                                            count_64x64_SKIP++;
-                                            count_64x64_2Nx2N_SKIP++;
-                                    }
-                                    else {
-                                            count_64x64_MERGE++;
-                                            count_64x64_2Nx2N_MERGE++;
-                                    }
-                            }
-                            else
-                                    count_64x64_2Nx2N_nonMSM++;
-                    }
-                    else if(part==1) {
-                            count_64x64_2NxN++;
-                    }
-                    else if(part==2) {
-                            count_64x64_Nx2N++;
-                    }
-                    else if(part==3) {
-                            count_64x64_NxN++;
-                    }
-                    else if(part==4) {
-                            count_64x64_2NxnU++;
-                    }
-                    else if(part==5) {
-                            count_64x64_2NxnD++;
-                    }
-                    else if(part==6) {
-                            count_64x64_nLx2N++;
-                    }
-                    else if(part==7) {
-                            count_64x64_nRx2N++;
-                    }
+          if(uiDepth==0) {
+                  if(part==0) {
+                          count_64x64_2Nx2N++;
+                          if(rpcBestCU->getMergeFlag( 0 )) {
+                                  count_64x64_MSM++;  
+                                  if(rpcBestCU->isSkipped( 0 )) {
+                                          count_64x64_SKIP++;
+                                          count_64x64_2Nx2N_SKIP++;
+                                  }
+                                  else {
+                                          count_64x64_MERGE++;
+                                          count_64x64_2Nx2N_MERGE++;
+                                  }
+                          }
+                          else
+                                  count_64x64_2Nx2N_nonMSM++;
+                  }
+                  else if(part==1) {
+                          count_64x64_2NxN++;
+                  }
+                  else if(part==2) {
+                          count_64x64_Nx2N++;
+                  }
+                  else if(part==3) {
+                          count_64x64_NxN++;
+                  }
+                  else if(part==4) {
+                          count_64x64_2NxnU++;
+                  }
+                  else if(part==5) {
+                          count_64x64_2NxnD++;
+                  }
+                  else if(part==6) {
+                          count_64x64_nLx2N++;
+                  }
+                  else if(part==7) {
+                          count_64x64_nRx2N++;
+                  }
 
-                    if(part > 0) {
-                            if(rpcBestCU->getMergeFlag( 0 )) {
-                                    count_64x64_MSM++;
-                                    if(rpcBestCU->isSkipped( 0 )) {
-                                            count_64x64_SKIP++;
-                                    }
-                                    else {
-                                            count_64x64_MERGE++;
-                                    }
-                            }
-                    }
-            }
+                  if(part > 0) {
+                          if(rpcBestCU->getMergeFlag( 0 )) {
+                                  count_64x64_MSM++;
+                                  if(rpcBestCU->isSkipped( 0 )) {
+                                          count_64x64_SKIP++;
+                                  }
+                                  else {
+                                          count_64x64_MERGE++;
+                                  }
+                          }
+                  }
+          }
 
-            else if(uiDepth==1) {
-                    if(part==0) {
-                            count_32x32_2Nx2N++;
-                            if(rpcBestCU->getMergeFlag( 0 )) {
-                                    count_32x32_MSM++;  
-                                    if(rpcBestCU->isSkipped( 0 )) {
-                                            count_32x32_SKIP++;
-                                            count_32x32_2Nx2N_SKIP++;
-                                    }
-                                    else {
-                                            count_32x32_MERGE++;
-                                            count_32x32_2Nx2N_MERGE++;
-                                    }
-                            }
-                            else
-                                    count_32x32_2Nx2N_nonMSM++;
-                    }
-                    else if(part==1) {
-                            count_32x32_2NxN++;
-                    }
-                    else if(part==2) {
-                            count_32x32_Nx2N++;
-                    }
-                    else if(part==3) {
-                            count_32x32_NxN++;
-                    }
-                    else if(part==4) {
-                            count_32x32_2NxnU++;
-                    }
-                    else if(part==5) {
-                            count_32x32_2NxnD++;
-                    }
-                    else if(part==6) {
-                            count_32x32_nLx2N++;
-                    }
-                    else if(part==7) {
-                            count_32x32_nRx2N++;
-                    }
+          else if(uiDepth==1) {
+                  if(part==0) {
+                          count_32x32_2Nx2N++;
+                          if(rpcBestCU->getMergeFlag( 0 )) {
+                                  count_32x32_MSM++;  
+                                  if(rpcBestCU->isSkipped( 0 )) {
+                                          count_32x32_SKIP++;
+                                          count_32x32_2Nx2N_SKIP++;
+                                  }
+                                  else {
+                                          count_32x32_MERGE++;
+                                          count_32x32_2Nx2N_MERGE++;
+                                  }
+                          }
+                          else
+                                  count_32x32_2Nx2N_nonMSM++;
+                  }
+                  else if(part==1) {
+                          count_32x32_2NxN++;
+                  }
+                  else if(part==2) {
+                          count_32x32_Nx2N++;
+                  }
+                  else if(part==3) {
+                          count_32x32_NxN++;
+                  }
+                  else if(part==4) {
+                          count_32x32_2NxnU++;
+                  }
+                  else if(part==5) {
+                          count_32x32_2NxnD++;
+                  }
+                  else if(part==6) {
+                          count_32x32_nLx2N++;
+                  }
+                  else if(part==7) {
+                          count_32x32_nRx2N++;
+                  }
 
-                    if(part > 0) {
-                            if(rpcBestCU->getMergeFlag( 0 )) {
-                                    count_32x32_MSM++;
-                                    if(rpcBestCU->isSkipped( 0 )) {
-                                            count_32x32_SKIP++;
-                                    }
-                                    else {
-                                            count_32x32_MERGE++;
-                                    }
-                            }
-                    }
-            }
+                  if(part > 0) {
+                          if(rpcBestCU->getMergeFlag( 0 )) {
+                                  count_32x32_MSM++;
+                                  if(rpcBestCU->isSkipped( 0 )) {
+                                          count_32x32_SKIP++;
+                                  }
+                                  else {
+                                          count_32x32_MERGE++;
+                                  }
+                          }
+                  }
+          }
 
-            else if(uiDepth==2) {
-                    if(part==0) {
-                            count_16x16_2Nx2N++;
-                            if(rpcBestCU->getMergeFlag( 0 )) {
-                                    count_16x16_MSM++;  
-                                    if(rpcBestCU->isSkipped( 0 )) {
-                                            count_16x16_SKIP++;
-                                            count_16x16_2Nx2N_SKIP++;
-                                    }
-                                    else {
-                                            count_16x16_MERGE++;
-                                            count_16x16_2Nx2N_MERGE++;
-                                    }
-                            }
-                            else
-                                    count_16x16_2Nx2N_nonMSM++;
-                    }
-                    else if(part==1) {
-                            count_16x16_2NxN++;
-                    }
-                    else if(part==2) {
-                            count_16x16_Nx2N++;
-                    }
-                    else if(part==3) {
-                            count_16x16_NxN++;
-                    }
-                    else if(part==4) {
-                            count_16x16_2NxnU++;
-                    }
-                    else if(part==5) {
-                            count_16x16_2NxnD++;
-                    }
-                    else if(part==6) {
-                            count_16x16_nLx2N++;
-                    }
-                    else if(part==7) {
-                            count_16x16_nRx2N++;
-                    }
+          else if(uiDepth==2) {
+                  if(part==0) {
+                          count_16x16_2Nx2N++;
+                          if(rpcBestCU->getMergeFlag( 0 )) {
+                                  count_16x16_MSM++;  
+                                  if(rpcBestCU->isSkipped( 0 )) {
+                                          count_16x16_SKIP++;
+                                          count_16x16_2Nx2N_SKIP++;
+                                  }
+                                  else {
+                                          count_16x16_MERGE++;
+                                          count_16x16_2Nx2N_MERGE++;
+                                  }
+                          }
+                          else
+                                  count_16x16_2Nx2N_nonMSM++;
+                  }
+                  else if(part==1) {
+                          count_16x16_2NxN++;
+                  }
+                  else if(part==2) {
+                          count_16x16_Nx2N++;
+                  }
+                  else if(part==3) {
+                          count_16x16_NxN++;
+                  }
+                  else if(part==4) {
+                          count_16x16_2NxnU++;
+                  }
+                  else if(part==5) {
+                          count_16x16_2NxnD++;
+                  }
+                  else if(part==6) {
+                          count_16x16_nLx2N++;
+                  }
+                  else if(part==7) {
+                          count_16x16_nRx2N++;
+                  }
 
-                    if(part > 0) {
-                            if(rpcBestCU->getMergeFlag( 0 )) {
-                                    count_16x16_MSM++;
-                                    if(rpcBestCU->isSkipped( 0 )) {
-                                            count_16x16_SKIP++;
-                                    }
-                                    else {
-                                            count_16x16_MERGE++;
-                                    }
-                            }
-                    }
-            }
+                  if(part > 0) {
+                          if(rpcBestCU->getMergeFlag( 0 )) {
+                                  count_16x16_MSM++;
+                                  if(rpcBestCU->isSkipped( 0 )) {
+                                          count_16x16_SKIP++;
+                                  }
+                                  else {
+                                          count_16x16_MERGE++;
+                                  }
+                          }
+                  }
+          }
 
-            else if(uiDepth==3) {
-                    if(part==0) {
-                            count_8x8_2Nx2N++;
-                            if(rpcBestCU->getMergeFlag( 0 )) {
-                                    count_8x8_MSM++;  
-                                    if(rpcBestCU->isSkipped( 0 )) {
-                                            count_8x8_SKIP++;
-                                            count_8x8_2Nx2N_SKIP++;
-                                    }
-                                    else {
-                                            count_8x8_MERGE++;
-                                            count_8x8_2Nx2N_MERGE++;
-                                    }
-                            }
-                            else
-                                    count_8x8_2Nx2N_nonMSM++;
-                    }
-                    else if(part==1) {
-                            count_8x8_2NxN++;
-                    }
-                    else if(part==2) {
-                            count_8x8_Nx2N++;
-                    }
-                    else if(part==3) {
-                            count_8x8_NxN++;
-                    }
-                    else if(part==4) {
-                            count_8x8_2NxnU++;
-                    }
-                    else if(part==5) {
-                            count_8x8_2NxnD++;
-                    }
-                    else if(part==6) {
-                            count_8x8_nLx2N++;
-                    }
-                    else if(part==7) {
-                            count_8x8_nRx2N++;
-                    }
+          else if(uiDepth==3) {
+                  if(part==0) {
+                          count_8x8_2Nx2N++;
+                          if(rpcBestCU->getMergeFlag( 0 )) {
+                                  count_8x8_MSM++;  
+                                  if(rpcBestCU->isSkipped( 0 )) {
+                                          count_8x8_SKIP++;
+                                          count_8x8_2Nx2N_SKIP++;
+                                  }
+                                  else {
+                                          count_8x8_MERGE++;
+                                          count_8x8_2Nx2N_MERGE++;
+                                  }
+                          }
+                          else
+                                  count_8x8_2Nx2N_nonMSM++;
+                  }
+                  else if(part==1) {
+                          count_8x8_2NxN++;
+                  }
+                  else if(part==2) {
+                          count_8x8_Nx2N++;
+                  }
+                  else if(part==3) {
+                          count_8x8_NxN++;
+                  }
+                  else if(part==4) {
+                          count_8x8_2NxnU++;
+                  }
+                  else if(part==5) {
+                          count_8x8_2NxnD++;
+                  }
+                  else if(part==6) {
+                          count_8x8_nLx2N++;
+                  }
+                  else if(part==7) {
+                          count_8x8_nRx2N++;
+                  }
 
-                    if(part > 0) {
-                            if(rpcBestCU->getMergeFlag( 0 )) {
-                                    count_8x8_MSM++;
-                                    if(rpcBestCU->isSkipped( 0 )) {
-                                            count_8x8_SKIP++;
-                                    }
-                                    else {
-                                            count_8x8_MERGE++;
-                                    }
-                            }
-                    }
-            }
+                  if(part > 0) {
+                          if(rpcBestCU->getMergeFlag( 0 )) {
+                                  count_8x8_MSM++;
+                                  if(rpcBestCU->isSkipped( 0 )) {
+                                          count_8x8_SKIP++;
+                                  }
+                                  else {
+                                          count_8x8_MERGE++;
+                                  }
+                          }
+                  }
+          }
 
-    }         
-  }
+  } 
+}
  
   for (Int iQP=iMinQP; iQP<=iMaxQP; iQP++)
   {
@@ -1218,241 +1223,259 @@ if(onlineTrainingIsDone==false){
 
   xCopyYuv2Pic( rpcBestCU->getPic(), rpcBestCU->getAddr(), rpcBestCU->getZorderIdxInCU(), uiDepth, uiDepth, rpcBestCU, uiLPelX, uiTPelY );   // Copy Yuv data to picture Yuv
 
-  if(onlineTrainingIsDone==false){
-      //gcorrea: 17/02/2014
+    //gcorrea: 17/02/2014
 
-    //mode 0 means inter prediction
-    if(mode==0) {
-            int partDir = -1;
-            if ((part == 1) || (part == 4) || (part == 5))		// horizontal partitioning
-                    partDir = 0;
-            else if ((part == 2) || (part == 6) || (part == 7))	// vertical partitioning
-                    partDir = 1;
-            else if  (part == 3)									//hor+ver partitioning 
-                    partDir = 2;
+  //mode 0 means inter prediction
+  if(mode==0) {
+      int partDir = -1;
+      if ((part == 1) || (part == 4) || (part == 5))		// horizontal partitioning
+              partDir = 0;
+      else if ((part == 2) || (part == 6) || (part == 7))	// vertical partitioning
+              partDir = 1;
+      else if  (part == 3)									//hor+ver partitioning 
+              partDir = 2;
 
-          double med_Above = -1;
-          double med_AboveLeft = -1;
-          double med_AboveRight = -1;
-          double med_Left = -1;
-          double med_Colocated1 = -1;
-          double med_Colocated2 = -1;
-          double sum_med = 0;
-          double med_med = -1;
-          double diff_NeiDepth = 0;
+      double med_Above = -1;
+      double med_AboveLeft = -1;
+      double med_AboveRight = -1;
+      double med_Left = -1;
+      double med_Colocated1 = -1;
+      double med_Colocated2 = -1;
+      double sum_med = 0;
+      double med_med = -1;
+      double diff_NeiDepth = 0;
 
-          int i;
-          int j;
-          double sum;
+      int i;
+      int j;
+      double sum;
 
-          i = j = sum = 0;
-          for(i=0; i<256; i+=4) {
-                  if(rpcBestCU->getCUAbove() != NULL) {
-                          sum += (double) ((rpcBestCU->getCUAbove())->getDepth(i));
-                          j++;
-                  }
-          }
-          if(j>0)
-                  med_Above = sum/j;
-
-          i = j = sum = 0;
-          for(i=0; i<256; i+=4) {
-                  if(rpcBestCU->getCUAboveLeft() != NULL) {
-                          sum += (double) ((rpcBestCU->getCUAboveLeft())->getDepth(i));
-                          j++;
-                  }
-          }
-          if(j>0)
-                  med_AboveLeft = sum/j;
-
-          i = j = sum = 0;
-          for(i=0; i<256; i+=4) {
-                  if(rpcBestCU->getCUAboveRight() != NULL) {
-                          sum += (double) ((rpcBestCU->getCUAboveRight())->getDepth(i));
-                          j++;
-                  }
-          }
-          if(j>0)
-                  med_AboveRight = sum/j;
-
-          i = j = sum = 0;
-          for(i=0; i<256; i+=4) {
-                  if(rpcBestCU->getCULeft() != NULL) {
-                          sum += (double) ((rpcBestCU->getCULeft())->getDepth(i));
-                          j++;
-                  }
-          }
-          if(j>0)
-                  med_Left = sum/j;
-
-          i = j = sum = 0;
-          for(i=0; i<256; i+=4) {
-                  if(rpcBestCU->getCUColocated(REF_PIC_LIST_0) != NULL) {
-                          sum += (double) ((rpcBestCU->getCUColocated(REF_PIC_LIST_0))->getDepth(i));
-                          j++;
-                  }
-          }
-          if(j>0)
-                  med_Colocated1 = sum/j;
-
-          i = j = sum = 0;
-          for(i=0; i<256; i+=4) {
-                  if(rpcBestCU->getCUColocated(REF_PIC_LIST_1) != NULL) {
-                          sum += (double) ((rpcBestCU->getCUColocated(REF_PIC_LIST_1))->getDepth(i));
-                          j++;
-                  }
-          }
-          if(j>0)
-                  med_Colocated2 = sum/j;
-
-
-          j = 0;
-          if(med_Above != -1) {
-                  sum_med += med_Above;
-                  j++;
-          }
-          if(med_AboveLeft != -1) {
-                  sum_med += med_AboveLeft;
-                  j++;
-          }
-          if(med_AboveRight != -1) {
-                  sum_med += med_AboveRight;
-                  j++;
-          }
-          if(med_Left != -1) {
-                  sum_med += med_Left;
-                  j++;
-          }
-          if(med_Colocated1 != -1) {
-                  sum_med += med_Colocated1;
-                  j++;
-          }
-          if(med_Colocated2 != -1) {
-                  sum_med += med_Colocated2;
-                  j++;
-          }
-
-          if(j>0) {
-                  med_med = sum_med/j;
-                  diff_NeiDepth = med_med - uiDepth;
-          }
-          else {
-                  med_med = -1;
-                  diff_NeiDepth = 0;
-          }
-
-          //cout << med_Above << '\t' << med_AboveLeft << '\t' << med_AboveRight << '\t' << med_Left << '\t' << med_Colocated1 << '\t' << med_Colocated2 << '\t' << sum_med << '\t' << med_med << '\t' << diff_NeiDepth << endl;
-          // pargles April 28th, 2015
-          if (count_frame < GOPforC5) {
-              if (uiDepth == 0) {
-                  stringstream convert;
-                  convert << RDcost_MSM;
-                  cu64x64forC5 += convert.str() + ',';
-                  convert.str("");
-                  convert << RDcost_2Nx2N;
-                  cu64x64forC5 += convert.str() + ',';
-                  convert.str("");
-                  convert << RDcost_2NxN;
-                  cu64x64forC5 += convert.str() + ',';
-                  convert.str("");
-                  convert << RDcost_Nx2N;
-                  cu64x64forC5 += convert.str() + ',';
-                  convert.str("");
-                  convert << part;
-                  cu64x64forC5 += convert.str() + ',';
-                  convert.str("");
-                  convert << rpcBestCU->getMergeFlag(0);
-                  cu64x64forC5 += convert.str() + ',';
-                  convert.str("");
-                  convert << (rpcBestCU->isSkipped(0) && rpcBestCU->getMergeFlag(0));
-                  cu64x64forC5 += convert.str() + ',';
-                  convert.str("");
-                  convert << diff_NeiDepth;
-                  cu64x64forC5 += convert.str() + ',';
-                  convert.str("");
-                  convert << fabs(RDcost_2Nx2N-RDcost_MSM)/RDcost_MSM;
-                  cu64x64forC5 += convert.str() + ',';
-                  convert.str("");
-                  convert << RDcost_2Nx2N/RDcost_MSM;
-                  cu64x64forC5 += convert.str() + ',';
-                  convert.str("");
-                  convert << div;
-                  cu64x64forC5 += convert.str() + '\n';
-              } else if (uiDepth == 1) {
-                  stringstream convert;
-                  convert << RDcost_MSM;
-                  cu32x32forC5 += convert.str() + ',';
-                  convert.str("");
-                  convert << RDcost_2Nx2N;
-                  cu32x32forC5 += convert.str() + ',';
-                  convert.str("");
-                  convert << RDcost_2NxN;
-                  cu32x32forC5 += convert.str() + ',';
-                  convert.str("");
-                  convert << RDcost_Nx2N;
-                  cu32x32forC5 += convert.str() + ',';
-                  convert.str("");
-                  convert << part;
-                  cu32x32forC5 += convert.str() + ',';
-                  convert.str("");
-                  convert << rpcBestCU->getMergeFlag(0);
-                  cu32x32forC5 += convert.str() + ',';
-                  convert.str("");
-                  convert << (rpcBestCU->isSkipped(0) && rpcBestCU->getMergeFlag(0));
-                  cu32x32forC5 += convert.str() + ',';
-                  convert.str("");
-                  convert << diff_NeiDepth;
-                  cu32x32forC5 += convert.str() + ',';
-                  convert.str("");
-                  convert << fabs(RDcost_2Nx2N-RDcost_MSM)/RDcost_MSM;
-                  cu32x32forC5 += convert.str() + ',';
-                  convert.str("");
-                  convert << RDcost_2Nx2N/RDcost_MSM;
-                  cu32x32forC5 += convert.str() + ',';
-                  convert.str("");
-                  convert << div;
-                  cu32x32forC5 += convert.str() + '\n';
-              } else if (uiDepth == 2) {
-                  stringstream convert;
-                  convert << RDcost_MSM;
-                  cu16x16forC5 += convert.str() + ',';
-                  convert.str("");
-                  convert << RDcost_2Nx2N;
-                  cu16x16forC5 += convert.str() + ',';
-                  convert.str("");
-                  convert << RDcost_2NxN;
-                  cu16x16forC5 += convert.str() + ',';
-                  convert.str("");
-                  convert << RDcost_Nx2N;
-                  cu16x16forC5 += convert.str() + ',';
-                  convert.str("");
-                  convert << part;
-                  cu16x16forC5 += convert.str() + ',';
-                  convert.str("");
-                  convert << rpcBestCU->getMergeFlag(0);
-                  cu16x16forC5 += convert.str() + ',';
-                  convert.str("");
-                  convert << (rpcBestCU->isSkipped(0) && rpcBestCU->getMergeFlag(0));
-                  cu16x16forC5 += convert.str() + ',';
-                  convert.str("");
-                  convert << diff_NeiDepth;
-                  cu16x16forC5 += convert.str() + ',';
-                  convert.str("");
-                  convert << fabs(RDcost_2Nx2N-RDcost_MSM)/RDcost_MSM;
-                  cu16x16forC5 += convert.str() + ',';
-                  convert.str("");
-                  convert << RDcost_2Nx2N/RDcost_MSM;
-                  cu16x16forC5 += convert.str() + ',';
-                  convert.str("");
-                  convert << div;
-                  cu16x16forC5 += convert.str() + '\n';
+      i = j = sum = 0;
+      for(i=0; i<256; i+=4) {
+              if(rpcBestCU->getCUAbove() != NULL) {
+                      sum += (double) ((rpcBestCU->getCUAbove())->getDepth(i));
+                      j++;
               }
-          }
+      }
+      if(j>0)
+              med_Above = sum/j;
 
-          // END pargles April 28th, 2015
+      i = j = sum = 0;
+      for(i=0; i<256; i+=4) {
+              if(rpcBestCU->getCUAboveLeft() != NULL) {
+                      sum += (double) ((rpcBestCU->getCUAboveLeft())->getDepth(i));
+                      j++;
+              }
+      }
+      if(j>0)
+              med_AboveLeft = sum/j;
+
+      i = j = sum = 0;
+      for(i=0; i<256; i+=4) {
+              if(rpcBestCU->getCUAboveRight() != NULL) {
+                      sum += (double) ((rpcBestCU->getCUAboveRight())->getDepth(i));
+                      j++;
+              }
+      }
+      if(j>0)
+              med_AboveRight = sum/j;
+
+      i = j = sum = 0;
+      for(i=0; i<256; i+=4) {
+              if(rpcBestCU->getCULeft() != NULL) {
+                      sum += (double) ((rpcBestCU->getCULeft())->getDepth(i));
+                      j++;
+              }
+      }
+      if(j>0)
+              med_Left = sum/j;
+
+      i = j = sum = 0;
+      for(i=0; i<256; i+=4) {
+              if(rpcBestCU->getCUColocated(REF_PIC_LIST_0) != NULL) {
+                      sum += (double) ((rpcBestCU->getCUColocated(REF_PIC_LIST_0))->getDepth(i));
+                      j++;
+              }
+      }
+      if(j>0)
+              med_Colocated1 = sum/j;
+
+      i = j = sum = 0;
+      for(i=0; i<256; i+=4) {
+              if(rpcBestCU->getCUColocated(REF_PIC_LIST_1) != NULL) {
+                      sum += (double) ((rpcBestCU->getCUColocated(REF_PIC_LIST_1))->getDepth(i));
+                      j++;
+              }
+      }
+      if(j>0)
+              med_Colocated2 = sum/j;
 
 
-    }
+      j = 0;
+      if(med_Above != -1) {
+              sum_med += med_Above;
+              j++;
+      }
+      if(med_AboveLeft != -1) {
+              sum_med += med_AboveLeft;
+              j++;
+      }
+      if(med_AboveRight != -1) {
+              sum_med += med_AboveRight;
+              j++;
+      }
+      if(med_Left != -1) {
+              sum_med += med_Left;
+              j++;
+      }
+      if(med_Colocated1 != -1) {
+              sum_med += med_Colocated1;
+              j++;
+      }
+      if(med_Colocated2 != -1) {
+              sum_med += med_Colocated2;
+              j++;
+      }
+
+      if(j>0) {
+              med_med = sum_med/j;
+              diff_NeiDepth = med_med - uiDepth;
+      }
+      else {
+              med_med = -1;
+              diff_NeiDepth = 0;
+      }
+
+      //cout << med_Above << '\t' << med_AboveLeft << '\t' << med_AboveRight << '\t' << med_Left << '\t' << med_Colocated1 << '\t' << med_Colocated2 << '\t' << sum_med << '\t' << med_med << '\t' << diff_NeiDepth << endl;
+      // pargles April 28th, 2015
+      
+      //////// DECISION TREES FOR CU-SPLITTING EARLY-TERMINATION
+      if(onlineTrainingIsDone){
+          
+        if(uiDepth == 0) {	// 64x64 Cus
+
+
+
+
+        }// END if(uiDepth == 0)
+        else if(uiDepth == 1) { // in 32x32 CUs
+
+            
+            
+        }// END if(uiDepth == 1)
+        else if(uiDepth == 2) { // in 16x16 CUs
+
+            
+            
+        }// END if(uiDepth == 2)	
+      }
+      //gcorrea: 03/03/2014 END
+      
+      if (count_frame < GOPforC5) {
+        if (uiDepth == 0) {
+            stringstream convert;
+            convert << RDcost_MSM;
+            cu64x64forC5 += convert.str() + ',';
+            convert.str("");
+            convert << RDcost_2Nx2N;
+            cu64x64forC5 += convert.str() + ',';
+            convert.str("");
+            convert << RDcost_2NxN;
+            cu64x64forC5 += convert.str() + ',';
+            convert.str("");
+            convert << RDcost_Nx2N;
+            cu64x64forC5 += convert.str() + ',';
+            convert.str("");
+            convert << part;
+            cu64x64forC5 += convert.str() + ',';
+            convert.str("");
+            convert << rpcBestCU->getMergeFlag(0);
+            cu64x64forC5 += convert.str() + ',';
+            convert.str("");
+            convert << (rpcBestCU->isSkipped(0) && rpcBestCU->getMergeFlag(0));
+            cu64x64forC5 += convert.str() + ',';
+            convert.str("");
+            convert << diff_NeiDepth;
+            cu64x64forC5 += convert.str() + ',';
+            convert.str("");
+            convert << fabs(RDcost_2Nx2N-RDcost_MSM)/RDcost_MSM;
+            cu64x64forC5 += convert.str() + ',';
+            convert.str("");
+            convert << RDcost_2Nx2N/RDcost_MSM;
+            cu64x64forC5 += convert.str() + ',';
+            convert.str("");
+            convert << div;
+            cu64x64forC5 += convert.str() + '\n';
+        } else if (uiDepth == 1) {
+            stringstream convert;
+            convert << RDcost_MSM;
+            cu32x32forC5 += convert.str() + ',';
+            convert.str("");
+            convert << RDcost_2Nx2N;
+            cu32x32forC5 += convert.str() + ',';
+            convert.str("");
+            convert << RDcost_2NxN;
+            cu32x32forC5 += convert.str() + ',';
+            convert.str("");
+            convert << RDcost_Nx2N;
+            cu32x32forC5 += convert.str() + ',';
+            convert.str("");
+            convert << part;
+            cu32x32forC5 += convert.str() + ',';
+            convert.str("");
+            convert << rpcBestCU->getMergeFlag(0);
+            cu32x32forC5 += convert.str() + ',';
+            convert.str("");
+            convert << (rpcBestCU->isSkipped(0) && rpcBestCU->getMergeFlag(0));
+            cu32x32forC5 += convert.str() + ',';
+            convert.str("");
+            convert << diff_NeiDepth;
+            cu32x32forC5 += convert.str() + ',';
+            convert.str("");
+            convert << fabs(RDcost_2Nx2N-RDcost_MSM)/RDcost_MSM;
+            cu32x32forC5 += convert.str() + ',';
+            convert.str("");
+            convert << RDcost_2Nx2N/RDcost_MSM;
+            cu32x32forC5 += convert.str() + ',';
+            convert.str("");
+            convert << div;
+            cu32x32forC5 += convert.str() + '\n';
+        } else if (uiDepth == 2) {
+            stringstream convert;
+            convert << RDcost_MSM;
+            cu16x16forC5 += convert.str() + ',';
+            convert.str("");
+            convert << RDcost_2Nx2N;
+            cu16x16forC5 += convert.str() + ',';
+            convert.str("");
+            convert << RDcost_2NxN;
+            cu16x16forC5 += convert.str() + ',';
+            convert.str("");
+            convert << RDcost_Nx2N;
+            cu16x16forC5 += convert.str() + ',';
+            convert.str("");
+            convert << part;
+            cu16x16forC5 += convert.str() + ',';
+            convert.str("");
+            convert << rpcBestCU->getMergeFlag(0);
+            cu16x16forC5 += convert.str() + ',';
+            convert.str("");
+            convert << (rpcBestCU->isSkipped(0) && rpcBestCU->getMergeFlag(0));
+            cu16x16forC5 += convert.str() + ',';
+            convert.str("");
+            convert << diff_NeiDepth;
+            cu16x16forC5 += convert.str() + ',';
+            convert.str("");
+            convert << fabs(RDcost_2Nx2N-RDcost_MSM)/RDcost_MSM;
+            cu16x16forC5 += convert.str() + ',';
+            convert.str("");
+            convert << RDcost_2Nx2N/RDcost_MSM;
+            cu16x16forC5 += convert.str() + ',';
+            convert.str("");
+            convert << div;
+            cu16x16forC5 += convert.str() + '\n';
+        }
+      }
+      // END pargles April 28th, 2015
   }
  
   if( bBoundary ||(bSliceEnd && bInsidePicture))
