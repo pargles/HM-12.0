@@ -442,22 +442,14 @@ Void TEncCu::xCompressCU( TComDataCU*& rpcBestCU, TComDataCU*& rpcTempCU, UInt u
   Bool isAddLowestQP = false;
   Int lowestQP = -rpcTempCU->getSlice()->getSPS()->getQpBDOffsetY();
   
-  //gcorrea: 17/10/2013
-  int n;		// CU dimension
-
-  curr_uiDepth = uiDepth;
-
-  if(curr_uiDepth == 0)
-	  n = 64;
-  else if(curr_uiDepth == 1)
-	  n = 32;
-  else if(curr_uiDepth == 2)
-	  n = 16;
-  else
-	  n = 8;
-  
-  // sum, mean, variance and gradient calculation for the CB
   int div;
+  
+  if(onlineTrainingIsDone){
+      
+    //gcorrea 03/03/2014
+    RDcost_MSM = RDcost_2Nx2N = RDcost_2NxN = RDcost_Nx2N = RDcost_NxN = RDcost_2NxnU = RDcost_2NxnD = RDcost_nLx2N = RDcost_nRx2N = 0;
+    //gcorrea 03/03/2014 END
+  }
 
   if( (g_uiMaxCUWidth>>uiDepth) >= rpcTempCU->getSlice()->getPPS()->getMinCuDQPSize() )
   {
@@ -525,8 +517,6 @@ Void TEncCu::xCompressCU( TComDataCU*& rpcBestCU, TComDataCU*& rpcTempCU, UInt u
 		RDcost_MSM = rpcBestCU->getTotalCost();
 
 		//cout << "\tgetMergeFlag: " << rpcBestCU->getMergeFlag( 0 ) << "\tisSkipped: " << rpcBestCU->isSkipped( 0 ) << "\tgetTotalCost: " << rpcBestCU->getTotalCost() << endl;
-
-
         rpcTempCU->initEstData( uiDepth, iQP );
 
         if(!m_pcEncCfg->getUseEarlySkipDetection())
@@ -835,6 +825,7 @@ Void TEncCu::xCompressCU( TComDataCU*& rpcBestCU, TComDataCU*& rpcTempCU, UInt u
   }
 #endif
   //gcorrea: 17/10/2013
+//double bestCost = rpcBestCU->getTotalCost();
 int mode = rpcBestCU->getPredictionMode( 0 );
 int part = rpcBestCU->getPartitionSize( 0 );
 int divide;
@@ -852,10 +843,146 @@ else
 //gcorrea: 17/10/2013 END
     
 if(onlineTrainingIsDone){
-     //gcorrea 03/03/2014
-     RDcost_MSM = RDcost_2Nx2N = RDcost_2NxN = RDcost_Nx2N = RDcost_NxN = RDcost_2NxnU = RDcost_2NxnD = RDcost_nLx2N = RDcost_nRx2N = 0;		
-  //gcorrea 03/03/2014 END
+    
+  double diff_NeiDepth = 0;
+  int split = 1;
+  if(mode == 0) {
+	double med_Above = -1;
+	double med_AboveLeft = -1;
+	double med_AboveRight = -1;
+	double med_Left = -1;
+	double med_Colocated1 = -1;
+	double med_Colocated2 = -1;
+	double sum_med = 0;
+	double med_med = -1;
+	int i;
+	int j;
+	double sum;
+	double a2DIVa1, ABSa2DIVa1;
+	int SKIPMergeFlag, MergeFlag;
+	
+	a2DIVa1 = (double)RDcost_2Nx2N / (double)RDcost_MSM;
+	ABSa2DIVa1 = abs((double)RDcost_2Nx2N - (double)RDcost_MSM) / (double)RDcost_MSM;
+	
+	if(rpcBestCU->getMergeFlag( 0 ))
+		MergeFlag = 1;
+	else
+		MergeFlag = 0;
+	if((rpcBestCU->isSkipped( 0 ) && rpcBestCU->getMergeFlag( 0 )))
+		SKIPMergeFlag = 1;
+	else
+		SKIPMergeFlag = 0;
+	i = j = sum = 0;
+	for(i=0; i<256; i+=4) {
+		if(rpcBestCU->getCUAbove() != NULL) {
+			sum += (double) ((rpcBestCU->getCUAbove())->getDepth(i));
+			j++;
+		}
+	}
+	if(j>0)
+		med_Above = sum/j;
+	
+	i = j = sum = 0;
+	for(i=0; i<256; i+=4) {
+		if(rpcBestCU->getCUAboveLeft() != NULL) {
+			sum += (double) ((rpcBestCU->getCUAboveLeft())->getDepth(i));
+			j++;
+		}
+	}
+	if(j>0)
+		med_AboveLeft = sum/j;
+	
+	i = j = sum = 0;
+	for(i=0; i<256; i+=4) {
+		if(rpcBestCU->getCUAboveRight() != NULL) {
+			sum += (double) ((rpcBestCU->getCUAboveRight())->getDepth(i));
+			j++;
+		}
+	}
+	if(j>0)
+		med_AboveRight = sum/j;
+	i = j = sum = 0;
+	for(i=0; i<256; i+=4) {
+		if(rpcBestCU->getCULeft() != NULL) {
+			sum += (double) ((rpcBestCU->getCULeft())->getDepth(i));
+			j++;
+		}
+	}
+	if(j>0)
+		med_Left = sum/j;
+	i = j = sum = 0;
+	for(i=0; i<256; i+=4) {
+		if(rpcBestCU->getCUColocated(REF_PIC_LIST_0) != NULL) {
+			sum += (double) ((rpcBestCU->getCUColocated(REF_PIC_LIST_0))->getDepth(i));
+			j++;
+		}
+	}
+	if(j>0)
+		med_Colocated1 = sum/j;
+	
+	i = j = sum = 0;
+	for(i=0; i<256; i+=4) {
+		if(rpcBestCU->getCUColocated(REF_PIC_LIST_1) != NULL) {
+			sum += (double) ((rpcBestCU->getCUColocated(REF_PIC_LIST_1))->getDepth(i));
+			j++;
+		}
+	}
+	if(j>0)
+		med_Colocated2 = sum/j;
+	
+	j = 0;
+	if(med_Above != -1) {
+		sum_med += med_Above;
+		j++;
+	}
+	if(med_AboveLeft != -1) {
+		sum_med += med_AboveLeft;
+		j++;
+	}
+	if(med_AboveRight != -1) {
+		sum_med += med_AboveRight;
+		j++;
+	}
+	if(med_Left != -1) {
+		sum_med += med_Left;
+		j++;
+	}
+	if(med_Colocated1 != -1) {
+		sum_med += med_Colocated1;
+		j++;
+	}
+	if(med_Colocated2 != -1) {
+		sum_med += med_Colocated2;
+		j++;
+	}
+	if(j>0) {
+		med_med = sum_med/j;
+		diff_NeiDepth = med_med - uiDepth;
+	}
+	else {
+		med_med = -1;
+		diff_NeiDepth = 0;
+	}
+        
+        //////// DECISION TREES FOR CU-SPLITTING EARLY-TERMINATION
+      if(uiDepth == 0) {	// 64x64 Cus
+
+                //todo get split from C5
+
+
+        }// END if(uiDepth == 0)
+        else if(uiDepth == 1) { // in 32x32 CUs
+
+            //todo get split from C5
             
+        }// END if(uiDepth == 1)
+        else if(uiDepth == 2) { // in 16x16 CUs
+
+            //todo get split from C5
+            
+        }// END if(uiDepth == 2)	
+    }
+    //gcorrea: 03/03/2014 END 
 }else{
 //collect data
   if(mode==0) {
@@ -1080,6 +1207,9 @@ if(onlineTrainingIsDone){
     rpcTempCU->initEstData( uiDepth, iQP );
 
     // further split
+    // gcorrea: 04/03/2014		
+   //if(split == 1) {		
+   // gcorrea: 04/03/2014 END
     if( bSubBranch && uiDepth < g_uiMaxCUDepth - g_uiAddCUDepth )
     {
       UChar       uhNextDepth         = uiDepth+1;
@@ -1199,7 +1329,6 @@ if(onlineTrainingIsDone){
       {
         rpcBestCU->getTotalCost()=rpcTempCU->getTotalCost()+1;
       }
-
 	  //gcorrea: 19/02/2014
       //Temp: CU dividida; Best: CU nao dividida
 	  if( rpcTempCU->getTotalCost() < rpcBestCU->getTotalCost() ){
@@ -1213,6 +1342,7 @@ if(onlineTrainingIsDone){
 
       xCheckBestMode( rpcBestCU, rpcTempCU, uiDepth);                                  // RD compare current larger prediction
     }                                                                                  // with sub partitioned prediction.
+      //}		// gcorrea: 04/03/2014 -- END if(split == 1)
     if (isAddLowestQP && (iQP == lowestQP))
     {
       iQP = iMinQP;
@@ -1347,28 +1477,6 @@ if(onlineTrainingIsDone){
 
       //cout << med_Above << '\t' << med_AboveLeft << '\t' << med_AboveRight << '\t' << med_Left << '\t' << med_Colocated1 << '\t' << med_Colocated2 << '\t' << sum_med << '\t' << med_med << '\t' << diff_NeiDepth << endl;
       // pargles April 28th, 2015
-      
-      //////// DECISION TREES FOR CU-SPLITTING EARLY-TERMINATION
-      if(onlineTrainingIsDone){
-          
-        if(uiDepth == 0) {	// 64x64 Cus
-
-
-
-
-        }// END if(uiDepth == 0)
-        else if(uiDepth == 1) { // in 32x32 CUs
-
-            
-            
-        }// END if(uiDepth == 1)
-        else if(uiDepth == 2) { // in 16x16 CUs
-
-            
-            
-        }// END if(uiDepth == 2)	
-      }
-      //gcorrea: 03/03/2014 END
       
       if (count_frame < GOPforC5) {
         if (uiDepth == 0) {
@@ -1989,28 +2097,24 @@ Void TEncCu::xCheckRDCostInter( TComDataCU*& rpcBestCU, TComDataCU*& rpcTempCU, 
   rpcTempCU->getTotalCost()  = m_pcRdCost->calcRdCost( rpcTempCU->getTotalBits(), rpcTempCU->getTotalDistortion() );
 
   xCheckDQP( rpcTempCU );
-
-  if(onlineTrainingIsDone==false){
-     //gcorrea 01/11/2013
-    if(ePartSize==SIZE_2Nx2N)
-            RDcost_2Nx2N = rpcTempCU->getTotalCost();
-    else if(ePartSize==SIZE_2NxN)
-            RDcost_2NxN = rpcTempCU->getTotalCost();
-    else if(ePartSize==SIZE_Nx2N)
-            RDcost_Nx2N = rpcTempCU->getTotalCost();
-    else if(ePartSize==SIZE_NxN)
-            RDcost_NxN = rpcTempCU->getTotalCost();
-    else if(ePartSize==SIZE_2NxnU)
-            RDcost_2NxnU = rpcTempCU->getTotalCost();
-    else if(ePartSize==SIZE_2NxnD)
-            RDcost_2NxnD = rpcTempCU->getTotalCost();
-    else if(ePartSize==SIZE_nLx2N)
-            RDcost_nLx2N = rpcTempCU->getTotalCost();
-    else if(ePartSize==SIZE_nRx2N)
-            RDcost_nRx2N = rpcTempCU->getTotalCost();
-    //gcorrea 01/11/2013 ENDs 
-  }
-  
+    //gcorrea 01/11/2013
+   if(ePartSize==SIZE_2Nx2N)
+           RDcost_2Nx2N = rpcTempCU->getTotalCost();
+   else if(ePartSize==SIZE_2NxN)
+           RDcost_2NxN = rpcTempCU->getTotalCost();
+   else if(ePartSize==SIZE_Nx2N)
+           RDcost_Nx2N = rpcTempCU->getTotalCost();
+   else if(ePartSize==SIZE_NxN)
+           RDcost_NxN = rpcTempCU->getTotalCost();
+   else if(ePartSize==SIZE_2NxnU)
+           RDcost_2NxnU = rpcTempCU->getTotalCost();
+   else if(ePartSize==SIZE_2NxnD)
+           RDcost_2NxnD = rpcTempCU->getTotalCost();
+   else if(ePartSize==SIZE_nLx2N)
+           RDcost_nLx2N = rpcTempCU->getTotalCost();
+   else if(ePartSize==SIZE_nRx2N)
+           RDcost_nRx2N = rpcTempCU->getTotalCost();
+   //gcorrea 01/11/2013 ENDs 
   xCheckBestMode(rpcBestCU, rpcTempCU, uhDepth);
 }
 
