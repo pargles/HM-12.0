@@ -9,7 +9,7 @@ BIN_DIR			= ../../../../bin
 
 SRC_DIR1		= ../../../../source/Lib/libmd5
 SRC_DIR2		= ../../../../source/Lib/libc5
-SRC_DIR3		=
+SRC_DIR3		= ../../../../source/Lib/c5Decoder
 SRC_DIR4		=
 
 USER_INC_DIRS	= -I$(SRC_DIR)
@@ -80,6 +80,9 @@ OBJS          	= \
 			$(OBJ_DIR)/trees.o \
 			$(OBJ_DIR)/update.o \
 			$(OBJ_DIR)/utility.o \
+			$(OBJ_DIR)/sample.o \
+			$(OBJ_DIR)/global.o \
+			$(OBJ_DIR)/hooks.o \
 			$(OBJ_DIR)/TComWeightPrediction.o \
 			$(OBJ_DIR)/TComRdCostWeightPrediction.o \
 
