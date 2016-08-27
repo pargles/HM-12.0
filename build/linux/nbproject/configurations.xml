@@ -5,6 +5,12 @@
                    displayName="Lib"
                    projectFiles="true"
                    root="../../source/Lib">
+      <logicalFolder name="c5Decoder" displayName="c5Decoder" projectFiles="true">
+        <itemPath>../../source/Lib/c5Decoder/defns.h</itemPath>
+        <itemPath>../../source/Lib/c5Decoder/global.c</itemPath>
+        <itemPath>../../source/Lib/c5Decoder/hooks.c</itemPath>
+        <itemPath>../../source/Lib/c5Decoder/sample.c</itemPath>
+      </logicalFolder>
       <logicalFolder name="libc5" displayName="libc5" projectFiles="true">
         <itemPath>../../source/Lib/libc5/C5.h</itemPath>
         <itemPath>../../source/Lib/libc5/attwinnow.c</itemPath>
@@ -229,7 +235,6 @@
       </toolsSet>
       <flagsDictionary>
         <element flagsID="0" commonFlags="-fPIC"/>
-        <element flagsID="1" commonFlags="-fPIC -O3"/>
       </flagsDictionary>
       <codeAssistance>
       </codeAssistance>
@@ -245,6 +250,7 @@
             </incDir>
             <preprocessorList>
               <Elem>MSYS_LINUX</Elem>
+              <Elem>_DEBUG</Elem>
             </preprocessorList>
           </ccTool>
         </makeTool>
@@ -703,75 +709,82 @@
         <ccTool flags="0">
         </ccTool>
       </item>
+      <item path="../../source/Lib/c5Decoder/global.c" ex="true" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/Lib/c5Decoder/hooks.c" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../../source/Lib/c5Decoder/sample.c"
+            ex="false"
+            tool="1"
+            flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
       <item path="../../source/Lib/libc5/attwinnow.c" ex="false" tool="1" flavor2="4">
-        <ccTool flags="1">
+        <ccTool flags="0">
         </ccTool>
       </item>
       <item path="../../source/Lib/libc5/c50.c" ex="false" tool="0" flavor2="2">
       </item>
       <item path="../../source/Lib/libc5/classify.c" ex="false" tool="1" flavor2="4">
-        <ccTool flags="1">
+        <ccTool flags="0">
         </ccTool>
       </item>
       <item path="../../source/Lib/libc5/confmat.c" ex="false" tool="1" flavor2="4">
-        <ccTool flags="1">
+        <ccTool flags="0">
         </ccTool>
       </item>
       <item path="../../source/Lib/libc5/construct.c" ex="false" tool="1" flavor2="4">
-        <ccTool flags="1">
+        <ccTool flags="0">
         </ccTool>
       </item>
       <item path="../../source/Lib/libc5/contin.c" ex="false" tool="1" flavor2="4">
-        <ccTool flags="1">
+        <ccTool flags="0">
         </ccTool>
       </item>
       <item path="../../source/Lib/libc5/discr.c" ex="false" tool="1" flavor2="4">
-        <ccTool flags="1">
+        <ccTool flags="0">
         </ccTool>
       </item>
       <item path="../../source/Lib/libc5/formrules.c" ex="false" tool="1" flavor2="4">
-        <ccTool flags="1">
+        <ccTool flags="0">
         </ccTool>
       </item>
       <item path="../../source/Lib/libc5/formtree.c" ex="false" tool="1" flavor2="4">
-        <ccTool flags="1">
+        <ccTool flags="0">
         </ccTool>
       </item>
       <item path="../../source/Lib/libc5/getdata.c" ex="false" tool="1" flavor2="4">
-        <ccTool flags="1">
+        <ccTool flags="0">
         </ccTool>
       </item>
       <item path="../../source/Lib/libc5/getnames.c" ex="false" tool="1" flavor2="4">
-        <ccTool flags="1">
+        <ccTool flags="0">
         </ccTool>
       </item>
       <item path="../../source/Lib/libc5/global.c" ex="false" tool="1" flavor2="4">
-        <ccTool flags="1">
+        <ccTool flags="0">
         </ccTool>
       </item>
       <item path="../../source/Lib/libc5/implicitatt.c"
             ex="false"
             tool="1"
             flavor2="4">
-        <ccTool flags="1">
+        <ccTool flags="0">
         </ccTool>
       </item>
       <item path="../../source/Lib/libc5/info.c" ex="false" tool="1" flavor2="4">
-        <ccTool flags="1">
+        <ccTool flags="0">
         </ccTool>
       </item>
       <item path="../../source/Lib/libc5/libc5.c" ex="false" tool="1" flavor2="4">
         <ccTool flags="0">
-          <preprocessorList>
-            <Elem>_DEBUG</Elem>
-          </preprocessorList>
         </ccTool>
       </item>
       <item path="../../source/Lib/libc5/mcost.c" ex="false" tool="1" flavor2="4">
         <ccTool flags="0">
-          <preprocessorList>
-            <Elem>_DEBUG</Elem>
-          </preprocessorList>
         </ccTool>
       </item>
       <item path="../../source/Lib/libc5/modelfiles.c"
@@ -779,86 +792,50 @@
             tool="1"
             flavor2="4">
         <ccTool flags="0">
-          <preprocessorList>
-            <Elem>_DEBUG</Elem>
-          </preprocessorList>
         </ccTool>
       </item>
       <item path="../../source/Lib/libc5/p-thresh.c" ex="false" tool="1" flavor2="4">
         <ccTool flags="0">
-          <preprocessorList>
-            <Elem>_DEBUG</Elem>
-          </preprocessorList>
         </ccTool>
       </item>
       <item path="../../source/Lib/libc5/prune.c" ex="false" tool="1" flavor2="4">
         <ccTool flags="0">
-          <preprocessorList>
-            <Elem>_DEBUG</Elem>
-          </preprocessorList>
         </ccTool>
       </item>
       <item path="../../source/Lib/libc5/report.c" ex="false" tool="1" flavor2="4">
         <ccTool flags="0">
-          <preprocessorList>
-            <Elem>_DEBUG</Elem>
-          </preprocessorList>
         </ccTool>
       </item>
       <item path="../../source/Lib/libc5/rules.c" ex="false" tool="1" flavor2="4">
         <ccTool flags="0">
-          <preprocessorList>
-            <Elem>_DEBUG</Elem>
-          </preprocessorList>
         </ccTool>
       </item>
       <item path="../../source/Lib/libc5/ruletree.c" ex="false" tool="1" flavor2="4">
         <ccTool flags="0">
-          <preprocessorList>
-            <Elem>_DEBUG</Elem>
-          </preprocessorList>
         </ccTool>
       </item>
       <item path="../../source/Lib/libc5/siftrules.c" ex="false" tool="1" flavor2="4">
         <ccTool flags="0">
-          <preprocessorList>
-            <Elem>_DEBUG</Elem>
-          </preprocessorList>
         </ccTool>
       </item>
       <item path="../../source/Lib/libc5/sort.c" ex="false" tool="1" flavor2="4">
         <ccTool flags="0">
-          <preprocessorList>
-            <Elem>_DEBUG</Elem>
-          </preprocessorList>
         </ccTool>
       </item>
       <item path="../../source/Lib/libc5/subset.c" ex="false" tool="1" flavor2="4">
         <ccTool flags="0">
-          <preprocessorList>
-            <Elem>_DEBUG</Elem>
-          </preprocessorList>
         </ccTool>
       </item>
       <item path="../../source/Lib/libc5/trees.c" ex="false" tool="1" flavor2="4">
         <ccTool flags="0">
-          <preprocessorList>
-            <Elem>_DEBUG</Elem>
-          </preprocessorList>
         </ccTool>
       </item>
       <item path="../../source/Lib/libc5/update.c" ex="false" tool="1" flavor2="4">
         <ccTool flags="0">
-          <preprocessorList>
-            <Elem>_DEBUG</Elem>
-          </preprocessorList>
         </ccTool>
       </item>
       <item path="../../source/Lib/libc5/utility.c" ex="false" tool="1" flavor2="4">
         <ccTool flags="0">
-          <preprocessorList>
-            <Elem>_DEBUG</Elem>
-          </preprocessorList>
         </ccTool>
       </item>
       <item path="../../source/Lib/libmd5/libmd5.c" ex="false" tool="1" flavor2="4">
@@ -873,9 +850,6 @@
             <pElem>../../source/Lib/TLibCommon</pElem>
             <pElem>lib/TLibCommon</pElem>
           </incDir>
-          <preprocessorList>
-            <Elem>_DEBUG</Elem>
-          </preprocessorList>
         </ccTool>
       </folder>
       <folder path="Lib/TLibDecoder">
@@ -884,9 +858,6 @@
             <pElem>../../source/Lib/TLibDecoder</pElem>
             <pElem>lib/TLibDecoder</pElem>
           </incDir>
-          <preprocessorList>
-            <Elem>_DEBUG</Elem>
-          </preprocessorList>
         </ccTool>
       </folder>
       <folder path="Lib/TLibVideoIO">
@@ -897,10 +868,17 @@
           </incDir>
           <preprocessorList>
             <Elem>MSYS_UNIX_LARGEFILE</Elem>
-            <Elem>_DEBUG</Elem>
             <Elem>_FILE_OFFSET_BITS=64</Elem>
             <Elem>_LARGEFILE64_SOURCE</Elem>
           </preprocessorList>
+        </ccTool>
+      </folder>
+      <folder path="Lib/c5Decoder">
+        <ccTool>
+          <incDir>
+            <pElem>../../source/Lib/TLibCommon</pElem>
+            <pElem>lib/TLibCommon</pElem>
+          </incDir>
         </ccTool>
       </folder>
       <folder path="Lib/libc5">
@@ -917,16 +895,6 @@
             <pElem>../../source/Lib/TLibCommon</pElem>
             <pElem>lib/TLibCommon</pElem>
           </incDir>
-          <preprocessorList>
-            <Elem>_DEBUG</Elem>
-          </preprocessorList>
-        </ccTool>
-      </folder>
-      <folder path="source">
-        <ccTool>
-          <preprocessorList>
-            <Elem>_DEBUG</Elem>
-          </preprocessorList>
         </ccTool>
       </folder>
       <folder path="source/App">

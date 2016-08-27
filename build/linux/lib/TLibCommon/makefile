@@ -80,9 +80,6 @@ OBJS          	= \
 			$(OBJ_DIR)/trees.o \
 			$(OBJ_DIR)/update.o \
 			$(OBJ_DIR)/utility.o \
-			$(OBJ_DIR)/sample.o \
-			$(OBJ_DIR)/global.o \
-			$(OBJ_DIR)/hooks.o \
 			$(OBJ_DIR)/TComWeightPrediction.o \
 			$(OBJ_DIR)/TComRdCostWeightPrediction.o \
 
