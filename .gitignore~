@@ -27,3 +27,9 @@
 *.exe
 *.out
 *.app
+
+# tree files
+*.tree
+
+#video files
+*.yuv

@@ -132,6 +132,7 @@
 
 #define  AllocZero(N,T)		(T *) Pcalloc(N, sizeof(T))
 #define  Alloc(N,T)		AllocZero(N,T) /* for safety */
+#define  PMAlloc(N,T)		(T *) Pmalloc((N)*sizeof(T))
 #define  Realloc(V,N,T)		V = (T *) Prealloc(V, (N)*sizeof(T))
 
 #define	 Max(a,b)               ((a)>(b) ? (a) : (b))
@@ -168,8 +169,8 @@
 #define	 Int(x)			((int)(x+0.5))
 
 #define  Space(s)	(s == ' ' || s == '\n' || s == '\r' || s == '\t')
-#define  SkipComment	while ( ( c = InCharC(f) ) != '\n' )
-#define  SkipComment1	while ( ( c = InChar(f) ) != '\n' )
+#define  SkipComment	while ( ( c = InCharC(fileChar) ) != '\n' )
+#define  SkipComment1	while ( ( c = InChar(file) ) != '\n' )
 
 #define	 P1(x)		(rint((x)*10) / 10)
 
@@ -600,6 +601,22 @@ extern	char		Fn[500];
 
 extern	FILE  		*Of;
 
+typedef	 struct _classify_environment
+	 {
+	    CaseNo	Fp;		/* for SMP */
+	    double	*ClassWt;	/* total class votes */
+	    float	*Vote,		/* class boost votes */
+			Confidence;	/* prediction CF */
+	    RuleNo	*Active,	/* active rules */
+			ActiveSpace,	/* space for same */
+			NActive;	/* number of same */
+	    CRule	*MostSpec;	/* most specific active rules */
+	    Boolean	*AttUsed;	/* reserved for possible later use */
+	    RuleNo	*RulesUsed,	/* all applicable rules */
+			NRulesUsed;	/* number of same */
+	 }
+	 CEnvRec, *CEnv;
+
 
 
 #pragma once
@@ -961,9 +978,157 @@ void	    Shuffle(int *Vec);
 void	    Summary(void);
 float	    SE(float sum, float sumsq, int no);    
     
-    
-    
+/* sample.c */
+int	    main2(int Argc, char *Argv[]);
+void	    ShowRules(int Spaces);
+
+ /* hooks.c */
+Boolean	    ReadName(FILE *f, String s, int n, char ColonOpt);
+void	    GetNames(FILE *Nf);
+void	    ExplicitAtt(FILE *Nf);
+int	    Which(String Val, String *List, int First, int Last);
+int	    InChar(FILE *f);
+
+DataRec	    GetDataRec(FILE *Df, Boolean Train);
+int	    StoreIVal(String S);
+void	    CheckValue(DataRec DVec, Attribute Att);
+
+void	    ImplicitAtt(FILE *Nf);
+void	    ReadDefinition(FILE *f);
+void	    Append(char c);
+Boolean	    Expression();
+Boolean	    Conjunct();
+Boolean	    SExpression();
+Boolean	    AExpression();
+Boolean	    Term();
+Boolean	    Factor();
+Boolean	    Primary();
+Boolean	    Atom();
+Boolean	    Find(String S);
+int	    FindOne(String *Alt);
+Attribute   FindAttName();
+void	    DefSyntaxError(String Msg);
+void	    DefSemanticsError(int Fi, String Msg, int OpCode);
+void	    Dump(char OpCode, ContValue F, String S, int Fi);
+void	    DumpOp(char OpCode, int Fi);
+Boolean	    UpdateTStack(char OpCode, ContValue F, String S, int Fi);
+AttValue    EvaluateDef(Definition D, DataRec Case);
+
+void	    ReadFilePrefix(String Extension);
+void	    ReadHeader();
+Tree	    GetTree(String Extension);
+Tree	    InTree();
+CRuleSet    GetRules(String Extension);
+CRuleSet    InRules();
+CRule	    InRule();
+Condition   InCondition();
+void	    ConstructRuleTree(CRuleSet RS);
+void	    SetTestIndex(Condition C);
+RuleTree    GrowRT(RuleNo *RR, int RRN, CRule *Rule);
+int	    DesiredOutcome(CRule R, int TI);
+int	    SelectTest(RuleNo *RR, int RRN, CRule *Rule);
+int	    ReadProp(char *Delim);
+String	    RemoveQuotes(String S);
+Set	    MakeSubset(Attribute Att);
+Tree	    Leaf(double *Freq, ClassNo NodeClass, CaseCount Cases,
+		 CaseCount Errors);
+
+void	    GetMCosts(FILE *f);
+
+ClassNo	    TreeClassify2(DataRec CaseDesc, Tree DecisionTree, CEnv E);
+void	    FollowAllBranches2(DataRec CaseDesc, Tree T, float Fraction,double *Prob, Boolean *AttUsed);
+void	    FindLeaf2(DataRec CaseDesc, Tree T, Tree PT, float Wt, double *Prob,Boolean *AttUsed);
+ClassNo	    RuleClassify2(DataRec CaseDesc, CRuleSet RS, CEnv E);
+int	    FindOutcome(DataRec Case, Condition OneCond);
+Boolean	    Satisfies(DataRec CaseDesc, Condition OneCond);
+Boolean	    Matches(CRule R, DataRec Case);
+void	    CheckActiveSpace2(int N, CEnv E);
+void	    MarkActive2(RuleTree RT, DataRec Case, CEnv E);
+ClassNo	    BoostClassify2(DataRec CaseDesc, int MaxTrial, CEnv E);
+ClassNo	    SelectClass2(ClassNo Default, Boolean UseCosts, double *Prob);
+double	    MisclassCost(double *LocalFreq, ClassNo C);
+ClassNo	    Classify2(DataRec CaseDesc, CEnv E);
+float	    Interpolate(Tree T, ContValue Val);
+
+FILE *	    GetFile(String Extension, String RW);
+void	    CheckFile(String Extension, Boolean Write);
+
+char	    ProcessOption(int Argc, char *Argv[], char *Options);
+void	    *Pmalloc(size_t Bytes);
+void	    *Prealloc(void *Present, size_t Bytes);
+void	    *Pcalloc(size_t Number, unsigned Size);
+void	    Error(int ErrNo, String S1, String S2);
+int	    Denominator(ContValue Val);
+int	    GetInt(String S, int N);
+int	    DateToDay(String DS);
+int	    TimeToSecs(String TS);
+void	    SetTSBase(int y);
+int	    TStampToMins(String TS);
+
+void	    FreeGlobals();
+void	    FreeCosts();
+void	    FreeNames();
+void	    FreeTree(Tree T);
+void	    FreeRule(CRule R);
+void	    FreeRuleTree(RuleTree RT);
+void	    FreeRules(CRuleSet RS);
+void	    FreeLastCase(DataRec DVec);
+void	    FreeVector(void **V, int First, int Last);
+
 void printHelloWorld();
 #ifdef __cplusplus
 }
 #endif
+
+/*************************************************************************/
+/*									 */
+/*		Text strings						 */
+/*									 */
+/*************************************************************************/
+
+#define	 E_NOFILE(f,e)		"cannot open file %s%s\n", f, e
+#define	 E_BADATTNAME		"`:' or `:=' expected after attribute name"\
+					" `%s'\n"
+#define	 E_EOFINATT		"unexpected eof while reading attribute `%s'\n"
+#define	 E_SINGLEATTVAL(a,v)	"attribute `%s' has only one value `%s'\n",\
+					a, v
+#define	 E_DUPATTNAME		"multiple attributes with name `%s'\n"
+#define	 E_CWTATTERR		"case weight attribute must be continuous\n"
+#define	 E_BADATTVAL(v,a)	"bad value of `%s' for attribute `%s'\n", v, a
+#define	 E_BADNUMBER(a)		"value of `%s' changed to `?'\n", a
+#define	 E_BADCLASSTHRESH	"bad class threshold `%s'\n"
+#define	 E_LEQCLASSTHRESH	"class threshold `%s' <= previous threshold\n"
+#define	 E_BADCOSTCLASS		"bad class `%s'\n"
+#define	 E_BADCOST		"bad cost value `%s'\n"
+#define	 E_NOMEM		"unable to allocate sufficient memory\n"
+#define	 E_TOOMANYVALS(a,n)	"too many values for attribute `%s'"\
+					" (max %d)\n", a, n
+#define	 E_BADDISCRETE		"bad number of discrete values for attribute"\
+					" `%s'\n"
+#define	 E_BADCTARGET		"target attribute `%s' must be"\
+					" type `continuous'\n"
+#define	 E_BADDTARGET		"target attribute `%s' must be specified by"\
+					" a list of discrete values\n"
+#define	 E_LONGNAME		"overlength name: check data file formats\n"
+#define	 E_HITEOF		"unexpected end of file\n"
+#define	 E_MISSNAME		"missing name or value before `%s'\n"
+#define	 E_BADTSTMP(d,a)	"bad timestamp `%s' for attribute `%s'\n", d, a
+#define	 E_BADDATE(d,a)		"bad date `%s' for attribute `%s'\n", d, a
+#define	 E_BADTIME(d,a)		"bad time `%s' for attribute `%s'\n", d, a
+#define	 E_UNKNOWNATT		"unknown attribute name `%s'\n"
+#define	 E_BADDEF1(a,s,x)	"in definition of attribute `%s':\n"\
+					"\tat `%.12s': expect %s\n", a, s, x
+#define	 E_BADDEF2(a,s,x)	"in definition of attribute `%s':\n"\
+					"\t`%s': %s\n", a, s, x
+#define	 E_BADDEF3		"cannot define target attribute `%s'\n"
+#define	 E_BADDEF4		"[warning] target attribute appears in"\
+					" definition of attribute `%s'\n"
+#define	 E_SAMEATT(a,b)		"[warning] attribute `%s' is identical to"\
+					" attribute `%s'\n", a, b
+#define	 EX_MODELFILE(f)	"file %s incompatible with .names file\n", f
+#define	 E_MFATT		"undefined or excluded attribute"
+#define	 E_MFATTVAL		"undefined attribute value"
+#define	 E_MFCLASS		"undefined class"
+#define	 E_MFEOF		"unexpected eof"
+
+

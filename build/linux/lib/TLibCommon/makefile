@@ -9,7 +9,7 @@ BIN_DIR			= ../../../../bin
 
 SRC_DIR1		= ../../../../source/Lib/libmd5
 SRC_DIR2		= ../../../../source/Lib/libc5
-SRC_DIR3		= ../../../../source/Lib/c5Decoder
+SRC_DIR3		= 
 SRC_DIR4		=
 
 USER_INC_DIRS	= -I$(SRC_DIR)

@@ -60,7 +60,7 @@ char	LineBuffer[MAXLINEBUFFER], *LBp=LineBuffer;
 /*************************************************************************/
 
 
-Boolean ReadName(FILE *f, String s, int n, char ColonOpt)
+Boolean ReadName(FILE *file, String s, int n, char ColonOpt)
 /*      --------  */
 {
     register char *Sp=s;
@@ -69,7 +69,7 @@ Boolean ReadName(FILE *f, String s, int n, char ColonOpt)
 
     /*  Skip to first non-space character  */
 
-    while ( (c = InChar(f)) == '|' || Space(c) )
+    while ( (c = InChar(file)) == '|' || Space(c) )
     {
 	if ( c == '|' ) SkipComment1;
     }
@@ -93,27 +93,27 @@ Boolean ReadName(FILE *f, String s, int n, char ColonOpt)
 
 	if ( c == '.' )
 	{
-	    if ( (c = InChar(f)) == '|' || Space(c) || c == EOF ) break;
+	    if ( (c = InChar(file)) == '|' || Space(c) || c == EOF ) break;
 	    *Sp++ = '.';
 	    continue;
 	}
 
 	if ( c == '\\' )
 	{
-	    c = InChar(f);
+	    c = InChar(file);
 	}
 
 	if ( Space(c) )
 	{
 	    *Sp++ = ' ';
 
-	    while ( ( c = InChar(f) ) == ' ' || c == '\t' )
+	    while ( ( c = InChar(file) ) == ' ' || c == '\t' )
 		;
 	}
 	else
 	{
 	    *Sp++ = c;
-	    c = InChar(f);
+	    c = InChar(file);
 	}
     }
 
@@ -159,7 +159,7 @@ Boolean ReadName(FILE *f, String s, int n, char ColonOpt)
 /*	Colons are sometimes delimiters depending on ColonOpt		 */
 /*									 */
 /*************************************************************************/
-Boolean ReadNameC(char **f, String s, int n, char ColonOpt)
+Boolean ReadNameC(char **fileChar, String s, int n, char ColonOpt)
 /*      --------  */
 {
     register char *Sp=s;
@@ -168,7 +168,7 @@ Boolean ReadNameC(char **f, String s, int n, char ColonOpt)
 
     /*  Skip to first non-space character  */
 
-   while ( (c = InCharC(f)) == '|' || Space(c) )
+   while ( (c = InCharC(fileChar)) == '|' || Space(c) )
     {
 	if ( c == '|' ) SkipComment;
     }
@@ -192,27 +192,27 @@ Boolean ReadNameC(char **f, String s, int n, char ColonOpt)
 
 	if ( c == '.' )
 	{
-	    if ( (c = InCharC(f)) == '|' || Space(c) ) break;
+	    if ( (c = InCharC(fileChar)) == '|' || Space(c) ) break;
 	    *Sp++ = '.';
 	    continue;
 	}
 
 	if ( c == '\\' )
 	{
-	    c = InCharC(f);
+	    c = InCharC(fileChar);
 	}
 
 	if ( Space(c) )
 	{
 	    *Sp++ = ' ';
 
-	   while ( ( c = InCharC(f) ) == ' ' || c == '\t' )
+	   while ( ( c = InCharC(fileChar) ) == ' ' || c == '\t' )
 		;
 	}
 	else
 	{
 	    *Sp++ = c;
-	    c = InCharC(f);
+	    c = InCharC(fileChar);
 	}
     }
 
