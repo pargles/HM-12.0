@@ -54,7 +54,7 @@
 /*									 */
 /*************************************************************************/
 
-#include "defns.h"
+#include "c5decoderdefns.h"
 #include "global.c"
 #include "hooks.c"
 

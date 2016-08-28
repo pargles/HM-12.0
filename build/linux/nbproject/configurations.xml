@@ -101,7 +101,7 @@
       <logicalFolder name="TLibDecoder" displayName="TLibDecoder" projectFiles="true">
         <itemPath>../../source/Lib/TLibDecoder/AnnexBread.cpp</itemPath>
         <itemPath>../../source/Lib/TLibDecoder/AnnexBread.h</itemPath>
-        <itemPath>C5Decoder.h</itemPath>
+        <itemPath>../../source/Lib/TLibDecoder/C5Decoder.h</itemPath>
         <itemPath>../../source/Lib/TLibDecoder/NALread.cpp</itemPath>
         <itemPath>../../source/Lib/TLibDecoder/NALread.h</itemPath>
         <itemPath>../../source/Lib/TLibDecoder/SEIread.cpp</itemPath>
@@ -125,7 +125,7 @@
         <itemPath>../../source/Lib/TLibDecoder/TDecSlice.h</itemPath>
         <itemPath>../../source/Lib/TLibDecoder/TDecTop.cpp</itemPath>
         <itemPath>../../source/Lib/TLibDecoder/TDecTop.h</itemPath>
-        <itemPath>../../source/Lib/TLibDecoder/defns.h</itemPath>
+        <itemPath>../../source/Lib/TLibDecoder/c5decoderdefns.h</itemPath>
         <itemPath>../../source/Lib/TLibDecoder/global.c</itemPath>
         <itemPath>../../source/Lib/TLibDecoder/hooks.c</itemPath>
         <itemPath>../../source/Lib/TLibDecoder/sample.c</itemPath>
@@ -491,6 +491,11 @@
         <ccTool flags="0">
         </ccTool>
       </item>
+      <item path="../../source/Lib/TLibDecoder/C5Decoder.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/Lib/TLibDecoder/NALread.cpp"
             ex="false"
             tool="1"
@@ -844,8 +849,6 @@
       <item path="../../source/Lib/libmd5/libmd5.c" ex="false" tool="1" flavor2="4">
         <ccTool flags="0">
         </ccTool>
-      </item>
-      <item path="C5Decoder.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="defns.i" ex="false" tool="0" flavor2="2">
       </item>

@@ -1,9 +1,9 @@
 objects/sample.d.o: \
  /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibDecoder/../../../../source/Lib/TLibDecoder/sample.c \
- /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibDecoder/../../../../source/Lib/TLibDecoder/defns.h \
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibDecoder/../../../../source/Lib/TLibDecoder/c5decoderdefns.h \
  /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibDecoder/../../../../source/Lib/TLibDecoder/global.c \
  /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibDecoder/../../../../source/Lib/TLibDecoder/hooks.c
  /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibDecoder/../../../../source/Lib/TLibDecoder/sample.c :
- /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibDecoder/../../../../source/Lib/TLibDecoder/defns.h :
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibDecoder/../../../../source/Lib/TLibDecoder/c5decoderdefns.h :
  /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibDecoder/../../../../source/Lib/TLibDecoder/global.c :
  /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibDecoder/../../../../source/Lib/TLibDecoder/hooks.c :
