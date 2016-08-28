@@ -36,6 +36,7 @@
 */
 
 #include <stdio.h>
+#include "TLibDecoder/C5Decoder.h"
 #include "TEncTop.h"
 #include "TEncCu.h"
 #include "TEncAnalyze.h"
@@ -61,6 +62,7 @@ extern char filename_C5data_64x64[100];
 extern char filename_C5data_32x32[100];
 extern char filename_C5data_16x16[100];
 extern Char*  relation;
+//extern C5Decoder c5Decoder;
 
 extern string cu64x64forC5;
 extern string cu32x32forC5;
@@ -95,7 +97,7 @@ extern long int count_32x32_MSM, count_32x32_MERGE, count_32x32_2Nx2N_MERGE, cou
 extern long int count_16x16_MSM, count_16x16_MERGE, count_16x16_2Nx2N_MERGE, count_16x16_SKIP, count_16x16_2Nx2N_SKIP, count_16x16_2Nx2N_nonMSM, count_16x16_2Nx2N, count_16x16_2NxN, count_16x16_Nx2N, count_16x16_NxN, count_16x16_2NxnU, count_16x16_2NxnD, count_16x16_nLx2N, count_16x16_nRx2N;
 extern long int count_8x8_MSM, count_8x8_MERGE, count_8x8_2Nx2N_MERGE, count_8x8_SKIP, count_8x8_2Nx2N_SKIP, count_8x8_2Nx2N_nonMSM, count_8x8_2Nx2N, count_8x8_2NxN, count_8x8_Nx2N, count_8x8_NxN, count_8x8_2NxnU, count_8x8_2NxnD, count_8x8_nLx2N, count_8x8_nRx2N;
 
-
+C5Decoder c5decoder;
 //gcorrea 17/10/2013 END
 
 //! \ingroup TLibEncoder

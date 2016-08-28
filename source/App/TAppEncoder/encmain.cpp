@@ -40,7 +40,6 @@
 #include "TAppEncTop.h"
 #include "TAppCommon/program_options_lite.h"
 #include "libc5/C5.h"
-
 using namespace std;
 namespace po = df::program_options_lite;
 
@@ -59,7 +58,6 @@ ofstream C5dataFileCU16x16;
 C5 c5_64;
 C5 c5_32;
 C5 c5_16;
-//C5Decoder c5Decoder;
 
 bool onlineTrainingIsDone;
 char filename_64x64[100];

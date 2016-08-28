@@ -14,7 +14,7 @@ class C5Decoder
       
     
     void runC5Decoder(char *Argv[]){
-        main(*Argv, *Argv);
+        main(5, Argv);
     }
 
 };
