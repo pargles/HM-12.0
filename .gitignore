@@ -33,3 +33,6 @@
 
 #video files
 *.yuv
+
+#temporary ubuntu files
+*~
