@@ -4,14 +4,20 @@
     <df root="." name="0">
       <df name="app">
         <df name="TAppDecoder">
+          <df name="objects">
+          </df>
         </df>
         <df name="TAppEncoder">
+          <df name="objects">
+          </df>
         </df>
       </df>
       <df name="common">
       </df>
       <df name="lib">
         <df name="TAppCommon">
+          <df name="objects">
+          </df>
         </df>
         <df name="TLibCommon">
           <df name="objects">
@@ -32,8 +38,12 @@
       </df>
       <df name="utils">
         <df name="annexBbytecount">
+          <df name="objects">
+          </df>
         </df>
         <df name="convert_NtoMbit_YCbCr">
+          <df name="objects">
+          </df>
         </df>
       </df>
       <in>defns.i</in>
