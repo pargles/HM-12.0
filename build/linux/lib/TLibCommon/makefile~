@@ -9,7 +9,7 @@ BIN_DIR			= ../../../../bin
 
 SRC_DIR1		= ../../../../source/Lib/libmd5
 SRC_DIR2		= ../../../../source/Lib/libc5
-SRC_DIR3		= 
+SRC_DIR3		= ../../../../source/Lib/libc5decoder
 SRC_DIR4		=
 
 USER_INC_DIRS	= -I$(SRC_DIR)
@@ -53,33 +53,7 @@ OBJS          	= \
 			$(OBJ_DIR)/TComYuv.o \
 			$(OBJ_DIR)/TComInterpolationFilter.o \
 			$(OBJ_DIR)/libmd5.o \
-			$(OBJ_DIR)/attwinnow.o \
-			$(OBJ_DIR)/classify.o \
-			$(OBJ_DIR)/confmat.o \
-			$(OBJ_DIR)/construct.o \
-			$(OBJ_DIR)/contin.o \
-			$(OBJ_DIR)/discr.o \
-			$(OBJ_DIR)/formrules.o \
-			$(OBJ_DIR)/formtree.o \
-			$(OBJ_DIR)/getdata.o \
-			$(OBJ_DIR)/getnames.o \
-			$(OBJ_DIR)/global.o \
-			$(OBJ_DIR)/implicitatt.o \
-			$(OBJ_DIR)/info.o \
-			$(OBJ_DIR)/libc5.o \
-			$(OBJ_DIR)/mcost.o \
-			$(OBJ_DIR)/modelfiles.o \
-			$(OBJ_DIR)/prune.o \
-			$(OBJ_DIR)/p-thresh.o \
-			$(OBJ_DIR)/report.o \
-			$(OBJ_DIR)/rules.o \
-			$(OBJ_DIR)/ruletree.o \
-			$(OBJ_DIR)/siftrules.o \
-			$(OBJ_DIR)/sort.o \
-			$(OBJ_DIR)/subset.o \
-			$(OBJ_DIR)/trees.o \
-			$(OBJ_DIR)/update.o \
-			$(OBJ_DIR)/utility.o \
+			$(OBJ_DIR)/sample.o \
 			$(OBJ_DIR)/TComWeightPrediction.o \
 			$(OBJ_DIR)/TComRdCostWeightPrediction.o \
 

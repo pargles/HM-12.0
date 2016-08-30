@@ -39,6 +39,7 @@
 #include "TEncTop.h"
 #include "TEncCu.h"
 #include "TEncAnalyze.h"
+#include "libc5/C5Decoder.h"
 
 #include <cmath>
 #include <algorithm>
@@ -62,6 +63,7 @@ extern char filename_C5data_32x32[100];
 extern char filename_C5data_16x16[100];
 extern Char*  relation;
 //extern C5Decoder c5Decoder;
+extern C5Decoder c5_64_decoder;
 
 extern string cu64x64forC5;
 extern string cu32x32forC5;
@@ -970,7 +972,7 @@ if(onlineTrainingIsDone){
           //needs C5hevc_64x64.names C5hevc_64x64.tree C5hevc_64x64.data C5hevc_64x64.cases
           char *param64[] = {"./see5", "-f", "/home/pargles/Documents/codificador/HM-12.0/C5hevc_64x64"};
                 //todo get split from C5
-
+                c5_64_decoder.decodeC5(param64);
 
         }// END if(uiDepth == 0)
         else if(uiDepth == 1) { // in 32x32 CUs

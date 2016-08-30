@@ -7,18 +7,22 @@
                    root="../../source/Lib">
       <logicalFolder name="libc5" displayName="libc5" projectFiles="true">
         <itemPath>../../source/Lib/libc5/C5.h</itemPath>
+        <itemPath>../../source/Lib/libc5/C5Decoder.h</itemPath>
         <itemPath>../../source/Lib/libc5/attwinnow.c</itemPath>
         <itemPath>../../source/Lib/libc5/c50.c</itemPath>
         <itemPath>../../source/Lib/libc5/classify.c</itemPath>
         <itemPath>../../source/Lib/libc5/confmat.c</itemPath>
         <itemPath>../../source/Lib/libc5/construct.c</itemPath>
         <itemPath>../../source/Lib/libc5/contin.c</itemPath>
+        <itemPath>../../source/Lib/libc5/defns.h</itemPath>
         <itemPath>../../source/Lib/libc5/discr.c</itemPath>
         <itemPath>../../source/Lib/libc5/formrules.c</itemPath>
         <itemPath>../../source/Lib/libc5/formtree.c</itemPath>
         <itemPath>../../source/Lib/libc5/getdata.c</itemPath>
         <itemPath>../../source/Lib/libc5/getnames.c</itemPath>
         <itemPath>../../source/Lib/libc5/global.c</itemPath>
+        <itemPath>../../source/Lib/libc5/global2.c</itemPath>
+        <itemPath>../../source/Lib/libc5/hooks.c</itemPath>
         <itemPath>../../source/Lib/libc5/implicitatt.c</itemPath>
         <itemPath>../../source/Lib/libc5/info.c</itemPath>
         <itemPath>../../source/Lib/libc5/libc5.c</itemPath>
@@ -30,6 +34,7 @@
         <itemPath>../../source/Lib/libc5/report.c</itemPath>
         <itemPath>../../source/Lib/libc5/rules.c</itemPath>
         <itemPath>../../source/Lib/libc5/ruletree.c</itemPath>
+        <itemPath>../../source/Lib/libc5/sample.c</itemPath>
         <itemPath>../../source/Lib/libc5/siftrules.c</itemPath>
         <itemPath>../../source/Lib/libc5/sort.c</itemPath>
         <itemPath>../../source/Lib/libc5/subset.c</itemPath>
@@ -749,6 +754,10 @@
         <ccTool flags="0">
         </ccTool>
       </item>
+      <item path="../../source/Lib/libc5/global2.c" ex="true" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/Lib/libc5/hooks.c" ex="true" tool="3" flavor2="0">
+      </item>
       <item path="../../source/Lib/libc5/implicitatt.c"
             ex="false"
             tool="1"
@@ -792,6 +801,10 @@
         </ccTool>
       </item>
       <item path="../../source/Lib/libc5/ruletree.c" ex="false" tool="1" flavor2="4">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../../source/Lib/libc5/sample.c" ex="false" tool="1" flavor2="0">
         <ccTool flags="0">
         </ccTool>
       </item>
