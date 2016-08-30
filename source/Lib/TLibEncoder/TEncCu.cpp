@@ -36,7 +36,6 @@
 */
 
 #include <stdio.h>
-#include "TLibDecoder/C5Decoder.h"
 #include "TEncTop.h"
 #include "TEncCu.h"
 #include "TEncAnalyze.h"
@@ -97,7 +96,6 @@ extern long int count_32x32_MSM, count_32x32_MERGE, count_32x32_2Nx2N_MERGE, cou
 extern long int count_16x16_MSM, count_16x16_MERGE, count_16x16_2Nx2N_MERGE, count_16x16_SKIP, count_16x16_2Nx2N_SKIP, count_16x16_2Nx2N_nonMSM, count_16x16_2Nx2N, count_16x16_2NxN, count_16x16_Nx2N, count_16x16_NxN, count_16x16_2NxnU, count_16x16_2NxnD, count_16x16_nLx2N, count_16x16_nRx2N;
 extern long int count_8x8_MSM, count_8x8_MERGE, count_8x8_2Nx2N_MERGE, count_8x8_SKIP, count_8x8_2Nx2N_SKIP, count_8x8_2Nx2N_nonMSM, count_8x8_2Nx2N, count_8x8_2NxN, count_8x8_Nx2N, count_8x8_NxN, count_8x8_2NxnU, count_8x8_2NxnD, count_8x8_nLx2N, count_8x8_nRx2N;
 
-C5Decoder c5decoder;
 //gcorrea 17/10/2013 END
 
 //! \ingroup TLibEncoder
@@ -968,13 +966,15 @@ if(onlineTrainingIsDone){
         
         //////// DECISION TREES FOR CU-SPLITTING EARLY-TERMINATION
       if(uiDepth == 0) {	// 64x64 Cus
-
+          //./see5 -f C5hevc_64x64
+          //needs C5hevc_64x64.names C5hevc_64x64.tree C5hevc_64x64.data C5hevc_64x64.cases
+          char *param64[] = {"./see5", "-f", "/home/pargles/Documents/codificador/HM-12.0/C5hevc_64x64"};
                 //todo get split from C5
 
 
         }// END if(uiDepth == 0)
         else if(uiDepth == 1) { // in 32x32 CUs
-
+            
             //todo get split from C5
             
         }// END if(uiDepth == 1)

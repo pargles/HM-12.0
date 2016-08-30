@@ -1,7 +1,5 @@
 objects/TEncCu.r.o: \
  /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibEncoder/TEncCu.cpp \
- /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibDecoder/C5Decoder.h \
- /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibDecoder/c5decoderdefns.h \
  /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibEncoder/TEncTop.h \
  /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibCommon/TComList.h \
  /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibCommon/CommonDef.h \
@@ -73,8 +71,6 @@ objects/TEncCu.r.o: \
  /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibEncoder/TEncPreanalyzer.h \
  /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibEncoder/TEncPic.h
  /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibEncoder/TEncCu.cpp :
- /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibDecoder/C5Decoder.h :
- /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibDecoder/c5decoderdefns.h :
  /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibEncoder/TEncTop.h :
  /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibCommon/TComList.h :
  /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibCommon/CommonDef.h :
