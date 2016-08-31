@@ -21,8 +21,6 @@
         <itemPath>../../source/Lib/libc5/getdata.c</itemPath>
         <itemPath>../../source/Lib/libc5/getnames.c</itemPath>
         <itemPath>../../source/Lib/libc5/global.c</itemPath>
-        <itemPath>../../source/Lib/libc5/global2.c</itemPath>
-        <itemPath>../../source/Lib/libc5/hooks.c</itemPath>
         <itemPath>../../source/Lib/libc5/implicitatt.c</itemPath>
         <itemPath>../../source/Lib/libc5/info.c</itemPath>
         <itemPath>../../source/Lib/libc5/libc5.c</itemPath>
@@ -753,10 +751,6 @@
       <item path="../../source/Lib/libc5/global.c" ex="false" tool="1" flavor2="4">
         <ccTool flags="0">
         </ccTool>
-      </item>
-      <item path="../../source/Lib/libc5/global2.c" ex="true" tool="3" flavor2="0">
-      </item>
-      <item path="../../source/Lib/libc5/hooks.c" ex="true" tool="3" flavor2="0">
       </item>
       <item path="../../source/Lib/libc5/implicitatt.c"
             ex="false"
