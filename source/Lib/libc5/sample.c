@@ -72,12 +72,9 @@ int mainFunctionDecoder(int Argc, char *Argv[])
 {
     FILE		*F;
     DataRec		Case;
-    int			CaseNo=0, MaxClassLen=5, o, TotalRules=0,
-			StartList, CurrentPosition;
-    ClassNo		Predict, c;
-    Boolean		XRefForm=false;
+    int			CaseNo=0,  o,StartList, CurrentPosition;
+    ClassNo		Predict;
     extern String	OptArg, Option;
-    void		ShowRules(int);
 
     /*  Process options  */
 
@@ -86,12 +83,6 @@ int mainFunctionDecoder(int Argc, char *Argv[])
 	switch (o)
 	{
 	case 'f':   FileStem = OptArg;
-		    break;
-	case 'r':   RULES = true;
-		    break;
-	case 'R':   RULES = RULESUSED = true;
-		    break;
-	case 'x':   XRefForm = true;
 		    break;
 	case '?':   printf("    **Unrecognised option %s\n", Option);
 		    exit(1);
@@ -115,34 +106,15 @@ int mainFunctionDecoder(int Argc, char *Argv[])
 	determine the number of trials, then allocate space for
 	trees or rulesets  */
 
-    if ( RULES )
+       
+    CheckFile(".tree", false);
+    Pruned = AllocZero(TRIALS+1, Tree);
+
+    ForEach(Trial, 0, TRIALS-1)
     {
-	CheckFile(".rules", false);
-	RuleSet = AllocZero(TRIALS+1, CRuleSet);
-
-	ForEach(Trial, 0, TRIALS-1)
-	{
-	    RuleSet[Trial] = GetRules(".rules");
-	    TotalRules += RuleSet[Trial]->SNRules;
-	}
-
-	if ( RULESUSED )
-	{
-	    GCEnv->RulesUsed = Alloc(TotalRules + TRIALS, RuleNo);
-	}
-
-	GCEnv->MostSpec   = Alloc(MaxClass+1, CRule);
+        Pruned[Trial] = GetTree(".tree");
     }
-    else
-    {
-	CheckFile(".tree", false);
-	Pruned = AllocZero(TRIALS+1, Tree);
 
-	ForEach(Trial, 0, TRIALS-1)
-	{
-	    Pruned[Trial] = GetTree(".tree");
-	}
-    }
 
     /*  Close the classifier file and reset the file variable  */
     
@@ -151,39 +123,26 @@ int mainFunctionDecoder(int Argc, char *Argv[])
 
     /*  Set global default class for boosting  */
 
-    Default = ( RULES ? RuleSet[0]->SDefault : Pruned[0]->Leaf );
+    Default = Pruned[0]->Leaf;
 
     /*  Now classify the cases in file <filestem>.cases.
 	This has the same format as a .data file except that
 	the class can be "?" to indicate that it is unknown.  */
 
-    if ( XRefForm )
-    {
-	ForEach(c, 1, MaxClass)
-	{
-	    if ( (o = strlen(ClassName[c])) > MaxClassLen ) MaxClassLen = o;
-	}
-
-	printf("%-15s %*s   [Predicted]%s\n\n",
-	       "Case", -MaxClassLen, "Class",
-	       ( RULESUSED ? "   Rules" : "" ));
-
-	StartList = 16 + MaxClassLen + 3 +
-		    ( MaxClassLen > 9 ? MaxClassLen + 2 : 11 ) + 3;
-    }
-    else
-    {
-	printf("Case\t\tGiven\t\tPredicted%s\n %s\t\tClass\t\tClass\n\n",
-		( RULESUSED ? "\t\t    Rules" : "" ),
+    printf("Case\t\tGiven\t\tPredicted%s\n %s\t\tClass\t\tClass\n\n",
 		( LabelAtt ? "ID" : "No" ));
 
 	StartList = 60;
-    }
 
-    if ( ! (F = GetFile(".cases", "r")) ) Error(NOFILE, Fn, "");
 
+    char buffer[] = "1098,7371,6671,6671,0,1,1,0.5,5.713115,6.713115,?";
+
+    F = fmemopen (buffer, strlen (buffer), "r");
+    
+    //if ( ! (F = GetFile(".cases", "r")) ) Error(NOFILE, Fn, "");
+        
     LineNo = 0;
-
+//todo how to cast char** to FILE or how to replace file by char
     while ( (Case = GetDataRec(F, false)) )
     {
 	/*  For this case, find the class predicted by See5/C5.0 model  */
@@ -203,26 +162,10 @@ int mainFunctionDecoder(int Argc, char *Argv[])
 
 	/*  Print the result for this case in alternative formats  */
 
-	if ( XRefForm )
-	{
-	    printf("%*s", -MaxClassLen, ClassName[Class(Case)]);
-	    CurrentPosition = 16 + MaxClassLen;
-
-	    if ( Class(Case) != Predict )
-	    {
-		printf("   [%s]", ClassName[Predict]);
-		CurrentPosition += 5 + strlen(ClassName[Predict]);
-	    }
-	}
-	else
-	{
-	    printf("%-15.15s %-15.15s [%.2f]",
+	printf("%-15.15s %-15.15s [%.2f]",
 		    ClassName[Class(Case)],
 		    ClassName[Predict], GCEnv->Confidence);
-	    CurrentPosition = 54;
-	}
-
-	if ( RULESUSED ) ShowRules(StartList - CurrentPosition);
+	CurrentPosition = 54;
 
 	printf("\n");
 
@@ -239,56 +182,3 @@ int mainFunctionDecoder(int Argc, char *Argv[])
     return 0;
 }
 
-
-
-/*************************************************************************/
-/*									 */
-/*	Show rules that were used to classify a case.			 */
-/*	Classify() will have set GCEnvRulesUsed[] to			 */
-/*	  number of active rules for trial 0,				 */
-/*	  first active rule, second active rule, ..., last active rule,	 */
-/*	  number of active rules for trial 1,				 */
-/*	  first active rule, second active rule, ..., last active rule,	 */
-/*	and so on.							 */
-/*									 */
-/*************************************************************************/
-
-
-void ShowRules(int Spaces)
-/*   ---------  */
-{
-    int	p, pLast, a, b, First;
-
-    printf("%*s", Spaces, "");
-
-    p = 0;
-    ForEach(Trial, 0, TRIALS-1)
-    {
-	pLast = p + GCEnv->RulesUsed[p];
-
-	ForEach(a, 1, GCEnv->RulesUsed[p])
-	{
-	    /*  Rules used are not in order, so find first  */
-
-	    First = 0;
-
-	    ForEach(b, p+1, pLast)
-	    {
-		if ( GCEnv->RulesUsed[b] &&
-		     ( ! First ||
-		       GCEnv->RulesUsed[b] < GCEnv->RulesUsed[First] ) )
-		{
-		    First = b;
-		}
-	    }
-
-	    if ( TRIALS > 1 ) printf("%d/", Trial);
-
-	    printf("%d ", GCEnv->RulesUsed[First]);
-
-	    GCEnv->RulesUsed[First] = 0;
-	}
-
-	p = pLast + 1;
-    }
-}

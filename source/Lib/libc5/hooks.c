@@ -27,7 +27,8 @@ char	LineBuffer[MAXLINEBUFFER], *LBp=LineBuffer;
 /*									 */
 /*************************************************************************/
 
-
+//example of what is contained in a data file:
+//1098,7371,6671,6671,0,1,1,0.5,5.713115,6.713115,?
 Boolean ReadName(FILE *f, String s, int n, char ColonOpt)
 /*      --------  */
 {
