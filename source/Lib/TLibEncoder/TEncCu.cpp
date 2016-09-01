@@ -967,12 +967,60 @@ if(onlineTrainingIsDone){
 	}
         
         //////// DECISION TREES FOR CU-SPLITTING EARLY-TERMINATION
+        string currentLine;
+        stringstream convert;
+            convert << RDcost_MSM;
+            currentLine += convert.str() + ',';
+            convert.str("");
+            convert << RDcost_2Nx2N;
+            currentLine += convert.str() + ',';
+            convert.str("");
+            convert << RDcost_2NxN;
+            currentLine += convert.str() + ',';
+            convert.str("");
+            convert << RDcost_Nx2N;
+            currentLine += convert.str() + ',';
+            convert.str("");
+            convert << part;
+            currentLine += convert.str() + ',';
+            convert.str("");
+            convert << rpcBestCU->getMergeFlag(0);
+            currentLine += convert.str() + ',';
+            convert.str("");
+            convert << (rpcBestCU->isSkipped(0) && rpcBestCU->getMergeFlag(0));
+            currentLine += convert.str() + ',';
+            convert.str("");
+            convert << diff_NeiDepth;
+            currentLine += convert.str() + ',';
+            convert.str("");
+            convert << fabs(RDcost_2Nx2N-RDcost_MSM)/RDcost_MSM;
+            currentLine += convert.str() + ',';
+            convert.str("");
+            convert << RDcost_2Nx2N/RDcost_MSM;
+            currentLine += convert.str() + ',';
+            currentLine +='?';
+            //question mark works as a wild card
+            // to find if the CU will be split or not
       if(uiDepth == 0) {	// 64x64 Cus
-          //./see5 -f C5hevc_64x64
-          //needs C5hevc_64x64.names C5hevc_64x64.tree C5hevc_64x64.data C5hevc_64x64.cases
-          char *param64[] = {"./see5", "-f", "/home/pargles/Documents/codificador/HM-12.0/C5hevc_64x64"};
-                //todo get split from C5
-                c5_64_decoder.decodeC5(param64);
+          /*
+           * RDcost_MSM: continuous. //RDcost_MSM (double)
+            RDcost_2Nx2N: continuous. // RDcost_2Nx2N(double)
+            RDcost_2NxN: continuous. //RDcost_2NxN
+            RDcost_Nx2N: continuous. //RDcost_Nx2N
+            part: 0,1,2,3,4,5,6,7.
+            MergeFlag: 0,1.
+            SkipMergeFlag: 0,1.
+            neighDepth_diff: continuous.
+            abs(a2-a1)/a1: continuous.
+            a2/a1: continuous.
+            SplitQuadtree: 0,1.
+            */
+          
+          //@see http://www.cplusplus.com/reference/string/string/c_str/
+          char * cstr = new char [currentLine.length()+1];
+            strcpy (cstr, currentLine.c_str());
+            split = c5_64_decoder.classifyCurrentLine(cstr);
+            //3866,3445,3815,3199,2,0,0,1.625,0.108898,0.891102,?
 
         }// END if(uiDepth == 0)
         else if(uiDepth == 1) { // in 32x32 CUs

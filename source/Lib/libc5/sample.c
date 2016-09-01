@@ -346,8 +346,8 @@ int loadTreeToMemory(int Argc, char *Argv[])
 
     /*  Close the case file and free allocated memory  */
     
-    fclose(F);
-    FreeGlobals();
+    //fclose(F);
+    //FreeGlobals();
     
     return 0;
 }
@@ -515,7 +515,7 @@ Boolean ReadName(FILE *f, String s, int n, char ColonOpt)
 /*									 */
 /*************************************************************************/
 
-
+//used
 void GetNames(FILE *Nf)
 /*   --------  */
 {
@@ -770,7 +770,7 @@ void GetNames(FILE *Nf)
 /*									 */
 /*************************************************************************/
 
-
+//used
 void ExplicitAtt(FILE *Nf)
 /*   -----------  */
 {
@@ -923,7 +923,7 @@ void ExplicitAtt(FILE *Nf)
 /*									 */
 /*************************************************************************/
 
-
+//used
 int Which(String Val, String *List, int First, int Last)
 /*  -----  */
 {
@@ -942,7 +942,7 @@ int Which(String Val, String *List, int First, int Last)
 /*									 */
 /*************************************************************************/
 
-
+//used
 int InChar(FILE *f)
 /*  ------  */
 {
@@ -979,7 +979,7 @@ int InChar(FILE *f)
 
 #define XError(a,b,c)	Error(a,b,c)
 
-
+//used
 DataRec GetDataRec(FILE *Df, Boolean Train)
 /*      ----------  */
 {
@@ -2421,7 +2421,7 @@ void ReadFilePrefix(String Extension)
 /*								  	 */
 /*************************************************************************/
 
-
+//used
 void ReadHeader()
 /*   ---------  */
 {
@@ -2500,7 +2500,7 @@ void ReadHeader()
 /*									 */
 /*************************************************************************/
 
-
+//used //important
 Tree GetTree(String Extension)
 /*   -------  */
 {
@@ -2510,7 +2510,7 @@ Tree GetTree(String Extension)
 }
 
 
-
+//used
 Tree InTree()
 /*   ------  */
 {
@@ -2618,7 +2618,7 @@ Tree InTree()
 /*									 */
 /*************************************************************************/
 
-
+//used
 int ReadProp(char *Delim)
 /*  --------  */
 {
@@ -2670,7 +2670,7 @@ int ReadProp(char *Delim)
     return Which(PropName, Prop, 1, PROPS);
 }
 
-
+//used
 String RemoveQuotes(String S)
 /*     ------------  */
 {
@@ -2690,7 +2690,7 @@ String RemoveQuotes(String S)
 }
 
 
-
+//used
 Set MakeSubset(Attribute Att)
 /*  ----------  */
 {
@@ -2823,7 +2823,7 @@ void GetMCosts(FILE *Cf)
 /*                                                              	 */
 /*************************************************************************/
 
-
+//used
 ClassNo TreeClassify(DataRec Case, Tree DecisionTree, CEnv E)
 /*      ------------  */
 {
@@ -2894,7 +2894,7 @@ void FollowAllBranches(DataRec Case, Tree T, float Fraction, double *Prob,
 /*                                                              	 */
 /*************************************************************************/
 
-
+//used
 void FindLeaf(DataRec Case, Tree T, Tree PT, float Fraction, double *Prob,
 	      Boolean *AttUsed)
 /*   --------  */
@@ -3198,7 +3198,7 @@ ClassNo BoostClassify(DataRec Case, int MaxTrial, CEnv E)
 /*									 */
 /*************************************************************************/
 
-
+//used
 ClassNo SelectClass(ClassNo Default, Boolean UseCosts, double *Prob)
 /*      -----------  */
 {
@@ -3268,7 +3268,7 @@ double MisclassCost(double *LocalFreq, ClassNo C)
 /*								   	 */
 /*************************************************************************/
 
-
+//used
 ClassNo Classify(DataRec Case, CEnv E)
 /*      --------  */
 {
@@ -3285,7 +3285,7 @@ ClassNo Classify(DataRec Case, CEnv E)
 /*								   	 */
 /*************************************************************************/
 
-
+//used
 float Interpolate(Tree T, ContValue Val)
 /*    -----------  */
 {
@@ -3304,7 +3304,7 @@ float Interpolate(Tree T, ContValue Val)
 /*									 */
 /*************************************************************************/
 
-
+//used
 FILE *GetFile(String Extension, String RW)
 /*    --------  */
 {
@@ -3322,7 +3322,7 @@ FILE *GetFile(String Extension, String RW)
 /*									 */
 /*************************************************************************/
 
-
+//used
 void CheckFile(String Extension, Boolean Write)
 /*   ---------  */
 {
@@ -3352,7 +3352,7 @@ void CheckFile(String Extension, Boolean Write)
 
 String	OptArg, Option;
 
-
+//used
 char ProcessOption(int Argc, char *Argv[], char *Options)
 /*   -------------  */
 {
@@ -3386,7 +3386,7 @@ char ProcessOption(int Argc, char *Argv[], char *Options)
 /*************************************************************************/
 
 
-
+//used
 void *Pmalloc(size_t Bytes)
 /*    -------  */
 {
@@ -3405,7 +3405,7 @@ void *Pmalloc(size_t Bytes)
 }
 
 
-
+//used
 void *Prealloc(void *Present, size_t Bytes)
 /*    --------  */
 {
@@ -3428,7 +3428,7 @@ void *Prealloc(void *Present, size_t Bytes)
 }
 
 
-
+//used
 void *Pcalloc(size_t Number, unsigned int Size)
 /*    -------  */
 {
@@ -3786,7 +3786,7 @@ int TimeToSecs(String TS)
 }
 
 
-
+//used
 void SetTSBase(int y)
 /*   ---------  */
 {
@@ -3850,7 +3850,7 @@ void FreeLastCase(DataRec DVec)
 /*									 */
 /*************************************************************************/
 
-
+//used
 void FreeGlobals()
 /*   -----------  */
 {
@@ -3904,7 +3904,7 @@ void FreeGlobals()
 /*									 */
 /*************************************************************************/
 
-
+//used
 void FreeNames()
 /*   ---------  */
 {
@@ -3958,7 +3958,7 @@ void FreeNames()
 /*									 */
 /*************************************************************************/
 
-
+//used
 void FreeTree(Tree T)
 /*   --------  */
 {

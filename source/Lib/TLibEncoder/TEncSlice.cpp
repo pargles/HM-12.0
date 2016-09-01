@@ -38,7 +38,8 @@
 #include "TEncTop.h"
 #include "TEncSlice.h"
 #include <math.h>
-#include "libc5/C5.h"
+//#include "libc5/C5.h"
+#include "libc5/C5Decoder.h"
 //gcorrea: 17/10/2013
 extern int count_frame;
 //gcorrea: 17/10/2013 END
@@ -46,6 +47,7 @@ extern int count_frame;
 //extern C5 c5_64;
 //extern C5 c5_32;
 //extern C5 c5_16;
+extern C5Decoder c5_64_decoder;
 extern bool onlineTrainingIsDone;
 extern string cu64x64forC5;
 extern string cu32x32forC5;
@@ -1306,9 +1308,10 @@ Void TEncSlice::compressSlice( TComPic*& rpcPic )
             C5dataFileCU64x64 <<  cu64x64forC5;
             C5dataFileCU64x64.close();
         }
-        char *param64[] = {"./c5.0", "-f", "/home/pargles/Documents/codificador/HM-12.0/C5hevc_64x64", NULL};
+        char *param64[] = {"./c5.0", "-f", "/home/pargles/Documents/codificador/HM-12.0/C5hevc_64x64"};
         // makes the tree for 64x64 CUs
         //c5_64.runC5(param64);
+        c5_64_decoder.loadC5Tree(param64);
         C5dataFileCU32x32.open(filename_C5data_32x32, ios::out);
         if (C5dataFileCU32x32.is_open()) {
             C5dataFileCU32x32 <<  cu32x32forC5;
