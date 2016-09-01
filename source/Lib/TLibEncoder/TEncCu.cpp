@@ -1017,6 +1017,7 @@ if(onlineTrainingIsDone){
             */
           
           //@see http://www.cplusplus.com/reference/string/string/c_str/
+          //cout << currentLine;
           char * cstr = new char [currentLine.length()+1];
             strcpy (cstr, currentLine.c_str());
             split = c5_64_decoder.classifyCurrentLine(cstr);

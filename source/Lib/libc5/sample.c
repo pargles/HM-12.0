@@ -346,7 +346,6 @@ int loadTreeToMemory(int Argc, char *Argv[])
 
     /*  Close the case file and free allocated memory  */
     
-    //fclose(F);
     //FreeGlobals();
     
     return 0;
@@ -357,6 +356,7 @@ int splitCU(char attributes[]){
     FILE		*F;
     DataRec		Case;
     ClassNo		Predict;
+    int     splitCu;
     
     F = fmemopen (attributes, strlen (attributes), "r");
    
@@ -365,6 +365,14 @@ int splitCU(char attributes[]){
     Predict = Classify(Case, GCEnv);
 
     printf("%s\n",ClassName[Predict]);
+    
+    //Predict = class number, 1..MaxClass 
+    //String *ClassName -> char *String
+    if(ClassName[Predict][0]=='1'){
+        splitCu = 1;
+    }else{
+        splitCu = 0;
+    }
 
     /*  Free the memory used by this case  */
 
@@ -375,7 +383,7 @@ int splitCU(char attributes[]){
     fclose(F);
     //no need to remove tree
     //FreeGlobals();
-    return 0;
+    return splitCu;
 }
 
 /*************************************************************************/

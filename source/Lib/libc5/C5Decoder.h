@@ -7,10 +7,6 @@ class C5Decoder
 {
 public:
   
-  void decodeC5(char *Argv[]){
-      mainFunctionDecoder(3,  Argv);
-  }
-  
   void loadC5Tree(char *Argv[]){
       loadTreeToMemory(3,Argv);
   }

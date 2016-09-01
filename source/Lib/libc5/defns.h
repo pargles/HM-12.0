@@ -326,7 +326,6 @@ typedef	 struct _classify_environment
 /*									 */
 /*************************************************************************/
 
-int mainFunctionDecoder(int, char *[]);
 int loadTreeToMemory(int, char *[]);
 int splitCU(char attributes[]);
          
