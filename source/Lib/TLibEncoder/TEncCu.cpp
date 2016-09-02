@@ -63,7 +63,10 @@ extern char filename_C5data_32x32[100];
 extern char filename_C5data_16x16[100];
 extern Char*  relation;
 //extern C5Decoder c5Decoder;
+
 extern C5Decoder c5_64_decoder;
+extern C5Decoder c5_32_decoder;
+extern C5Decoder c5_16_decoder;
 
 extern string cu64x64forC5;
 extern string cu32x32forC5;
@@ -831,6 +834,7 @@ Void TEncCu::xCompressCU( TComDataCU*& rpcBestCU, TComDataCU*& rpcTempCU, UInt u
 int mode = rpcBestCU->getPredictionMode( 0 );
 int part = rpcBestCU->getPartitionSize( 0 );
 int divide;
+int split;
 
 //mode 0 means inter prediction
 //mode 1 means intra prediction
@@ -847,7 +851,6 @@ else
 if(onlineTrainingIsDone){
     
   double diff_NeiDepth = 0;
-  int split = 1;
   if(mode == 0) {
 	double med_Above = -1;
 	double med_AboveLeft = -1;
@@ -1001,8 +1004,8 @@ if(onlineTrainingIsDone){
             currentLine +='?';
             //question mark works as a wild card
             // to find if the CU will be split or not
-      if(uiDepth == 0) {	// 64x64 Cus
-          /*
+            
+            /*
            * RDcost_MSM: continuous. //RDcost_MSM (double)
             RDcost_2Nx2N: continuous. // RDcost_2Nx2N(double)
             RDcost_2NxN: continuous. //RDcost_2NxN
@@ -1015,25 +1018,28 @@ if(onlineTrainingIsDone){
             a2/a1: continuous.
             SplitQuadtree: 0,1.
             */
-          
-          //@see http://www.cplusplus.com/reference/string/string/c_str/
-          //cout << currentLine;
+            //@see http://www.cplusplus.com/reference/string/string/c_str/
+          cout << currentLine;
           char * cstr = new char [currentLine.length()+1];
             strcpy (cstr, currentLine.c_str());
+            
+            
+      if(uiDepth == 0) {	// 64x64 Cus
+          
             split = c5_64_decoder.classifyCurrentLine(cstr);
             //3866,3445,3815,3199,2,0,0,1.625,0.108898,0.891102,?
 
-        }// END if(uiDepth == 0)
+        }
         else if(uiDepth == 1) { // in 32x32 CUs
             
-            //todo get split from C5
+            split = c5_32_decoder.classifyCurrentLine(cstr);
             
-        }// END if(uiDepth == 1)
+        }
         else if(uiDepth == 2) { // in 16x16 CUs
 
-            //todo get split from C5
+            split = c5_16_decoder.classifyCurrentLine(cstr);
             
-        }// END if(uiDepth == 2)	
+        }	
     }
     //gcorrea: 03/03/2014 END 
 }else{
@@ -1261,7 +1267,7 @@ if(onlineTrainingIsDone){
 
     // further split
     // gcorrea: 04/03/2014		
-   //if(split == 1) {		
+   if( ! onlineTrainingIsDone || split == 1) {		
    // gcorrea: 04/03/2014 END
     if( bSubBranch && uiDepth < g_uiMaxCUDepth - g_uiAddCUDepth )
     {
@@ -1395,7 +1401,7 @@ if(onlineTrainingIsDone){
 
       xCheckBestMode( rpcBestCU, rpcTempCU, uiDepth);                                  // RD compare current larger prediction
     }                                                                                  // with sub partitioned prediction.
-      //}		// gcorrea: 04/03/2014 -- END if(split == 1)
+  }// gcorrea: 04/03/2014 -- END if(split == 1)
     if (isAddLowestQP && (iQP == lowestQP))
     {
       iQP = iMinQP;

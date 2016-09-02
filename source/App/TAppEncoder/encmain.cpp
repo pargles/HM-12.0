@@ -61,6 +61,8 @@ ofstream C5dataFileCU16x16;
 //C5 c5_16;
 
 C5Decoder c5_64_decoder;
+C5Decoder c5_32_decoder;
+C5Decoder c5_16_decoder;
 
 bool onlineTrainingIsDone;
 char filename_64x64[100];
