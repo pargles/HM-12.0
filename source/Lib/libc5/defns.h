@@ -319,6 +319,49 @@ typedef	 struct _classify_environment
 	 }
 	 CEnvRec, *CEnv;
 
+typedef	 struct _global_variables
+{
+   
+    /*Attribute ClassAtt = 0,LabelAtt, CWtAtt; 
+
+    String *ClassName = 0, *AttName = 0, **AttValName = 0; 
+
+    char *IgnoredVals = 0;
+    int IValsSize = 0, IValsOffset = 0; 
+
+    int MaxAtt,
+            MaxClass = 0, 
+            AttExIn = 0, 
+            LineNo = 0,
+            ErrMsgs = 0,
+            Delimiter, 
+            TSBase = 0; 
+
+    DiscrValue *MaxAttVal = 0; 
+
+    ContValue *ClassThresh = 0;
+
+    char *SpecialStatus = 0; 
+
+    Definition *AttDef = 0;
+
+    Boolean *SomeMiss = Nil,
+            *SomeNA = Nil;*/
+
+    CEnvRec *globalGCEnv;
+
+    Tree *globalPruned = 0; 
+
+   /* ClassNo *TrialPred = 0;
+
+    float **MCost = 0; 
+    
+
+    CRuleSet *RuleSet = 0; 
+
+    ClassNo Default;*/
+    
+}GlobalValues;
 
 /*************************************************************************/
 /*									 */
@@ -327,7 +370,8 @@ typedef	 struct _classify_environment
 /*************************************************************************/
 
 int loadTreeToMemory(int, char *[]);
-int splitCU(char attributes[]);
+int splitCU(char attributes[], GlobalValues *globals);
+GlobalValues getAllocatedValues();
          
 Boolean	    ReadName(FILE *f, String s, int n, char ColonOpt);
 void	    GetNames(FILE *Nf);
