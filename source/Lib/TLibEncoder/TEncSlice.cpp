@@ -1325,9 +1325,8 @@ Void TEncSlice::compressSlice( TComPic*& rpcPic )
         char *param32[] = {"./c5.0", "-f", "/home/pargles/Documents/codificador/HM-12.0/C5hevc_32x32", NULL};
       //makes the tree for 32x32 CUs
         //c5_32.runC5(param32);
-        //c5_64_decoder.loadC5Tree(param32);
         c5_32_decoder.loadC5Tree(param32);
-        
+
         C5dataFileCU16x16.open(filename_C5data_16x16, ios::out);
         if (C5dataFileCU16x16.is_open()) {
             C5dataFileCU16x16 <<  cu16x16forC5;
@@ -1336,7 +1335,7 @@ Void TEncSlice::compressSlice( TComPic*& rpcPic )
         char *param16[] = {"./c5.0", "-f", "/home/pargles/Documents/codificador/HM-12.0/C5hevc_16x16", NULL};
         // makes the tree for 16x16 CUs
         //c5_16.runC5(param16);
-        //c5_16_decoder.loadC5Tree(param16);
+        c5_16_decoder.loadC5Tree(param16);
         
         onlineTrainingIsDone = true;
     }

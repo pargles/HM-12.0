@@ -1037,7 +1037,7 @@ if(onlineTrainingIsDone){
         }
         else if(uiDepth == 2) { // in 16x16 CUs
 
-           //split = c5_16_decoder.classifyCurrentLine(cstr);
+           split = c5_16_decoder.classifyCurrentLine(cstr);
             
         }
         //uiDepth == 3, setting split == 1 wont make any difference    

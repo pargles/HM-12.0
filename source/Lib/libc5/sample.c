@@ -155,6 +155,14 @@ CRuleSet *RuleSet = 0; /* rulesets */
 ClassNo Default; /* default class associated with ruleset or
 				   boosted classifier */
 
+/*************************************************************************/
+/*									 */
+/*	Specialised form of the getopt() utility			 */
+/*									 */
+/*************************************************************************/
+
+String OptArg, Option;
+
 
 /*************************************************************************/
 /*									 */
@@ -179,7 +187,6 @@ int mainFunctionDecoder(int Argc, char *Argv[])
     DataRec Case;
     int CaseNo = 0, o, StartList, CurrentPosition;
     ClassNo Predict;
-    extern String OptArg, Option;
 
     /*  Process options  */
 
@@ -283,19 +290,8 @@ int mainFunctionDecoder(int Argc, char *Argv[])
 int loadTreeToMemory(int Argc, char *Argv[])
 /*  ----  */ {
     FILE *F;
-    int o;
-    extern String OptArg, Option;
 
-    /*  Process options  */
-
-    while ((o = ProcessOption(Argc, Argv, "f+xrR"))) {
-        switch (o) {
-            case 'f': FileStem = OptArg;
-                break;
-            case '?': printf("    **Unrecognised option %s\n", Option);
-                exit(1);
-        }
-    }
+    FileStem = Argv[2];
 
     /*  Read information on attribute names, values, and classes  */
 
@@ -336,6 +332,34 @@ GlobalValues getAllocatedValues(){
     GlobalValues *globalValues= AllocZero(1, GlobalValues);
     globalValues->globalPruned = Pruned;
     globalValues->globalGCEnv = GCEnv;
+    globalValues->globalClassAtt = ClassAtt;
+    globalValues->globalLabelAtt = LabelAtt;
+    globalValues->globalCWtAtt = CWtAtt;
+    globalValues->globalClassName = ClassName;
+    globalValues->globalAttName = AttName;
+    globalValues->globalAttValName = AttValName;
+    globalValues->globalMaxAtt = MaxAtt;
+    globalValues->globalMaxClass = MaxClass;
+    globalValues->globalAttExIn = AttExIn;
+    globalValues->globalLineNo = LineNo;
+    globalValues->globalErrMsgs = ErrMsgs;
+    globalValues->globalDelimiter = Delimiter;
+    globalValues->globalTSBase = TSBase;
+    globalValues->globalMaxAttVal = MaxAttVal;
+    globalValues->globalClassThresh = ClassThresh;
+    globalValues->globalSpecialStatus = SpecialStatus;
+    globalValues->globalAttDef = AttDef;
+    globalValues->globalSomeMiss = SomeMiss;
+    globalValues->globalSomeNA = SomeNA;
+    
+    globalValues->globalIgnoredVals = IgnoredVals;
+    globalValues->globalIValsSize = IValsSize;
+    globalValues->globalIValsOffset = IValsOffset;
+    
+    globalValues->globalTrialPred = TrialPred;
+    globalValues->globalMCost = MCost;
+    globalValues->globalRuleSet = RuleSet;
+   
     
     return *globalValues;
 }
@@ -347,12 +371,38 @@ int splitCU(char attributes[], GlobalValues *globals) {
     ClassNo Predict;
     int splitCu;
 
+    ClassAtt = globals->globalClassAtt;
+    LabelAtt = globals->globalLabelAtt;
+    CWtAtt = globals->globalCWtAtt;
+    ClassName = globals->globalClassName;
+    AttName = globals->globalAttName;
+    AttValName = globals->globalAttValName ;
+    MaxAtt = globals->globalMaxAtt;
+    MaxClass =globals->globalMaxClass;
+    AttExIn = globals->globalAttExIn;
+    LineNo = globals->globalLineNo;
+    ErrMsgs = globals->globalErrMsgs;
+    Delimiter = globals->globalDelimiter;
+    TSBase = globals->globalTSBase;
+    
+    MaxAttVal = globals->globalMaxAttVal;
+    ClassThresh = globals->globalClassThresh;
+    SpecialStatus = globals->globalSpecialStatus;
+    AttDef = globals->globalAttDef;
+    SomeMiss = globals->globalSomeMiss ;
+    SomeNA = globals->globalSomeNA;
     GCEnv = globals->globalGCEnv;
     
+    IgnoredVals = globals->globalIgnoredVals;
+    IValsSize = globals->globalIValsSize;
+    IValsOffset = globals->globalIValsOffset;
+    
+    TrialPred = globals->globalTrialPred;
+    MCost = globals->globalMCost;
+    RuleSet = globals->globalRuleSet;
+    
     Pruned = globals->globalPruned;
-    
-    MCost = NULL;
-    
+
     /*  Set global default class for boosting  */
 
     Default = Pruned[0]->Leaf;
@@ -3048,16 +3098,6 @@ void CheckFile(String Extension, Boolean Write)
         ReadFilePrefix(Extension);
     }
 }
-
-
-
-/*************************************************************************/
-/*									 */
-/*	Specialised form of the getopt() utility			 */
-/*									 */
-/*************************************************************************/
-
-String OptArg, Option;
 
 //used
 

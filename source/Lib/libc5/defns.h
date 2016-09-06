@@ -322,44 +322,45 @@ typedef	 struct _classify_environment
 typedef	 struct _global_variables
 {
    
-    /*Attribute ClassAtt = 0,LabelAtt, CWtAtt; 
+    Attribute globalClassAtt,globalLabelAtt, globalCWtAtt; 
 
-    String *ClassName = 0, *AttName = 0, **AttValName = 0; 
+    String *globalClassName, *globalAttName, **globalAttValName = 0; 
 
-    char *IgnoredVals = 0;
-    int IValsSize = 0, IValsOffset = 0; 
+    char *globalIgnoredVals;
+    int globalIValsSize, globalIValsOffset; 
 
-    int MaxAtt,
-            MaxClass = 0, 
-            AttExIn = 0, 
-            LineNo = 0,
-            ErrMsgs = 0,
-            Delimiter, 
-            TSBase = 0; 
+    int globalMaxAtt,
+            globalMaxClass , 
+            globalAttExIn , 
+            globalLineNo ,
+            globalErrMsgs ,
+            globalDelimiter, 
+            globalTSBase ; 
 
-    DiscrValue *MaxAttVal = 0; 
+    DiscrValue *globalMaxAttVal; 
 
-    ContValue *ClassThresh = 0;
+    ContValue *globalClassThresh ;
 
-    char *SpecialStatus = 0; 
+    char *globalSpecialStatus ; 
 
-    Definition *AttDef = 0;
+    Definition *globalAttDef ;
 
-    Boolean *SomeMiss = Nil,
-            *SomeNA = Nil;*/
+    Boolean *globalSomeMiss ,
+            *globalSomeNA ;
 
     CEnvRec *globalGCEnv;
 
-    Tree *globalPruned = 0; 
+    Tree *globalPruned; 
 
-   /* ClassNo *TrialPred = 0;
+    ClassNo *globalTrialPred ;
 
-    float **MCost = 0; 
+    float **globalMCost; 
     
 
-    CRuleSet *RuleSet = 0; 
+    CRuleSet *globalRuleSet ; 
 
-    ClassNo Default;*/
+    ClassNo globalDefault;
+    
     
 }GlobalValues;
 
