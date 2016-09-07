@@ -1,8 +1,10 @@
 #pragma once
 #include "defns.h"
 
-//! \ingroup libMD5
-//! \{
+/*
+ * @author: Pargles Dall'Oglio
+ * class made to interface C library with C++ HEVC functions
+ */
 class C5Decoder
 {
     GlobalValues allAllocatedVariables;

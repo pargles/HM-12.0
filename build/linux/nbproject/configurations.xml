@@ -10,6 +10,7 @@
         <itemPath>../../source/Lib/libc5/C5Decoder.h</itemPath>
         <itemPath>../../source/Lib/libc5/attwinnow.c</itemPath>
         <itemPath>../../source/Lib/libc5/c50.c</itemPath>
+        <itemPath>../../source/Lib/libc5/c5decoder.c</itemPath>
         <itemPath>../../source/Lib/libc5/classify.c</itemPath>
         <itemPath>../../source/Lib/libc5/confmat.c</itemPath>
         <itemPath>../../source/Lib/libc5/construct.c</itemPath>
@@ -32,7 +33,6 @@
         <itemPath>../../source/Lib/libc5/report.c</itemPath>
         <itemPath>../../source/Lib/libc5/rules.c</itemPath>
         <itemPath>../../source/Lib/libc5/ruletree.c</itemPath>
-        <itemPath>../../source/Lib/libc5/sample.c</itemPath>
         <itemPath>../../source/Lib/libc5/siftrules.c</itemPath>
         <itemPath>../../source/Lib/libc5/sort.c</itemPath>
         <itemPath>../../source/Lib/libc5/subset.c</itemPath>
@@ -712,6 +712,10 @@
       </item>
       <item path="../../source/Lib/libc5/c50.c" ex="false" tool="0" flavor2="2">
       </item>
+      <item path="../../source/Lib/libc5/c5decoder.c" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
       <item path="../../source/Lib/libc5/classify.c" ex="false" tool="1" flavor2="4">
         <ccTool flags="0">
         </ccTool>
@@ -795,10 +799,6 @@
         </ccTool>
       </item>
       <item path="../../source/Lib/libc5/ruletree.c" ex="false" tool="1" flavor2="4">
-        <ccTool flags="0">
-        </ccTool>
-      </item>
-      <item path="../../source/Lib/libc5/sample.c" ex="false" tool="1" flavor2="0">
         <ccTool flags="0">
         </ccTool>
       </item>

@@ -1,5 +1,0 @@
-objects/sample.r.o: \
- /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibCommon/../../../../source/Lib/libc5/sample.c \
- /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibCommon/../../../../source/Lib/libc5/defns.h
- /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibCommon/../../../../source/Lib/libc5/sample.c :
- /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibCommon/../../../../source/Lib/libc5/defns.h :
