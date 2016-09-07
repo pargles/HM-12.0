@@ -1027,7 +1027,7 @@ if(onlineTrainingIsDone){
       if(uiDepth == 0) {	// 64x64 Cus
           
             split = c5_64_decoder.classifyCurrentLine(cstr);
-            //3866,3445,3815,3199,2,0,0,1.625,0.108898,0.891102,?
+            //example: 3866,3445,3815,3199,2,0,0,1.625,0.108898,0.891102,?
 
         }
         else if(uiDepth == 1) { // in 32x32 CUs

@@ -371,35 +371,7 @@ int splitCU(char attributes[], GlobalValues *globals) {
     ClassNo Predict;
     int splitCu;
 
-    ClassAtt = globals->globalClassAtt;
-    LabelAtt = globals->globalLabelAtt;
-    CWtAtt = globals->globalCWtAtt;
-    ClassName = globals->globalClassName;
-    AttName = globals->globalAttName;
-    AttValName = globals->globalAttValName ;
-    MaxAtt = globals->globalMaxAtt;
-    MaxClass =globals->globalMaxClass;
-    AttExIn = globals->globalAttExIn;
-    LineNo = globals->globalLineNo;
-    ErrMsgs = globals->globalErrMsgs;
-    Delimiter = globals->globalDelimiter;
-    TSBase = globals->globalTSBase;
-    
-    MaxAttVal = globals->globalMaxAttVal;
-    ClassThresh = globals->globalClassThresh;
-    SpecialStatus = globals->globalSpecialStatus;
-    AttDef = globals->globalAttDef;
-    SomeMiss = globals->globalSomeMiss ;
-    SomeNA = globals->globalSomeNA;
     GCEnv = globals->globalGCEnv;
-    
-    IgnoredVals = globals->globalIgnoredVals;
-    IValsSize = globals->globalIValsSize;
-    IValsOffset = globals->globalIValsOffset;
-    
-    TrialPred = globals->globalTrialPred;
-    MCost = globals->globalMCost;
-    RuleSet = globals->globalRuleSet;
     
     Pruned = globals->globalPruned;
 
