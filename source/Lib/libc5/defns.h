@@ -93,7 +93,7 @@
 #endif
 
 #define	 P1(x)			(rint((x)*10) / 10)
-#define	 Of			stdout
+//#define	 Of			stdout
 #define	 Goodbye(x)		exit(x)
 #define	 CharWidth(s)		((int) strlen(s))
 
@@ -301,8 +301,7 @@ typedef struct _rulesetrec
 	    RuleTree	RT;		/* rule tree for this ruleset */
 	 }
 	 RuleSetRec, *CRuleSet;
-
-
+         
 typedef	 struct _classify_environment
 	 {
 	    CaseNo	Fp;		/* for SMP */
@@ -317,7 +316,64 @@ typedef	 struct _classify_environment
 	    RuleNo	*RulesUsed,	/* all applicable rules */
 			NRulesUsed;	/* number of same */
 	 }
-	 CEnvRec, *CEnv;
+	 CEnvRec, *CEnv;         
+
+extern	int		TRIALS,
+			Trial;
+
+extern	Boolean		RULES,
+			RULESUSED;
+
+extern	Attribute	ClassAtt,
+			LabelAtt,
+			CWtAtt;
+
+extern	String		*ClassName,
+			*AttName,
+			**AttValName;
+
+extern	char 		*IgnoredVals;
+extern	int		IValsSize,
+			IValsOffset;
+
+extern	int		MaxAtt,
+			MaxClass,
+                        AttExIn,
+                        LineNo,
+			ErrMsgs,
+                        Delimiter,
+			TSBase;
+
+extern	DiscrValue	*MaxAttVal;
+
+extern	ContValue	*ClassThresh;
+
+extern	char		*SpecialStatus;
+
+extern	Definition	*AttDef;
+
+extern	Boolean		*SomeMiss,
+			*SomeNA;
+
+extern	String		FileStem;
+
+extern  CEnvRec         *GCEnv;
+
+extern	Tree		*Pruned;
+
+extern	ClassNo		*TrialPred;
+
+extern	float		**MCost;
+
+extern	CRuleSet	 *RuleSet;
+
+extern	ClassNo		Default;
+
+extern  String          OptArg, 
+                        Option;
+
+extern	FILE		*TRf;
+extern	char		Fn[500];
          
 typedef	 struct _sort_rec
 	 {

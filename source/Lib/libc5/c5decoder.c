@@ -348,7 +348,7 @@ Boolean ReadName(FILE *f, String s, int n, char ColonOpt)
 
     while (c != ColonOpt && c != ',' && c != '\n' && c != '|' && c != EOF) {
         if (--n <= 0) {
-            if (Of) Error(LONGNAME, "", "");
+            if (stdout) Error(LONGNAME, "", "");
         }
 
         if (c == '.') {
@@ -3081,7 +3081,7 @@ void Error(int ErrNo, String S1, String S2)
     }
 #endif
 
-    if (Of) fprintf(Of, "\n");
+    if (stdout) fprintf(stdout, "\n");
 
     if (ErrNo == NOFILE || ErrNo == NOMEM || ErrNo == MODELFILE) {
         sprintf(Msg, "*** ");
@@ -3240,7 +3240,7 @@ void Error(int ErrNo, String S1, String S2)
         MessageBox(NULL, Buffer, (WarningOnly ? "Warning" : "Error"), MB_OK);
     }
 #else
-    fprintf(Of, Buffer);
+    fprintf(stdout, Buffer);
 #endif
 
     if (!WarningOnly) ErrMsgs++;
@@ -3249,12 +3249,12 @@ void Error(int ErrNo, String S1, String S2)
 #if defined WIN32 && ! defined _CONSOLE
         MessageBox(NULL, T_ErrorLimit, "Too many errors!", MB_OK);
 #else
-        fprintf(Of, T_ErrorLimit);
+        fprintf(stdout, T_ErrorLimit);
 #endif
         Quit = true;
     }
 
-    if (Quit && Of) {
+    if (Quit && stdout) {
         Goodbye(1);
     }
 }
