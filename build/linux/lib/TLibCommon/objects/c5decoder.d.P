@@ -1,5 +1,7 @@
 objects/c5decoder.d.o: \
  /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibCommon/../../../../source/Lib/libc5/c5decoder.c \
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibCommon/../../../../source/Lib/libc5/global.c \
  /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibCommon/../../../../source/Lib/libc5/defns.h
  /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibCommon/../../../../source/Lib/libc5/c5decoder.c :
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibCommon/../../../../source/Lib/libc5/global.c :
  /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibCommon/../../../../source/Lib/libc5/defns.h :

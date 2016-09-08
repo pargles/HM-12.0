@@ -31,7 +31,8 @@
 /*									 */
 /*************************************************************************/
 
-#include "libc5.h"
+//#include "libc5.h"
+#include "defns.h"
 
 /*************************************************************************/
 /*									 */
@@ -48,6 +49,7 @@ Boolean		SUBSET=0,	/* subset tests allowed */
 		BOOST=0,	/* boosting invoked */
 		PROBTHRESH=0,	/* to use soft thresholds */
 		RULES=0,	/* rule-based classifiers */
+                RULESUSED = 0, /* list applicable rules */
 		XVAL=0,		/* perform crossvalidation */
 		NOCOSTS=0,	/* ignoring costs */
 		WINNOW=0,	/* attribute winnowing */
@@ -89,6 +91,7 @@ int		MaxAtt,		/* max att number */
 		LineNo=0,	/* input line number */
 		ErrMsgs=0,	/* errors found */
 		AttExIn=0,	/* attribute exclusions/inclusions */
+                Delimiter, /* character at end of name */
 		TSBase=0;	/* base day for time stamps */
 
 DiscrValue	*MaxAttVal=0;	/* number of values for each att */
@@ -111,6 +114,14 @@ DataRec		*Case=0;	/* data cases */
 DataRec		*SaveCase=0;
 
 String		FileStem="undefined";
+
+/*************************************************************************/
+/*									 */
+/*		Classification environment				 */
+/*									 */
+/*************************************************************************/
+
+CEnvRec *GCEnv; /* used by classification routines */
 
 /*************************************************************************/
 /*									 */
@@ -193,6 +204,14 @@ double		*LogCaseNo=0,	/* LogCaseNo[i] = log2(i) */
 int		*UtilErr=0,	/* error by utility band */
 		*UtilBand=0;	/* last rule in each band */
 double		*UtilCost=0;	/* cost ditto */
+
+/*************************************************************************/
+/*									 */
+/*	Specialised form of the getopt() utility			 */
+/*									 */
+/*************************************************************************/
+
+String OptArg, Option;
 
 
 /*************************************************************************/

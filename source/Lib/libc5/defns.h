@@ -318,6 +318,44 @@ typedef	 struct _classify_environment
 			NRulesUsed;	/* number of same */
 	 }
 	 CEnvRec, *CEnv;
+         
+typedef	 struct _sort_rec
+	 {
+	    ContValue	V;
+	    ClassNo	C;
+	    float	W;
+	 }
+	 SortRec;
+         
+typedef	 struct _environment
+{
+   CaseNo	Xp, Ep;			/* start and end of scan  */
+   double	Cases,			/* total cases */
+               KnownCases,		/* ditto less missing values */
+               ApplicCases,		/* cases with numeric values */
+               HighCases, LowCases,	/* cases above/below cut */
+               NAInfo,			/* info for N/A values */
+               FixedSplitInfo,		/* split info for ?, N/A */
+               BaseInfo,		/* info before split */
+               UnknownRate,		/* proportion of ? values */
+               MinSplit,		/* min cases before/after cut */
+               **Freq,			/* local Freq[4][class] */
+               *ClassFreq,		/* local class frequencies */
+               *ValFreq;		/* cases with val i */
+   ClassNo	HighClass, LowClass;	/* class after/before cut */
+   ContValue	HighVal, LowVal;	/* values after/before cut */
+   SortRec	*SRec;			/* for Cachesort() */
+   Set		**Subset,		/* Subset[att][number] */
+               *WSubset;		/* working subsets */
+   int		*Subsets,		/* no of subsets for att */
+               Blocks,			/* intermediate no of subsets */
+               Bytes,			/* size of each subset */
+               ReasonableSubsets;
+   double	*SubsetInfo,		/* subset info */
+               *SubsetEntr,		/* subset entropy */
+               **MergeInfo,		/* info of merged subsets i,j */
+               **MergeEntr;		/* entropy ditto */
+}EnvRec;
 
 typedef	 struct _global_variables
 {
