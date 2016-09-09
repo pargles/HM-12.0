@@ -169,8 +169,9 @@
 #define	 Int(x)			((int)(x+0.5))
 
 #define  Space(s)	(s == ' ' || s == '\n' || s == '\r' || s == '\t')
-#define  SkipComment	while ( ( c = InCharC(fileChar) ) != '\n' )
-#define  SkipComment1	while ( ( c = InChar(file) ) != '\n' )
+#define  SkipComment		while ( ( c = InChar(f) ) != '\n' && c != EOF )
+//#define  SkipComment	while ( ( c = InCharC(c) ) != '\n' )
+#define  SkipComment1	while ( ( c = InChar(f) ) != '\n' )
 
 #define	 P1(x)		(rint((x)*10) / 10)
 
@@ -185,6 +186,8 @@
 			 assert(a >= 0 && a <= MaxCase &&\
 			        b >= 0 && b <= MaxCase);\
 			 xab = Case[a]; Case[a] = Case[b]; Case[b] = xab;}
+
+#define	 CharWidth(s)		((int) strlen(s))
 
 
 #define	 NOFILE		 0
@@ -401,14 +404,14 @@ typedef	 struct _environment
 			**MergeEntr;		/* entropy ditto */
 	 }
 	 EnvRec;
-
-
+         
 typedef  int	RuleNo;			/* rule number */
 
 typedef  struct _condrec
 	 {
 	    BranchType	NodeType;	/* test type (see tree nodes) */
 	    Attribute	Tested;		/* attribute tested */
+            int		Forks;		/* possible branches */
 	    ContValue	Cut;		/* threshold (if relevant) */
 	    Set		Subset;		/* subset (if relevant) */
 	    int		TestValue,	/* specified outcome of test */
@@ -451,7 +454,66 @@ typedef struct _rulesetrec
 	    RuleTree	RT;		/* rule tree (see ruletree.c) */
 	 }
 	 RuleSetRec, *CRuleSet;
+         
+typedef	 struct _classify_environment	
+        {
+            CaseNo	Fp;		/* for SMP */
+            double	*ClassWt;	/* total class votes */
+            float	*Vote,		/* class boost votes */
+                        Confidence;      /* prediction CF */
+            RuleNo	*Active,	/* active rules */
+                    ActiveSpace,	/* space for same */
+                    NActive;	/* number of same */
+            CRule	*MostSpec;	/* most specific active rules */
+            Boolean	*AttUsed;	/* reserved for possible later use */
+            RuleNo	*RulesUsed,	/* all applicable rules */
+                    NRulesUsed;	/* number of same */
+        }CEnvRec, *CEnv;
 
+typedef	 struct _global_variables
+    {
+   
+    Attribute globalClassAtt,globalLabelAtt, globalCWtAtt; 
+
+    String *globalClassName, *globalAttName, **globalAttValName = 0; 
+
+    char *globalIgnoredVals;
+    int globalIValsSize, globalIValsOffset; 
+
+    int globalMaxAtt,
+            globalMaxClass , 
+            globalAttExIn , 
+            globalLineNo ,
+            globalErrMsgs ,
+            globalDelimiter, 
+            globalTSBase ; 
+
+    DiscrValue *globalMaxAttVal; 
+
+    ContValue *globalClassThresh ;
+
+    char *globalSpecialStatus ; 
+
+    Definition *globalAttDef ;
+
+    Boolean *globalSomeMiss ,
+            *globalSomeNA ;
+
+    CEnvRec *globalGCEnv;
+
+    Tree *globalPruned; 
+
+    ClassNo *globalTrialPred ;
+
+    float **globalMCost; 
+    
+
+    CRuleSet *globalRuleSet ; 
+
+    ClassNo globalDefault;
+    
+    
+}GlobalValues;
 
          extern char** c5header;
          extern char** c5data;
@@ -459,6 +521,7 @@ typedef struct _rulesetrec
          
 extern	int		VERBOSITY,
 			TRIALS,
+                        Trial,
 			FOLDS,
 			UTILITY,
 			NCPU;
@@ -467,6 +530,7 @@ extern	Boolean		SUBSET,
 			BOOST,
 			PROBTHRESH,
 			RULES,
+                        RULESUSED,
 			XVAL,
 			NOCOSTS,
 			WINNOW,
@@ -501,6 +565,7 @@ extern	int		MaxAtt,
 			LineNo,
 			ErrMsgs,
 			AttExIn,
+                        Delimiter,
 			TSBase;
 
 extern	DiscrValue	*MaxAttVal;
@@ -523,6 +588,8 @@ extern	DataRec		*Case;
 extern	DataRec		*SaveCase;
 
 extern	String		FileStem;
+
+extern  CEnvRec         *GCEnv;
 
 extern	Tree		*Raw,
 			*Pruned,
@@ -575,6 +642,9 @@ extern	CRuleSet	 *RuleSet;
 
 extern	ClassNo		Default;
 
+extern  String          OptArg, 
+                        Option;
+
 extern	Byte		**Fires,
 			*CBuffer;
 
@@ -601,24 +671,6 @@ extern	char		Fn[500];
 
 extern	FILE  		*Of;
 
-typedef	 struct _classify_environment
-	 {
-	    CaseNo	Fp;		/* for SMP */
-	    double	*ClassWt;	/* total class votes */
-	    float	*Vote,		/* class boost votes */
-			Confidence;	/* prediction CF */
-	    RuleNo	*Active,	/* active rules */
-			ActiveSpace,	/* space for same */
-			NActive;	/* number of same */
-	    CRule	*MostSpec;	/* most specific active rules */
-	    Boolean	*AttUsed;	/* reserved for possible later use */
-	    RuleNo	*RulesUsed,	/* all applicable rules */
-			NRulesUsed;	/* number of same */
-	 }
-	 CEnvRec, *CEnv;
-
-
-
 #pragma once
 #ifdef __cplusplus
 extern "C" {
@@ -631,6 +683,17 @@ extern "C" {
 /*		Function prototypes					 */
 /*									 */
 /*************************************************************************/
+                
+    /* c5decoder.c*/
+    
+int loadTreeToMemory(int, char *[]);
+int splitCU(char attributes[], GlobalValues *globals);
+GlobalValues getAllocatedValues();
+double	    MisclassCost(double *LocalFreq, ClassNo C);
+ClassNo SelectClassCase(ClassNo Default, Boolean UseCosts, double *Prob);
+void	    FreeGlobals();
+ClassNo ClassifyCase(DataRec Case, CEnv E);
+void FindLeafCase(DataRec Case, Tree T, Tree PT, float Fraction, double *Prob,Boolean *AttUsed);
 
 	/* c50.c */
 
@@ -979,6 +1042,64 @@ void	    Summary(void);
 float	    SE(float sum, float sumsq, int no);
 
 void printHelloWorld();
+
+/*************************************************************************/
+/*									 */
+/*		Text strings						 */
+/*									 */
+/*************************************************************************/
+
+
+#define	 TX_Line(l,f)		"\n*** line %d of `%s': ", l, f
+#define	 E_NOFILE(f,e)		"cannot open file %s%s\n", f, e
+#define	 E_BADATTNAME		"`:' or `:=' expected after attribute name"\
+					" `%s'\n"
+#define	 E_EOFINATT		"unexpected eof while reading attribute `%s'\n"
+#define	 E_SINGLEATTVAL(a,v)	"attribute `%s' has only one value `%s'\n",\
+					a, v
+#define	 E_DUPATTNAME		"multiple attributes with name `%s'\n"
+#define	 E_CWTATTERR		"case weight attribute must be continuous\n"
+#define	 E_BADATTVAL(v,a)	"bad value of `%s' for attribute `%s'\n", v, a
+#define	 E_BADNUMBER(a)		"value of `%s' changed to `?'\n", a
+#define	 E_BADCLASS		"bad class value `%s'l\n"
+#define	 E_BADCLASSTHRESH	"bad class threshold `%s'\n"
+#define	 E_LEQCLASSTHRESH	"class threshold `%s' <= previous threshold\n"
+#define	 E_BADCOSTCLASS		"bad class `%s'\n"
+#define	 E_BADCOST		"bad cost value `%s'\n"
+#define	 E_NOMEM		"unable to allocate sufficient memory\n"
+#define	 E_TOOMANYVALS(a,n)	"too many values for attribute `%s'"\
+					" (max %d)\n", a, n
+#define	 E_BADDISCRETE		"bad number of discrete values for attribute"\
+					" `%s'\n"
+#define	 E_NOTARGET		"target attribute `%s' not found\n"
+#define	 E_BADCTARGET		"target attribute `%s' must be"\
+					" type `continuous'\n"
+#define	 E_BADDTARGET		"target attribute `%s' must be specified by"\
+					" a list of discrete values\n"
+#define	 E_LONGNAME		"overlength name: check data file formats\n"
+#define	 E_HITEOF		"unexpected end of file\n"
+#define	 E_MISSNAME		"missing name or value before `%s'\n"
+#define	 E_BADTSTMP(d,a)	"bad timestamp `%s' for attribute `%s'\n", d, a
+#define	 E_BADDATE(d,a)		"bad date `%s' for attribute `%s'\n", d, a
+#define	 E_BADTIME(d,a)		"bad time `%s' for attribute `%s'\n", d, a
+#define	 E_UNKNOWNATT		"unknown attribute name `%s'\n"
+#define	 E_BADDEF1(a,s,x)	"in definition of attribute `%s':\n"\
+					"\tat `%.12s': expect %s\n", a, s, x
+#define	 E_BADDEF2(a,s,x)	"in definition of attribute `%s':\n"\
+					"\t`%s': %s\n", a, s, x
+#define	 E_BADDEF3		"cannot define target attribute `%s'\n"
+#define	 E_BADDEF4		"[warning] target attribute appears in"\
+					" definition of attribute `%s'\n"
+#define	 E_SAMEATT(a,b)		"[warning] attribute `%s' is identical to"\
+					" attribute `%s'\n", a, b
+#define	 EX_MODELFILE(f)	"file %s incompatible with .names file\n", f
+#define	 E_MFATT		"undefined or excluded attribute"
+#define	 E_MFATTVAL		"undefined attribute value"
+#define	 E_MFCLASS		"undefined class"
+#define	 E_MFEOF		"unexpected eof"
+#define	 T_ErrorLimit		"Error limit exceeded\n"
+
+
 #ifdef __cplusplus
 }
 #endif

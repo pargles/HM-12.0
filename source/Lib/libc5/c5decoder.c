@@ -54,7 +54,8 @@
 /*									 */
 /*************************************************************************/
 
-#include "defns.h"
+#include "libc5.h"
+//#include "defns.h"
 //#include "global.c"
 
 #define	MAXLINEBUFFER	10000
@@ -143,7 +144,7 @@ int mainFunctionDecoder(int Argc, char *Argv[])
     while ((Case = GetDataRec(F, false))) {
         /*  For this case, find the class predicted by See5/C5.0 model  */
 
-        Predict = Classify(Case, GCEnv);
+        Predict = ClassifyCase(Case, GCEnv);
 
         /*  Print either case label or number  */
 
@@ -271,7 +272,7 @@ int splitCU(char attributes[], GlobalValues *globals) {
 
     Case = GetDataRec(F, false);
 
-    Predict = Classify(Case, GCEnv);
+    Predict = ClassifyCase(Case, GCEnv);
     printf("%s\n", ClassName[Predict]);
 
     //Predict = class number, 1..MaxClass 
@@ -2491,9 +2492,9 @@ ClassNo TreeClassify(DataRec Case, Tree DecisionTree, CEnv E)
         E->ClassWt[c] = 0;
     }
 
-    FindLeaf(Case, DecisionTree, Nil, 1.0, E->ClassWt, E->AttUsed);
+    FindLeafCase(Case, DecisionTree, Nil, 1.0, E->ClassWt, E->AttUsed);
 
-    C = SelectClass(DecisionTree->Leaf, (Boolean) (MCost != Nil), E->ClassWt);
+    C = SelectClassCase(DecisionTree->Leaf, (Boolean) (MCost != Nil), E->ClassWt);
 
 #if defined WIN32 || defined PREDICT
 
@@ -2531,7 +2532,7 @@ void FollowAllBranches(DataRec Case, Tree T, float Fraction, double *Prob,
 
     ForEach(v, 1, T->Forks) {
         if (T->Branch[v]->Cases > Epsilon) {
-            FindLeaf(Case, T->Branch[v], T,
+            FindLeafCase(Case, T->Branch[v], T,
                     (Fraction * T->Branch[v]->Cases) / T->Cases,
                     Prob, AttUsed);
         }
@@ -2548,7 +2549,7 @@ void FollowAllBranches(DataRec Case, Tree T, float Fraction, double *Prob,
 
 //used
 
-void FindLeaf(DataRec Case, Tree T, Tree PT, float Fraction, double *Prob,
+void FindLeafCase(DataRec Case, Tree T, Tree PT, float Fraction, double *Prob,
         Boolean *AttUsed)
 /*   --------  */ {
     DiscrValue v, Dv;
@@ -2582,7 +2583,7 @@ void FindLeaf(DataRec Case, Tree T, Tree PT, float Fraction, double *Prob,
             Dv = DVal(Case, T->Tested); /* > MaxAttVal if unknown */
 
             if (Dv <= T->Forks) /*  Make sure not new discrete value  */ {
-                FindLeaf(Case, T->Branch[Dv], T, Fraction, Prob, AttUsed);
+                FindLeafCase(Case, T->Branch[Dv], T, Fraction, Prob, AttUsed);
             } else {
                 FollowAllBranches(Case, T, Fraction, Prob, AttUsed);
             }
@@ -2595,7 +2596,7 @@ void FindLeaf(DataRec Case, Tree T, Tree PT, float Fraction, double *Prob,
                 FollowAllBranches(Case, T, Fraction, Prob, AttUsed);
             } else
                 if (NotApplic(Case, T->Tested)) {
-                FindLeaf(Case, T->Branch[1], T, Fraction, Prob, AttUsed);
+                FindLeafCase(Case, T->Branch[1], T, Fraction, Prob, AttUsed);
             } else {
                 /*  Find weights for <= and > branches, interpolating if
                     erobabilistic thresholds are used  */
@@ -2605,7 +2606,7 @@ void FindLeaf(DataRec Case, Tree T, Tree PT, float Fraction, double *Prob,
 
                 ForEach(v, 2, 3) {
                     if ((NewFrac = Fraction * BrWt[v]) >= 1E-6) {
-                        FindLeaf(Case, T->Branch[v], T, NewFrac, Prob, AttUsed);
+                        FindLeafCase(Case, T->Branch[v], T, NewFrac, Prob, AttUsed);
                     }
                 }
             }
@@ -2620,7 +2621,7 @@ void FindLeaf(DataRec Case, Tree T, Tree PT, float Fraction, double *Prob,
 
                 ForEach(v, 1, T->Forks) {
                     if (In(Dv, T->Subset[v])) {
-                        FindLeaf(Case, T->Branch[v], T, Fraction, Prob, AttUsed);
+                        FindLeafCase(Case, T->Branch[v], T, Fraction, Prob, AttUsed);
 
                         return;
                     }
@@ -2807,7 +2808,7 @@ ClassNo BoostClassify(DataRec Case, int MaxTrial, CEnv E)
         E->ClassWt[c] = E->Vote[c] / Total;
     }
 
-    Best = SelectClass(Default, false, E->ClassWt);
+    Best = SelectClassCase(Default, false, E->ClassWt);
 
     E->Confidence = E->ClassWt[Best];
 
@@ -2825,7 +2826,7 @@ ClassNo BoostClassify(DataRec Case, int MaxTrial, CEnv E)
 
 //used
 
-ClassNo SelectClass(ClassNo Default, Boolean UseCosts, double *Prob)
+ClassNo SelectClassCase(ClassNo Default, Boolean UseCosts, double *Prob)
 /*      -----------  */ {
     ClassNo c, BestClass;
     double ExpCost, BestCost = 1E10;
@@ -2889,7 +2890,7 @@ double MisclassCost(double *LocalFreq, ClassNo C)
 
 //used
 
-ClassNo Classify(DataRec Case, CEnv E)
+ClassNo ClassifyCase(DataRec Case, CEnv E)
 /*      --------  */ {
     E->NRulesUsed = 0;
 

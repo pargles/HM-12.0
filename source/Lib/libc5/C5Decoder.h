@@ -1,5 +1,6 @@
 #pragma once
-#include "defns.h"
+//#include "defns.h"
+#include "libc5.h"
 
 /*
  * @author: Pargles Dall'Oglio
