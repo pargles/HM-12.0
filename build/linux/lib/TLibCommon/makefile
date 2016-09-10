@@ -53,6 +53,7 @@ OBJS          	= \
 			$(OBJ_DIR)/TComYuv.o \
 			$(OBJ_DIR)/TComInterpolationFilter.o \
 			$(OBJ_DIR)/libmd5.o \
+			$(OBJ_DIR)/implicitatt.o \
 			$(OBJ_DIR)/global.o \
 			$(OBJ_DIR)/c5decoder.o \
 			$(OBJ_DIR)/TComWeightPrediction.o \
