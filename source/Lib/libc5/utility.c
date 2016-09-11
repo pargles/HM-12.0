@@ -319,7 +319,7 @@ void Error(int ErrNo, String S1, String S2)
     char	Buffer[10000], *Msg=Buffer;
 
 
-    //if ( Of ) fprintf(Of, "\n");
+    if ( Of ) fprintf(Of, "\n");
 
     if ( ErrNo == NOFILE || ErrNo == NOMEM || ErrNo == MODELFILE )
     {
@@ -329,7 +329,7 @@ void Error(int ErrNo, String S1, String S2)
     {
 	sprintf(Msg, TX_Line(LineNo, Fn));
     }
-   // Msg += strlen(Buffer);
+   Msg += strlen(Buffer);
 
     switch ( ErrNo )
     {
@@ -571,9 +571,9 @@ int Denominator(ContValue Val)
     double	RoundErr, Accuracy;
     int		Mult;
 
-//    Accuracy = fabs(Val) * 1E-6;	/* approximate */
-  //  Val = modf(Val, &RoundErr);
-/*
+    Accuracy = fabs(Val) * 1E-6;	/* approximate */
+    Val = modf(Val, &RoundErr);
+
     for ( Mult = 100000 ; Mult >= 1 ; Mult /= 10 )
     {
 	RoundErr = fabs(rint(Val * Mult) / Mult - Val);
@@ -582,7 +582,7 @@ int Denominator(ContValue Val)
 	    return Mult * 10;
 	}
     }
-*/
+
     return 1;
 }
 
@@ -600,12 +600,12 @@ int GetInt(String S, int N)
 {
     int	Result=0;
 
-    /*while ( N-- )
+    while ( N-- )
     {
 	if ( ! isdigit(*S) ) return 0;
 
 	Result = Result * 10 + (*S++ - '0');
-    }*/
+    }
 
     return Result;
 }
@@ -616,7 +616,7 @@ int DateToDay(String DS)	/*  Day 1 is 0000/03/01  */
 {
     int Year, Month, Day;
 
-//    if ( strlen(DS) != 10 ) return 0;
+    if ( strlen(DS) != 10 ) return 0;
 
     Year  = GetInt(DS, 4);
     Month = GetInt(DS+5, 2);
@@ -709,7 +709,7 @@ int TimeToSecs(String TS)
 {
     int Hour, Mins, Secs;
 
-//    if ( strlen(TS) != 8 ) return -1;
+    if ( strlen(TS) != 8 ) return -1;
 
     Hour = GetInt(TS, 2);
     Mins = GetInt(TS+3, 2);
@@ -759,7 +759,7 @@ int TStampToMins(String TS)
 
     /*  Check for reasonable length and space between date and time  */
 
-//    if ( strlen(TS) < 19 || ! Space(TS[10]) ) return (1 << 30);
+    if ( strlen(TS) < 19 || ! Space(TS[10]) ) return (1 << 30);
 
     /*  Read date part  */
 
