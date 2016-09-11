@@ -58,9 +58,10 @@
 //#include "defns.h"
 //#include "global.c"
 
-#define	MAXLINEBUFFER	10000
-char LineBuffer[MAXLINEBUFFER], *LBp = LineBuffer;
+char LineBuffer2[MAXLINEBUFFER], *LBp2 = LineBuffer2;
 
+Boolean SuppressErrorMessagesDecoder=false;
+#define XErrorDecoder(a,b,c)	if (! SuppressErrorMessagesDecoder) Error(a,b,c)
 
 /*************************************************************************/
 /*									 */
@@ -141,7 +142,7 @@ int mainFunctionDecoder(int Argc, char *Argv[])
 
     LineNo = 0;
     //todo how to cast char** to FILE or how to replace file by char
-    while ((Case = GetDataRec(F, false))) {
+    while ((Case = c5DecoderGetDataRec(F, false))) {
         /*  For this case, find the class predicted by See5/C5.0 model  */
 
         Predict = ClassifyCase(Case, GCEnv);
@@ -165,7 +166,7 @@ int mainFunctionDecoder(int Argc, char *Argv[])
 
         /*  Free the memory used by this case  */
 
-        FreeLastCase(Case);
+        c5DecoderFreeLastCase(Case);
     }
 
     /*  Close the case file and free allocated memory  */
@@ -270,7 +271,7 @@ int splitCU(char attributes[], GlobalValues *globals) {
 
     F = fmemopen(attributes, strlen(attributes), "r");
 
-    Case = GetDataRec(F, false);
+    Case = c5DecoderGetDataRec(F, false);
 
     Predict = ClassifyCase(Case, GCEnv);
     printf("%s\n", ClassName[Predict]);
@@ -285,7 +286,7 @@ int splitCU(char attributes[], GlobalValues *globals) {
 
     /*  Free the memory used by this case  */
 
-    FreeLastCase(Case);
+    c5DecoderFreeLastCase(Case);
 
     /*  Close the case file and free allocated memory  */
 
@@ -307,512 +308,7 @@ int splitCU(char attributes[], GlobalValues *globals) {
 /*************************************************************************/
 
 
-
-
-
-/*************************************************************************/
-/*									 */
-/*	Read a name from file f into string s, setting Delimiter.	 */
-/*									 */
-/*	- Embedded periods are permitted, but periods followed by space	 */
-/*	  characters act as delimiters.					 */
-/*	- Embedded spaces are permitted, but multiple spaces are	 */
-/*	  replaced by a single space.					 */
-/*	- Any character can be escaped by '\'.				 */
-/*	- The remainder of a line following '|' is ignored.		 */
-/*									 */
-/*************************************************************************/
-
-//example of what is contained in a data file:
-//1098,7371,6671,6671,0,1,1,0.5,5.713115,6.713115,?
-
-Boolean ReadName(FILE *f, String s, int n, char ColonOpt)
-/*      --------  */ {
-    register char *Sp = s;
-    register int c;
-    char Msg[2];
-
-    /*  Skip to first non-space character  */
-
-    while ((c = InChar(f)) == '|' || Space(c)) {
-        if (c == '|') SkipComment;
-    }
-
-    /*  Return false if no names to read  */
-
-    if (c == EOF) {
-        Delimiter = EOF;
-        return false;
-    }
-
-    /*  Read in characters up to the next delimiter  */
-
-    while (c != ColonOpt && c != ',' && c != '\n' && c != '|' && c != EOF) {
-        if (--n <= 0) {
-            if (stdout) Error(LONGNAME, "", "");
-        }
-
-        if (c == '.') {
-            if ((c = InChar(f)) == '|' || Space(c) || c == EOF) break;
-            *Sp++ = '.';
-            continue;
-        }
-
-        if (c == '\\') {
-            c = InChar(f);
-        }
-
-        if (Space(c)) {
-            *Sp++ = ' ';
-
-            while ((c = InChar(f)) == ' ' || c == '\t')
-                ;
-        } else {
-            *Sp++ = c;
-            c = InChar(f);
-        }
-    }
-
-    if (c == '|') SkipComment;
-    Delimiter = c;
-
-    /*  Special case for ':='  */
-
-    if (Delimiter == ':') {
-        if (*LBp == '=') {
-            Delimiter = '=';
-            LBp++;
-        }
-    }
-
-    /*  Strip trailing spaces  */
-
-    while (Sp > s && Space(*(Sp - 1))) Sp--;
-
-    if (Sp == s) {
-        Msg[0] = (Space(c) ? '.' : c);
-        Msg[1] = '\00';
-        Error(MISSNAME, Fn, Msg);
-    }
-
-    *Sp++ = '\0';
-    return true;
-}
-
-
-
-/*************************************************************************/
-/*									 */
-/*	Read names of classes, attributes and legal attribute values.	 */
-/*	On completion, names are stored in:				 */
-/*	  ClassName	-	class names				 */
-/*	  AttName	-	attribute names				 */
-/*	  AttValName	-	attribute value names			 */
-/*	with:								 */
-/*	  MaxAttVal	-	number of values for each attribute	 */
-/*									 */
-/*	Other global variables set are:					 */
-/*	  MaxAtt	-	maximum attribute number		 */
-/*	  MaxClass	-	maximum class number			 */
-/*									 */
-/*	Note:  until the number of attributes is known, the name	 */
-/*	       information is assembled in local arrays			 */
-/*									 */
-/*************************************************************************/
-
-//used
-
-void GetNames(FILE *Nf)
-/*   --------  */ {
-    char Buffer[1000] = "", *EndBuff;
-    int AttCeiling = 100, ClassCeiling = 100;
-    Attribute Att;
-    ClassNo c;
-
-    ErrMsgs = AttExIn = 0;
-    LineNo = 0;
-    LBp = LineBuffer;
-    *LBp = 0;
-
-    MaxClass = ClassAtt = LabelAtt = CWtAtt = 0;
-
-    /*  Get class names from names file.  This entry can be:
-        - a list of discrete values separated by commas
-        - the name of the discrete attribute to use as the class
-        - the name of a continuous attribute followed by a colon and
-          a comma-separated list of thresholds used to segment it  */
-
-    ClassName = AllocZero(ClassCeiling, String);
-    do {
-        ReadName(Nf, Buffer, 1000, ':');
-
-        if (++MaxClass >= ClassCeiling) {
-            ClassCeiling += 100;
-            Realloc(ClassName, ClassCeiling, String);
-        }
-        ClassName[MaxClass] = strdup(Buffer);
-    }    while (Delimiter == ',');
-
-    if (Delimiter == ':') {
-        /*  Thresholds for continuous class attribute  */
-
-        ClassThresh = Alloc(ClassCeiling, ContValue);
-        MaxClass = 0;
-
-        do {
-            ReadName(Nf, Buffer, 1000, ':');
-
-            if (++MaxClass >= ClassCeiling) {
-                ClassCeiling += 100;
-                Realloc(ClassThresh, ClassCeiling, ContValue);
-            }
-
-            ClassThresh[MaxClass] = strtod(Buffer, &EndBuff);
-            if (EndBuff == Buffer || *EndBuff != '\0') {
-                Error(BADCLASSTHRESH, Buffer, Nil);
-            } else
-                if (MaxClass > 1 &&
-                    ClassThresh[MaxClass] <= ClassThresh[MaxClass - 1]) {
-                Error(LEQCLASSTHRESH, Buffer, Nil);
-            }
-        } while (Delimiter == ',');
-    }
-
-    /*  Get attribute and attribute value names from names file  */
-
-    AttName = AllocZero(AttCeiling, String);
-    MaxAttVal = AllocZero(AttCeiling, DiscrValue);
-    AttValName = AllocZero(AttCeiling, String *);
-    SpecialStatus = AllocZero(AttCeiling, char);
-    AttDef = AllocZero(AttCeiling, Definition);
-
-    MaxAtt = 0;
-    while (ReadName(Nf, Buffer, 1000, ':')) {
-        if (Delimiter != ':' && Delimiter != '=') {
-            Error(BADATTNAME, Buffer, "");
-        }
-
-        /*  Check for attributes included/excluded  */
-
-        if ((*Buffer == 'a' || *Buffer == 'A') &&
-                !memcmp(Buffer + 1, "ttributes ", 10) &&
-                !memcmp(Buffer + strlen(Buffer) - 6, "cluded", 6)) {
-            AttExIn = (!memcmp(Buffer + strlen(Buffer) - 8, "in", 2) ? 1 : -1);
-            if (AttExIn == 1) {
-
-                ForEach(Att, 1, MaxAtt) {
-                    SpecialStatus[Att] |= SKIP;
-                }
-            }
-
-            while (ReadName(Nf, Buffer, 1000, ':')) {
-                Att = Which(Buffer, AttName, 1, MaxAtt);
-                if (!Att) {
-                    Error(UNKNOWNATT, Buffer, Nil);
-                } else
-                    if (AttExIn == 1) {
-                    SpecialStatus[Att] -= SKIP;
-                } else {
-                    SpecialStatus[Att] |= SKIP;
-                }
-            }
-
-            break;
-        }
-
-        if (Which(Buffer, AttName, 1, MaxAtt) > 0) {
-            Error(DUPATTNAME, Buffer, Nil);
-        }
-
-        if (++MaxAtt >= AttCeiling) {
-            AttCeiling += 100;
-            Realloc(AttName, AttCeiling, String);
-            Realloc(MaxAttVal, AttCeiling, DiscrValue);
-            Realloc(AttValName, AttCeiling, String *);
-            Realloc(SpecialStatus, AttCeiling, char);
-            Realloc(AttDef, AttCeiling, Definition);
-        }
-
-        AttName[MaxAtt] = strdup(Buffer);
-        SpecialStatus[MaxAtt] = Nil;
-        AttDef[MaxAtt] = Nil;
-        MaxAttVal[MaxAtt] = 0;
-
-        if (Delimiter == '=') {
-            if (MaxClass == 1 && !strcmp(ClassName[1], AttName[MaxAtt])) {
-                Error(BADDEF3, Nil, Nil);
-            }
-
-            ImplicitAtt(Nf);
-        } else {
-            ExplicitAtt(Nf);
-        }
-
-        /*  Check for case weight attribute, which must be type continuous  */
-
-        if (!strcmp(AttName[MaxAtt], "case weight")) {
-            CWtAtt = MaxAtt;
-
-            if (!Continuous(CWtAtt)) {
-                Error(CWTATTERR, "", "");
-            }
-        }
-    }
-
-    /*  Check whether class is one of the attributes  */
-
-    if (MaxClass == 1 || ClassThresh) {
-        /*  Class attribute must be present and must be either
-            a discrete attribute or a thresholded continuous attribute  */
-
-        ClassAtt = Which(ClassName[1], AttName, 1, MaxAtt);
-
-        if (ClassAtt <= 0 || Exclude(ClassAtt)) {
-            Error(NOTARGET, ClassName[1], "");
-        } else
-            if (ClassThresh &&
-                (!Continuous(ClassAtt) ||
-                StatBit(ClassAtt, DATEVAL | STIMEVAL | TSTMPVAL))) {
-            Error(BADCTARGET, ClassName[1], "");
-        } else
-            if (!ClassThresh &&
-                (Continuous(ClassAtt) || StatBit(ClassAtt, DISCRETE))) {
-            Error(BADDTARGET, ClassName[1], "");
-        }
-
-        Free(ClassName[1]);
-
-        if (!ClassThresh) {
-            Free(ClassName);
-            MaxClass = MaxAttVal[ClassAtt];
-            ClassName = AttValName[ClassAtt];
-        } else {
-            /*  Set up class names as segments of continuous target att  */
-
-            MaxClass++;
-            Realloc(ClassName, MaxClass + 1, String);
-
-            sprintf(Buffer, "%s <= %g", AttName[ClassAtt], ClassThresh[1]);
-            ClassName[1] = strdup(Buffer);
-
-            ForEach(c, 2, MaxClass - 1) {
-                sprintf(Buffer, "%g < %s <= %g",
-                        ClassThresh[c - 1], AttName[ClassAtt], ClassThresh[c]);
-                ClassName[c] = strdup(Buffer);
-            }
-
-            sprintf(Buffer, "%s > %g",
-                    AttName[ClassAtt], ClassThresh[MaxClass - 1]);
-            ClassName[MaxClass] = strdup(Buffer);
-        }
-    }
-
-    /*  Ignore case weight attribute if it is excluded; otherwise,
-        it cannot be used in models  */
-
-    if (CWtAtt) {
-        if (Skip(CWtAtt)) {
-            CWtAtt = 0;
-        } else {
-            SpecialStatus[CWtAtt] |= SKIP;
-        }
-    }
-
-    ClassName[0] = "?";
-
-    fclose(Nf);
-
-    if (ErrMsgs > 0) Goodbye(1);
-}
-
-
-
-/*************************************************************************/
-/*									 */
-/*	Continuous or discrete attribute				 */
-/*									 */
-/*************************************************************************/
-
-//used
-
-void ExplicitAtt(FILE *Nf)
-/*   -----------  */ {
-    char Buffer[1000] = "", *p;
-    DiscrValue v;
-    int ValCeiling = 100, BaseYear;
-    time_t clock;
-
-    /*  Read attribute type or first discrete value  */
-
-    if (!(ReadName(Nf, Buffer, 1000, ':'))) {
-        Error(EOFINATT, AttName[MaxAtt], "");
-    }
-
-    MaxAttVal[MaxAtt] = 0;
-
-    if (Delimiter != ',') {
-        /*  Typed attribute  */
-
-        if (!strcmp(Buffer, "continuous")) {
-        } else
-            if (!strcmp(Buffer, "timestamp")) {
-            SpecialStatus[MaxAtt] = TSTMPVAL;
-
-            /*  Set the base date if not done already  */
-
-            if (!TSBase) {
-                clock = time(0);
-                BaseYear = gmtime(&clock)->tm_year + 1900;
-                SetTSBase(BaseYear);
-            }
-        } else
-            if (!strcmp(Buffer, "date")) {
-            SpecialStatus[MaxAtt] = DATEVAL;
-        } else
-            if (!strcmp(Buffer, "time")) {
-            SpecialStatus[MaxAtt] = STIMEVAL;
-        } else
-            if (!memcmp(Buffer, "discrete", 8)) {
-            SpecialStatus[MaxAtt] = DISCRETE;
-
-            /*  Read max values and reserve space  */
-
-            v = atoi(&Buffer[8]);
-            if (v < 2) {
-                Error(BADDISCRETE, AttName[MaxAtt], "");
-            }
-
-            AttValName[MaxAtt] = Alloc(v + 3, String);
-            AttValName[MaxAtt][0] = (char *) (long) v + 1;
-            AttValName[MaxAtt][(MaxAttVal[MaxAtt] = 1)] = strdup("N/A");
-        } else
-            if (!strcmp(Buffer, "ignore")) {
-            SpecialStatus[MaxAtt] = EXCLUDE;
-        } else
-            if (!strcmp(Buffer, "label")) {
-            LabelAtt = MaxAtt;
-            SpecialStatus[MaxAtt] = EXCLUDE;
-        } else {
-            /*  Cannot have only one discrete value for an attribute  */
-
-            Error(SINGLEATTVAL, AttName[MaxAtt], Buffer);
-        }
-    } else {
-        /*  Discrete attribute with explicit values  */
-
-        AttValName[MaxAtt] = AllocZero(ValCeiling, String);
-
-        /*  Add "N/A" unless this attribute is the class  */
-
-        if (MaxClass > 1 || strcmp(ClassName[1], AttName[MaxAtt])) {
-            AttValName[MaxAtt][(MaxAttVal[MaxAtt] = 1)] = strdup("N/A");
-        } else {
-            MaxAttVal[MaxAtt] = 0;
-        }
-
-        p = Buffer;
-
-        /*  Special check for ordered attribute  */
-
-        if (!memcmp(Buffer, "[ordered]", 9)) {
-            SpecialStatus[MaxAtt] = ORDERED;
-
-            for (p = Buffer + 9; Space(*p); p++)
-                ;
-        }
-
-        /*  Record first real explicit value  */
-
-        AttValName[MaxAtt][++MaxAttVal[MaxAtt]] = strdup(p);
-
-        /*  Record remaining values  */
-
-        do {
-            if (!(ReadName(Nf, Buffer, 1000, ':'))) {
-                Error(EOFINATT, AttName[MaxAtt], "");
-            }
-
-            if (++MaxAttVal[MaxAtt] >= ValCeiling) {
-                ValCeiling += 100;
-                Realloc(AttValName[MaxAtt], ValCeiling, String);
-            }
-
-            AttValName[MaxAtt][MaxAttVal[MaxAtt]] = strdup(Buffer);
-        } while (Delimiter == ',');
-
-        /*  Cancel ordered status if <3 real values  */
-
-        if (Ordered(MaxAtt) && MaxAttVal[MaxAtt] <= 3) {
-            SpecialStatus[MaxAtt] = 0;
-        }
-    }
-}
-
-
-
-/*************************************************************************/
-/*									 */
-/*	Locate value Val in List[First] to List[Last]			 */
-/*									 */
-/*************************************************************************/
-
-//used
-
-int Which(String Val, String *List, int First, int Last)
-/*  -----  */ {
-    int n = First;
-
-    while (n <= Last && strcmp(Val, List[n])) n++;
-
-    return ( n <= Last ? n : First - 1);
-}
-
-
-
-/*************************************************************************/
-/*									 */
-/*	Read next char keeping track of line numbers			 */
-/*									 */
-/*************************************************************************/
-
-//used
-
-int InChar(FILE *f)
-/*  ------  */ {
-    if (! *LBp) {
-        LBp = LineBuffer;
-
-        if (!fgets(LineBuffer, MAXLINEBUFFER, f)) {
-            LineBuffer[0] = '\00';
-            return EOF;
-        }
-
-        LineNo++;
-    }
-
-    return (int) *LBp++;
-}
-
-
-
-/*************************************************************************/
-/*									 */
-/*  Read a raw case from file Df.					 */
-/*									 */
-/*  For each attribute, read the attribute value from the file.		 */
-/*  If it is a discrete valued attribute, find the associated no.	 */
-/*  of this attribute value (if the value is unknown this is 0).	 */
-/*									 */
-/*  Returns the array of attribute values.				 */
-/*									 */
-/*************************************************************************/
-
-
-#define XError(a,b,c)	Error(a,b,c)
-
-//used
-
-DataRec GetDataRec(FILE *Df, Boolean Train)
+DataRec c5DecoderGetDataRec(FILE *Df, Boolean Train)
 /*      ----------  */ {
     Attribute Att;
     char Name[1000], *EndName;
@@ -845,8 +341,8 @@ DataRec GetDataRec(FILE *Df, Boolean Train)
             /*  Get the attribute value if don't already have it  */
 
             if (!FirstValue && !ReadName(Df, Name, 1000, '\00')) {
-                XError(HITEOF, AttName[Att], "");
-                FreeLastCase(DVec);
+                XErrorDecoder(HITEOF, AttName[Att], "");
+                c5DecoderFreeLastCase(DVec);
                 return Nil;
             }
             FirstValue = false;
@@ -880,7 +376,7 @@ DataRec GetDataRec(FILE *Df, Boolean Train)
                             /*  Add value to list  */
 
                             if (MaxAttVal[Att] >= (long) AttValName[Att][0]) {
-                                XError(TOOMANYVALS, AttName[Att],
+                                XErrorDecoder(TOOMANYVALS, AttName[Att],
                                         (char *) AttValName[Att][0] - 1);
                                 Dv = MaxAttVal[Att];
                             } else {
@@ -894,7 +390,7 @@ DataRec GetDataRec(FILE *Df, Boolean Train)
                             Dv = MaxAttVal[Att] + 1;
                         }
                     } else {
-                        XError(BADATTVAL, AttName[Att], Name);
+                        XErrorDecoder(BADATTVAL, AttName[Att], Name);
                         Dv = UNKNOWN;
                     }
                 }
@@ -905,27 +401,27 @@ DataRec GetDataRec(FILE *Df, Boolean Train)
                 if (TStampVal(Att)) {
                     CVal(DVec, Att) = Cv = TStampToMins(Name);
                     if (Cv >= 1E9) /* long time in future */ {
-                        XError(BADTSTMP, AttName[Att], Name);
+                        XErrorDecoder(BADTSTMP, AttName[Att], Name);
                         DVal(DVec, Att) = UNKNOWN;
                     }
                 } else
                     if (DateVal(Att)) {
                     CVal(DVec, Att) = Cv = DateToDay(Name);
                     if (Cv < 1) {
-                        XError(BADDATE, AttName[Att], Name);
+                        XErrorDecoder(BADDATE, AttName[Att], Name);
                         DVal(DVec, Att) = UNKNOWN;
                     }
                 } else
                     if (TimeVal(Att)) {
                     CVal(DVec, Att) = Cv = TimeToSecs(Name);
                     if (Cv < 0) {
-                        XError(BADTIME, AttName[Att], Name);
+                        XErrorDecoder(BADTIME, AttName[Att], Name);
                         DVal(DVec, Att) = UNKNOWN;
                     }
                 } else {
                     CVal(DVec, Att) = strtod(Name, &EndName);
                     if (EndName == Name || *EndName != '\0') {
-                        XError(BADATTVAL, AttName[Att], Name);
+                        XErrorDecoder(BADATTVAL, AttName[Att], Name);
                         DVal(DVec, Att) = UNKNOWN;
                     }
                 }
@@ -952,8 +448,8 @@ DataRec GetDataRec(FILE *Df, Boolean Train)
             }
         } else {
             if (!ReadName(Df, Name, 1000, '\00')) {
-                XError(HITEOF, Fn, "");
-                FreeLastCase(DVec);
+                XErrorDecoder(HITEOF, Fn, "");
+                c5DecoderFreeLastCase(DVec);
                 return Nil;
             }
 
@@ -966,575 +462,13 @@ DataRec GetDataRec(FILE *Df, Boolean Train)
     }
 }
 
-
-
 /*************************************************************************/
 /*									 */
-/*	Store a label or ignored value in IValStore			 */
-/*									 */
-
-/*************************************************************************/
-
-
-int StoreIVal(String S)
-/*  ---------  */ {
-    int StartIx, Length;
-
-    if ((Length = strlen(S) + 1) + IValsOffset > IValsSize) {
-        if (IgnoredVals) {
-            Realloc(IgnoredVals, IValsSize += 32768, char);
-        } else {
-            IValsSize = 32768;
-            IValsOffset = 0;
-            IgnoredVals = Alloc(IValsSize, char);
-        }
-    }
-
-    StartIx = IValsOffset;
-    strcpy(IgnoredVals + StartIx, S);
-    IValsOffset += Length;
-
-    return StartIx;
-}
-
-
-
-/*************************************************************************/
-/*									 */
-/*	Check for bad continuous value					 */
-/*									 */
-
-/*************************************************************************/
-
-
-void CheckValue(DataRec DVec, Attribute Att)
-/*   ----------  */ {
-    ContValue Cv;
-
-    Cv = CVal(DVec, Att);
-    if (!finite(Cv)) {
-        Error(BADNUMBER, AttName[Att], "");
-
-        CVal(DVec, Att) = UNKNOWN;
-    }
-}
-
-
-/*************************************************************************/
-/*									 */
-/*	Routines for reading model files				 */
-/*	--------------------------------				 */
+/*	Read next char keeping track of line numbers			 */
 /*									 */
 /*************************************************************************/
 
-
-int Entry;
-
-char* Prop[] = {"null",
-    "att",
-    "class",
-    "cut",
-    "conds",
-    "elts",
-    "entries",
-    "forks",
-    "freq",
-    "id",
-    "type",
-    "low",
-    "mid",
-    "high",
-    "result",
-    "rules",
-    "val",
-    "lift",
-    "cover",
-    "ok",
-    "default",
-    "costs",
-    "sample",
-    "init"};
-
-char PropName[20],
-        *PropVal = Nil,
-        *Unquoted;
-int PropValSize = 0;
-
-#define	PROPS 23
-
-#define	ERRORP		0
-#define ATTP		1
-#define CLASSP		2
-#define CUTP		3
-#define	CONDSP		4
-#define ELTSP		5
-#define ENTRIESP	6
-#define FORKSP		7
-#define FREQP		8
-#define IDP		9
-#define TYPEP		10
-#define LOWP		11
-#define MIDP		12
-#define HIGHP		13
-#define RESULTP		14
-#define RULESP		15
-#define VALP		16
-#define LIFTP		17
-#define COVERP		18
-#define OKP		19
-#define DEFAULTP	20
-#define COSTSP		21
-
-
-
-/*************************************************************************/
-/*									 */
-/*	Read header information and decide whether model files are	 */
-/*	in ASCII or binary format					 */
-/*									 */
-
-/*************************************************************************/
-
-
-void ReadFilePrefix(String Extension)
-/*   --------------  */ {
-#if defined WIN32 || defined _CONSOLE
-    if (!(TRf = GetFile(Extension, "rb"))) Error(NOFILE, Fn, "");
-#else
-    if (!(TRf = GetFile(Extension, "r"))) Error(NOFILE, Fn, "");
-#endif
-
-    ReadHeader();
-}
-
-
-
-/*************************************************************************/
-/*								  	 */
-/*	Read the header information (id, saved names, models)		 */
-/*								  	 */
-/*************************************************************************/
-
-//used
-
-void ReadHeader()
-/*   ---------  */ {
-    Attribute Att;
-    DiscrValue v;
-    char *p, Dummy;
-    int Year, Month, Day;
-    FILE *F;
-
-    while (true) {
-        switch (ReadProp(&Dummy)) {
-            case ERRORP:
-                return;
-
-            case IDP:
-                /*  Recover year run and set base date for timestamps  */
-
-                if (sscanf(PropVal + strlen(PropVal) - 11,
-                        "%d-%d-%d\"", &Year, &Month, &Day) == 3) {
-                    SetTSBase(Year);
-                }
-                break;
-
-            case COSTSP:
-                /*  Recover costs file used to generate model  */
-
-                if ((F = GetFile(".costs", "r"))) {
-                    GetMCosts(F);
-                }
-                break;
-
-            case ATTP:
-                Unquoted = RemoveQuotes(PropVal);
-                Att = Which(Unquoted, AttName, 1, MaxAtt);
-                if (!Att || Exclude(Att)) {
-                    Error(MODELFILE, E_MFATT, Unquoted);
-                }
-                break;
-
-            case ELTSP:
-                MaxAttVal[Att] = 1;
-                AttValName[Att][1] = strdup("N/A");
-
-                for (p = PropVal; *p;) {
-                    p = RemoveQuotes(p);
-                    v = ++MaxAttVal[Att];
-                    AttValName[Att][v] = strdup(p);
-
-                    for (p += strlen(p); *p != '"'; p++)
-                        ;
-                    p++;
-                    if (*p == ',') p++;
-                }
-                AttValName[Att][MaxAttVal[Att] + 1] = "<other>";
-                break;
-
-            case ENTRIESP:
-                sscanf(PropVal, "\"%d\"", &TRIALS);
-                Entry = 0;
-                return;
-        }
-    }
-}
-
-
-
-/*************************************************************************/
-/*									 */
-/*	Retrieve decision tree with extension Extension			 */
-/*									 */
-/*************************************************************************/
-
-//used //important
-
-Tree GetTree(String Extension)
-/*   -------  */ {
-    CheckFile(Extension, false);
-
-    return InTree();
-}
-
-
-//used
-
-Tree InTree()
-/*   ------  */ {
-    Tree T;
-    DiscrValue v, Subset = 0;
-    char Delim, *p;
-    ClassNo c;
-    int X;
-    double XD;
-
-    T = (Tree) AllocZero(1, TreeRec);
-
-    do {
-        switch (ReadProp(&Delim)) {
-            case ERRORP:
-                return Nil;
-
-            case TYPEP:
-                sscanf(PropVal, "\"%d\"", &X);
-                T->NodeType = X;
-                break;
-
-            case CLASSP:
-                Unquoted = RemoveQuotes(PropVal);
-                T->Leaf = Which(Unquoted, ClassName, 1, MaxClass);
-                if (!T->Leaf) Error(MODELFILE, E_MFCLASS, Unquoted);
-                break;
-
-            case ATTP:
-                Unquoted = RemoveQuotes(PropVal);
-                T->Tested = Which(Unquoted, AttName, 1, MaxAtt);
-                if (!T->Tested || Exclude(T->Tested)) {
-                    Error(MODELFILE, E_MFATT, Unquoted);
-                }
-                break;
-
-            case CUTP:
-                sscanf(PropVal, "\"%lf\"", &XD);
-                T->Cut = XD;
-                T->Lower = T->Upper = T->Cut;
-                break;
-
-            case LOWP:
-                sscanf(PropVal, "\"%lf\"", &XD);
-                T->Lower = XD;
-                break;
-
-            case HIGHP:
-                sscanf(PropVal, "\"%lf\"", &XD);
-                T->Upper = XD;
-                break;
-
-            case FORKSP:
-                sscanf(PropVal, "\"%d\"", &T->Forks);
-                break;
-
-            case FREQP:
-                T->ClassDist = Alloc(MaxClass + 1, CaseCount);
-                p = PropVal + 1;
-
-                ForEach(c, 1, MaxClass) {
-                    T->ClassDist[c] = strtod(p, &p);
-                    T->Cases += T->ClassDist[c];
-                    p++;
-                }
-                break;
-
-            case ELTSP:
-                if (!Subset++) {
-                    T->Subset = AllocZero(T->Forks + 1, Set);
-                }
-
-                T->Subset[Subset] = MakeSubset(T->Tested);
-                break;
-        }
-    }    while (Delim == ' ');
-
-    if (T->ClassDist) {
-        T->Errors = T->Cases - T->ClassDist[T->Leaf];
-    } else {
-        T->ClassDist = Alloc(1, CaseCount);
-    }
-
-    if (T->NodeType) {
-        T->Branch = AllocZero(T->Forks + 1, Tree);
-
-        ForEach(v, 1, T->Forks) {
-            T->Branch[v] = InTree();
-        }
-    }
-
-    return T;
-}
-
-
-/*************************************************************************/
-/*									 */
-/*	ASCII reading utilities						 */
-/*									 */
-/*************************************************************************/
-
-//used
-
-int ReadProp(char *Delim)
-/*  --------  */ {
-    int c, i;
-    char *p;
-    Boolean Quote = false;
-
-    for (p = PropName; (c = fgetc(TRf)) != '=';) {
-        if (p - PropName >= 19 || c == EOF) {
-            Error(MODELFILE, E_MFEOF, "");
-            PropName[0] = PropVal[0] = *Delim = '\00';
-            return 0;
-        }
-        *p++ = c;
-    }
-    *p = '\00';
-
-    for (p = PropVal; ((c = fgetc(TRf)) != ' ' && c != '\n') || Quote;) {
-        if (c == EOF) {
-            Error(MODELFILE, E_MFEOF, "");
-            PropName[0] = PropVal[0] = '\00';
-            return 0;
-        }
-
-        if ((i = p - PropVal) >= PropValSize) {
-            Realloc(PropVal, (PropValSize += 10000) + 3, char);
-            p = PropVal + i;
-        }
-
-        *p++ = c;
-        if (c == '\\') {
-            *p++ = fgetc(TRf);
-        } else
-            if (c == '"') {
-            Quote = !Quote;
-        }
-    }
-    *p = '\00';
-    *Delim = c;
-
-    return Which(PropName, Prop, 1, PROPS);
-}
-
-//used
-
-String RemoveQuotes(String S)
-/*     ------------  */ {
-    char *p, *Start;
-
-    p = Start = S;
-
-    for (S++; *S != '"'; S++) {
-        if (*S == '\\') S++;
-        *p++ = *S;
-        *S = '-';
-    }
-    *p = '\00';
-
-    return Start;
-}
-
-
-//used
-
-Set MakeSubset(Attribute Att)
-/*  ----------  */ {
-    int Bytes, b;
-    char *p;
-    Set S;
-
-    Bytes = (MaxAttVal[Att] >> 3) + 1;
-    S = AllocZero(Bytes, Byte);
-
-    for (p = PropVal; *p;) {
-        p = RemoveQuotes(p);
-        b = Which(p, AttValName[Att], 1, MaxAttVal[Att]);
-        if (!b) Error(MODELFILE, E_MFATTVAL, p);
-        SetBit(b, S);
-
-        for (p += strlen(p); *p != '"'; p++)
-            ;
-        p++;
-        if (*p == ',') p++;
-    }
-
-    return S;
-}
-
-
-
-/*************************************************************************/
-/*									 */
-/*	Construct a leaf in a given node				 */
-/*									 */
-
-/*************************************************************************/
-
-
-Tree Leaf(double *Freq, ClassNo NodeClass, CaseCount Cases, CaseCount Errors)
-/*   ----  */ {
-    Tree Node;
-    ClassNo c;
-
-    Node = AllocZero(1, TreeRec);
-
-    Node->ClassDist = AllocZero(MaxClass + 1, CaseCount);
-    if (Freq) {
-
-        ForEach(c, 1, MaxClass) {
-            Node->ClassDist[c] = Freq[c];
-        }
-    }
-
-    Node->NodeType = 0;
-    Node->Leaf = NodeClass;
-    Node->Cases = Cases;
-    Node->Errors = Errors;
-
-    return Node;
-}
-
-
-/*************************************************************************/
-/*									 */
-/*	Read variable misclassification costs				 */
-/*									 */
-
-/*************************************************************************/
-
-
-void GetMCosts(FILE *Cf)
-/*   ---------  */ {
-    ClassNo Pred, Real, p, r;
-    char Name[1000];
-    float Val;
-
-    LineNo = 0;
-
-    /*  Read entries from cost file  */
-
-    while (ReadName(Cf, Name, 1000, ':')) {
-        if (!(Pred = Which(Name, ClassName, 1, MaxClass))) {
-            Error(BADCOSTCLASS, Name, "");
-        }
-
-        if (!ReadName(Cf, Name, 1000, ':') ||
-                !(Real = Which(Name, ClassName, 1, MaxClass))) {
-            Error(BADCOSTCLASS, Name, "");
-        }
-
-        if (!ReadName(Cf, Name, 1000, ':') ||
-                sscanf(Name, "%f", &Val) != 1 || Val < 0) {
-            Error(BADCOST, "", "");
-            Val = 1;
-        }
-
-        if (Pred > 0 && Real > 0 && Pred != Real && Val != 1) {
-            /*  Have a non-trivial cost entry  */
-
-            if (!MCost) {
-                /*  Set up cost matrices  */
-
-                MCost = Alloc(MaxClass + 1, float *);
-
-                ForEach(p, 1, MaxClass) {
-                    MCost[p] = Alloc(MaxClass + 1, float);
-
-                    ForEach(r, 1, MaxClass) {
-                        MCost[p][r] = (p == r ? 0.0 : 1.0);
-                    }
-                }
-            }
-
-            MCost[Pred][Real] = Val;
-        }
-    }
-    fclose(Cf);
-}
-
-
-
-/*************************************************************************/
-/*                                                              	 */
-/*	Categorize a case using a decision tree				 */
-/*                                                              	 */
-/*************************************************************************/
-
-//used
-
-ClassNo TreeClassify(DataRec Case, Tree DecisionTree, CEnv E)
-/*      ------------  */ {
-    ClassNo c, C;
-    double Prior;
-
-    /*  Save total leaf count in E->ClassWt[0]  */
-
-    ForEach(c, 0, MaxClass) {
-        E->ClassWt[c] = 0;
-    }
-
-    FindLeafCase(Case, DecisionTree, Nil, 1.0, E->ClassWt, E->AttUsed);
-
-    C = SelectClassCase(DecisionTree->Leaf, (Boolean) (MCost != Nil), E->ClassWt);
-
-#if defined WIN32 || defined PREDICT
-
-    ForEach(c, 1, MaxClass) {
-        Prior = DecisionTree->ClassDist[c] / DecisionTree->Cases;
-        E->ClassWt[c] =
-                (E->ClassWt[0] * E->ClassWt[c] + Prior) / (E->ClassWt[0] + 1);
-    }
-    E->Confidence = E->ClassWt[C];
-#else
-    Prior = DecisionTree->ClassDist[C] / DecisionTree->Cases;
-    E->Confidence =
-            (E->ClassWt[0] * E->ClassWt[C] + Prior) / (E->ClassWt[0] + 1);
-#endif
-
-    return C;
-}
-
-
-
-/*************************************************************************/
-/*                                                              	 */
-/*	Follow all branches from a node, weighting them in proportion	 */
-/*	to the number of training cases they contain			 */
-/*                                                              	 */
-
-/*************************************************************************/
-
-
-
-void FollowAllBranches(DataRec Case, Tree T, float Fraction, double *Prob,
+void FollowAllBranchesCase(DataRec Case, Tree T, float Fraction, double *Prob,
         Boolean *AttUsed)
 /*   -----------------  */ {
     DiscrValue v;
@@ -1549,17 +483,14 @@ void FollowAllBranches(DataRec Case, Tree T, float Fraction, double *Prob,
 }
 
 
-
 /*************************************************************************/
 /*                                                              	 */
 /*	Classify a case using the given subtree.			 */
 /*                                                              	 */
 /*************************************************************************/
 
-//used
 
-void FindLeafCase(DataRec Case, Tree T, Tree PT, float Fraction, double *Prob,
-        Boolean *AttUsed)
+void FindLeafCase(DataRec Case, Tree T, Tree PT, float Fraction, double *Prob, Boolean *AttUsed)
 /*   --------  */ {
     DiscrValue v, Dv;
     ClassNo c;
@@ -1594,7 +525,7 @@ void FindLeafCase(DataRec Case, Tree T, Tree PT, float Fraction, double *Prob,
             if (Dv <= T->Forks) /*  Make sure not new discrete value  */ {
                 FindLeafCase(Case, T->Branch[Dv], T, Fraction, Prob, AttUsed);
             } else {
-                FollowAllBranches(Case, T, Fraction, Prob, AttUsed);
+                FollowAllBranchesCase(Case, T, Fraction, Prob, AttUsed);
             }
 
             return;
@@ -1602,7 +533,7 @@ void FindLeafCase(DataRec Case, Tree T, Tree PT, float Fraction, double *Prob,
         case BrThresh: /* test of continuous attribute */
 
             if (Unknown(Case, T->Tested)) {
-                FollowAllBranches(Case, T, Fraction, Prob, AttUsed);
+                FollowAllBranchesCase(Case, T, Fraction, Prob, AttUsed);
             } else
                 if (NotApplic(Case, T->Tested)) {
                 FindLeafCase(Case, T->Branch[1], T, Fraction, Prob, AttUsed);
@@ -1640,191 +571,10 @@ void FindLeafCase(DataRec Case, Tree T, Tree PT, float Fraction, double *Prob,
 
                 goto LeafUpdate;
             } else {
-                FollowAllBranches(Case, T, Fraction, Prob, AttUsed);
+                FollowAllBranchesCase(Case, T, Fraction, Prob, AttUsed);
             }
     }
 }
-
-
-
-/*************************************************************************/
-/*                                                              	 */
-/*	Determine outcome of a test on a case.				 */
-/*	Return -1 if value of tested attribute is unknown		 */
-/*                                                              	 */
-
-/*************************************************************************/
-
-
-int FindOutcome(DataRec Case, Condition OneCond)
-/*  -----------  */ {
-    DiscrValue v, Outcome;
-    Attribute Att;
-
-    Att = OneCond->Tested;
-
-    /*  Determine the outcome of this test on this case  */
-
-    switch (OneCond->NodeType) {
-        case BrDiscr: /* test of discrete attribute */
-
-            v = XDVal(Case, Att);
-            Outcome = (v == 0 ? -1 : v);
-            break;
-
-        case BrThresh: /* test of continuous attribute */
-
-            Outcome = (Unknown(Case, Att) ? -1 :
-                    NotApplic(Case, Att) ? 1 :
-                    CVal(Case, Att) <= OneCond->Cut ? 2 : 3);
-            break;
-
-        case BrSubset: /* subset test on discrete attribute  */
-
-            v = XDVal(Case, Att);
-            Outcome = (v <= MaxAttVal[Att] && In(v, OneCond->Subset) ?
-                    OneCond->TestValue : 0);
-    }
-
-    return Outcome;
-}
-
-
-
-/*************************************************************************/
-/*									 */
-/*	Determine whether a case satisfies a condition			 */
-/*									 */
-
-/*************************************************************************/
-
-
-Boolean Satisfies(DataRec Case, Condition OneCond)
-/*      ---------  */ {
-    return ( FindOutcome(Case, OneCond) == OneCond->TestValue);
-}
-
-
-
-/*************************************************************************/
-/*									 */
-/*	Determine whether a case satisfies all conditions of a rule	 */
-/*									 */
-
-/*************************************************************************/
-
-
-Boolean Matches(CRule R, DataRec Case)
-/*      -------  */ {
-    int d;
-
-    ForEach(d, 1, R->Size) {
-        if (!Satisfies(Case, R->Lhs[d])) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-
-
-/*************************************************************************/
-/*									 */
-/*	Make sure that Active[] has space for at least N rules		 */
-/*									 */
-
-/*************************************************************************/
-
-
-void CheckActiveSpace(int N, CEnv E)
-/*   ----------------  */ {
-    if (E->ActiveSpace <= N) {
-        Realloc(E->Active, (E->ActiveSpace = N + 1), RuleNo);
-    }
-}
-
-
-
-/*************************************************************************/
-/*									 */
-/*	Use RT to enter active rules in Active[]			 */
-/*									 */
-
-/*************************************************************************/
-
-
-void MarkActive(RuleTree RT, DataRec Case, CEnv E)
-/*   ----------  */ {
-    DiscrValue v;
-    int ri;
-    RuleNo r;
-
-    if (!RT) return;
-
-    /*  Enter any rules satisfied at this node  */
-
-    if (RT->Fire) {
-        for (ri = 0; (r = RT->Fire[ri]); ri++) {
-            E->Active[E->NActive++] = r;
-        }
-    }
-
-    if (!RT->Branch) return;
-
-    /*  Explore subtree for rules that include condition at this node  */
-
-    if ((v = FindOutcome(Case, RT->CondTest)) > 0 && v <= RT->Forks) {
-        MarkActive(RT->Branch[v], Case, E);
-    }
-
-    /*  Explore default subtree for rules that do not include condition  */
-
-    MarkActive(RT->Branch[0], Case, E);
-}
-
-
-
-/*************************************************************************/
-/*									 */
-/*	Classify a case using boosted tree or rule sequence		 */
-/*									 */
-
-/*************************************************************************/
-
-
-ClassNo BoostClassify(DataRec Case, int MaxTrial, CEnv E)
-/*	-------------  */ {
-    ClassNo c, Best;
-    int t;
-    double Total = 0;
-
-    ForEach(c, 1, MaxClass) {
-        E->Vote[c] = 0;
-    }
-
-    ForEach(t, 0, MaxTrial) {
-        Best = TreeClassify(Case, Pruned[t], E);
-
-        E->Vote[Best] += E->Confidence;
-        Total += E->Confidence;
-
-    }
-
-    /*  Copy normalised votes into E->ClassWt  */
-
-    ForEach(c, 1, MaxClass) {
-        E->ClassWt[c] = E->Vote[c] / Total;
-    }
-
-    Best = SelectClassCase(Default, false, E->ClassWt);
-
-    E->Confidence = E->ClassWt[Best];
-
-    return Best;
-}
-
-
 
 /*************************************************************************/
 /*									 */
@@ -1897,535 +647,75 @@ double MisclassCost(double *LocalFreq, ClassNo C)
 /*								   	 */
 /*************************************************************************/
 
-//used
+ClassNo TreeClassifyCase(DataRec Case, Tree DecisionTree, CEnv E)
+/*      ------------  */ {
+    ClassNo c, C;
+    double Prior;
+
+    /*  Save total leaf count in E->ClassWt[0]  */
+
+    ForEach(c, 0, MaxClass) {
+        E->ClassWt[c] = 0;
+    }
+
+    FindLeafCase(Case, DecisionTree, Nil, 1.0, E->ClassWt, E->AttUsed);
+
+    C = SelectClassCase(DecisionTree->Leaf, (Boolean) (MCost != Nil), E->ClassWt);
+
+#if defined WIN32 || defined PREDICT
+
+    ForEach(c, 1, MaxClass) {
+        Prior = DecisionTree->ClassDist[c] / DecisionTree->Cases;
+        E->ClassWt[c] =
+                (E->ClassWt[0] * E->ClassWt[c] + Prior) / (E->ClassWt[0] + 1);
+    }
+    E->Confidence = E->ClassWt[C];
+#else
+    Prior = DecisionTree->ClassDist[C] / DecisionTree->Cases;
+    E->Confidence =
+            (E->ClassWt[0] * E->ClassWt[C] + Prior) / (E->ClassWt[0] + 1);
+#endif
+
+    return C;
+}
+
+ClassNo BoostClassifyCase(DataRec Case, int MaxTrial, CEnv E)
+/*	-------------  */ {
+    ClassNo c, Best;
+    int t;
+    double Total = 0;
+
+    ForEach(c, 1, MaxClass) {
+        E->Vote[c] = 0;
+    }
+
+    ForEach(t, 0, MaxTrial) {
+        Best = TreeClassifyCase(Case, Pruned[t], E);
+
+        E->Vote[Best] += E->Confidence;
+        Total += E->Confidence;
+
+    }
+
+    /*  Copy normalised votes into E->ClassWt  */
+
+    ForEach(c, 1, MaxClass) {
+        E->ClassWt[c] = E->Vote[c] / Total;
+    }
+
+    Best = SelectClassCase(Default, false, E->ClassWt);
+
+    E->Confidence = E->ClassWt[Best];
+
+    return Best;
+}
 
 ClassNo ClassifyCase(DataRec Case, CEnv E)
 /*      --------  */ {
     E->NRulesUsed = 0;
 
-    return ( TRIALS > 1 ? BoostClassify(Case, TRIALS - 1, E) : TreeClassify(Case, Pruned[0], E));
+    return ( TRIALS > 1 ? BoostClassifyCase(Case, TRIALS - 1, E) : TreeClassifyCase(Case, Pruned[0], E));
 }
-
-
-
-/*************************************************************************/
-/*								   	 */
-/*	Interpolate a single value between Lower, Cut and Upper		 */
-/*								   	 */
-/*************************************************************************/
-
-//used
-
-float Interpolate(Tree T, ContValue Val)
-/*    -----------  */ {
-    return ( Val <= T->Lower ? 1.0 :
-            Val >= T->Upper ? 0.0 :
-            Val <= T->Cut ?
-            1 - 0.5 * (Val - T->Lower) / (T->Cut - T->Lower + 1E-10) :
-            0.5 * (Val - T->Upper) / (T->Cut - T->Upper + 1E-10));
-}
-
-
-
-/*************************************************************************/
-/*									 */
-/*	Open file with given extension for read/write			 */
-/*									 */
-/*************************************************************************/
-
-//used
-
-FILE *GetFile(String Extension, String RW)
-/*    --------  */ {
-    strcpy(Fn, FileStem);
-    strcat(Fn, Extension);
-    return fopen(Fn, RW);
-}
-
-
-
-/*************************************************************************/
-/*									 */
-/*	Check whether file is open.  If it is not, open it and		 */
-/*	read/write discrete names					 */
-/*									 */
-/*************************************************************************/
-
-//used
-
-void CheckFile(String Extension, Boolean Write)
-/*   ---------  */ {
-    static char *LastExt = "";
-
-    if (!TRf || strcmp(LastExt, Extension)) {
-        LastExt = Extension;
-
-        if (TRf) {
-            fprintf(TRf, "\n");
-            fclose(TRf);
-        }
-
-        ReadFilePrefix(Extension);
-    }
-}
-
-//used
-
-char ProcessOption(int Argc, char *Argv[], char *Options)
-/*   -------------  */ {
-    int i;
-    static int OptNo = 1;
-
-    if (OptNo >= Argc) return '\00';
-
-    if (*(Option = Argv[OptNo++]) != '-') return '?';
-
-    for (i = 0; Options[i]; i++) {
-        if (Options[i] == Option[1]) {
-            OptArg = (char *) (Options[i + 1] != '+' ? Nil :
-                    Option[2] ? Option + 2 :
-                    OptNo < Argc ? Argv[OptNo++] : "0");
-            return Option[1];
-        }
-    }
-
-    return '?';
-}
-
-
-
-/*************************************************************************/
-/*									 */
-/*	Protected memory allocation routines				 */
-/*									 */
-/*************************************************************************/
-
-
-//used
-
-void *Pmalloc(size_t Bytes)
-/*    -------  */ {
-    void *p = Nil;
-
-    if (!Bytes || (p = (void *) malloc(Bytes))) {
-        return p;
-    }
-
-    Error(NOMEM, "", "");
-
-#ifdef WIN32
-    return Nil;
-#endif
-}
-
-
-//used
-
-void *Prealloc(void *Present, size_t Bytes)
-/*    --------  */ {
-    void *p = Nil;
-
-    if (!Bytes) return Nil;
-
-    if (!Present) return Pmalloc(Bytes);
-
-    if ((p = (void *) realloc(Present, Bytes))) {
-        return p;
-    }
-
-    Error(NOMEM, "", "");
-
-#ifdef WIN32
-    return Nil;
-#endif
-}
-
-
-//used
-
-void *Pcalloc(size_t Number, unsigned int Size)
-/*    -------  */ {
-    void *p = Nil;
-
-    if (!Number || (p = (void *) calloc(Number, Size))) {
-        return p;
-    }
-
-    Error(NOMEM, "", "");
-
-#ifdef WIN32
-    return Nil;
-#endif
-}
-
-
-
-/*************************************************************************/
-/*									 */
-/*	Error messages							 */
-/*									 */
-
-/*************************************************************************/
-
-
-void Error(int ErrNo, String S1, String S2)
-/*   -----  */ {
-    Boolean Quit = false, WarningOnly = false;
-    char Buffer[10000], *Msg = Buffer;
-
-#ifdef WIN32
-    if (ErrNo == NOMEM) {
-        MessageBox(NULL, "Cannot allocate sufficient memory", "Fatal Error",
-                MB_ICONERROR | MB_OK);
-        Goodbye(1);
-    } else
-        if (ErrNo == MODELFILE) {
-        if (!ErrMsgs) {
-            sprintf(Msg, "File %s is incompatible with .names file\n(%s `%s')",
-                    Fn, S1, S2);
-            MessageBox(NULL, Msg, "Cannot Load Classifier",
-                    MB_ICONERROR | MB_OK);
-        }
-        ErrMsgs++;
-        return;
-    }
-#endif
-
-    if (stdout) fprintf(stdout, "\n");
-
-    if (ErrNo == NOFILE || ErrNo == NOMEM || ErrNo == MODELFILE) {
-        sprintf(Msg, "*** ");
-    } else {
-        sprintf(Msg, TX_Line(LineNo, Fn));
-    }
-    Msg += strlen(Buffer);
-
-    switch (ErrNo) {
-        case NOFILE:
-            sprintf(Msg, E_NOFILE(Fn, S2));
-            Quit = true;
-            break;
-
-        case BADCLASSTHRESH:
-            sprintf(Msg, E_BADCLASSTHRESH, S1);
-            break;
-
-        case LEQCLASSTHRESH:
-            sprintf(Msg, E_LEQCLASSTHRESH, S1);
-            break;
-
-        case BADATTNAME:
-            sprintf(Msg, E_BADATTNAME, S1);
-            break;
-
-        case EOFINATT:
-            sprintf(Msg, E_EOFINATT, S1);
-            break;
-
-        case SINGLEATTVAL:
-            sprintf(Msg, E_SINGLEATTVAL(S1, S2));
-            break;
-
-        case DUPATTNAME:
-            sprintf(Msg, E_DUPATTNAME, S1);
-            break;
-
-        case CWTATTERR:
-            sprintf(Msg, E_CWTATTERR);
-            break;
-
-        case BADATTVAL:
-            sprintf(Msg, E_BADATTVAL(S2, S1));
-            break;
-
-        case BADNUMBER:
-            sprintf(Msg, E_BADNUMBER(S1));
-            break;
-
-        case BADCLASS:
-            sprintf(Msg, E_BADCLASS, S2);
-            break;
-
-        case BADCOSTCLASS:
-            sprintf(Msg, E_BADCOSTCLASS, S1);
-            Quit = true;
-            break;
-
-        case BADCOST:
-            sprintf(Msg, E_BADCOST, S1);
-            Quit = true;
-            break;
-
-        case NOMEM:
-            sprintf(Msg, E_NOMEM);
-            Quit = true;
-            break;
-
-        case TOOMANYVALS:
-            sprintf(Msg, E_TOOMANYVALS(S1, (int) (long) S2));
-            break;
-
-        case BADDISCRETE:
-            sprintf(Msg, E_BADDISCRETE, S1);
-            break;
-
-        case NOTARGET:
-            sprintf(Msg, E_NOTARGET, S1);
-            Quit = true;
-            break;
-
-        case BADCTARGET:
-            sprintf(Msg, E_BADCTARGET, S1);
-            Quit = true;
-            break;
-
-        case BADDTARGET:
-            sprintf(Msg, E_BADDTARGET, S1);
-            Quit = true;
-            break;
-
-        case LONGNAME:
-            sprintf(Msg, E_LONGNAME);
-            Quit = true;
-            break;
-
-        case HITEOF:
-            sprintf(Msg, E_HITEOF);
-            break;
-
-        case MISSNAME:
-            sprintf(Msg, E_MISSNAME, S2);
-            break;
-
-        case BADTSTMP:
-            sprintf(Msg, E_BADTSTMP(S2, S1));
-            break;
-
-        case BADDATE:
-            sprintf(Msg, E_BADDATE(S2, S1));
-            break;
-
-        case BADTIME:
-            sprintf(Msg, E_BADTIME(S2, S1));
-            break;
-
-        case UNKNOWNATT:
-            sprintf(Msg, E_UNKNOWNATT, S1);
-            break;
-
-        case BADDEF1:
-            sprintf(Msg, E_BADDEF1(AttName[MaxAtt], S1, S2));
-            break;
-
-        case BADDEF2:
-            sprintf(Msg, E_BADDEF2(AttName[MaxAtt], S1, S2));
-            break;
-
-        case SAMEATT:
-            sprintf(Msg, E_SAMEATT(AttName[MaxAtt], S1));
-            WarningOnly = true;
-            break;
-
-        case BADDEF3:
-            sprintf(Msg, E_BADDEF3, AttName[MaxAtt]);
-            break;
-
-        case BADDEF4:
-            sprintf(Msg, E_BADDEF4, AttName[MaxAtt]);
-            WarningOnly = true;
-            break;
-
-        case MODELFILE:
-            sprintf(Msg, EX_MODELFILE(Fn));
-            sprintf(Msg, "    (%s `%s')\n", S1, S2);
-            Quit = true;
-            break;
-    }
-
-#ifdef WIN32
-    if (Of) {
-        fprintf(Of, Buffer);
-    } else
-        if (ErrMsgs <= 10) {
-        MessageBox(NULL, Buffer, (WarningOnly ? "Warning" : "Error"), MB_OK);
-    }
-#else
-    fprintf(stdout, Buffer);
-#endif
-
-    if (!WarningOnly) ErrMsgs++;
-
-    if (ErrMsgs == 10) {
-#if defined WIN32 && ! defined _CONSOLE
-        MessageBox(NULL, T_ErrorLimit, "Too many errors!", MB_OK);
-#else
-        fprintf(stdout, T_ErrorLimit);
-#endif
-        Quit = true;
-    }
-
-    if (Quit && stdout) {
-        Goodbye(1);
-    }
-}
-
-
-
-/*************************************************************************/
-/*									 */
-/*	Determine precision of floating value				 */
-/*									 */
-
-/*************************************************************************/
-
-
-int Denominator(ContValue Val)
-/*  -----------  */ {
-    double RoundErr, Accuracy;
-    int Mult;
-
-    Accuracy = fabs(Val) * 1E-6; /* approximate */
-    Val = modf(Val, &RoundErr);
-
-    for (Mult = 100000; Mult >= 1; Mult /= 10) {
-        RoundErr = fabs(rint(Val * Mult) / Mult - Val);
-        if (RoundErr > 2 * Accuracy) {
-            return Mult * 10;
-        }
-    }
-
-    return 1;
-}
-
-
-
-/*************************************************************************/
-/*									 */
-/*	Routines to process dates (algorithm due to Gauss),		 */
-/*	times, and timestamps						 */
-/*									 */
-
-/*************************************************************************/
-
-
-int GetInt(String S, int N)
-/*  ------  */ {
-    int Result = 0;
-
-    while (N--) {
-        if (!isdigit(*S)) return 0;
-
-        Result = Result * 10 + (*S++ -'0');
-    }
-
-    return Result;
-}
-
-int DateToDay(String DS) /*  Day 1 is 0000/03/01  */
-/*  ---------  */ {
-    int Year, Month, Day;
-
-    if (strlen(DS) != 10) return 0;
-
-    Year = GetInt(DS, 4);
-    Month = GetInt(DS + 5, 2);
-    Day = GetInt(DS + 8, 2);
-
-    if (!(DS[4] == '/' && DS[7] == '/' || DS[4] == '-' && DS[7] == '-') ||
-            Year < 0 || Month < 1 || Day < 1 ||
-            Month > 12 ||
-            Day > 31 ||
-            Day > 30 &&
-            (Month == 4 || Month == 6 || Month == 9 || Month == 11) ||
-            Month == 2 &&
-            (Day > 29 ||
-            Day > 28 && (Year % 4 != 0 ||
-            Year % 100 == 0 && Year % 400 != 0))) {
-        return 0;
-    }
-
-    if ((Month -= 2) <= 0) {
-        Month += 12;
-        Year -= 1;
-    }
-
-    return Year * 365 + Year / 4 - Year / 100 + Year / 400
-            + 367 * Month / 12
-            + Day - 30;
-}
-
-int TimeToSecs(String TS)
-/*  ----------  */ {
-    int Hour, Mins, Secs;
-
-    if (strlen(TS) != 8) return -1;
-
-    Hour = GetInt(TS, 2);
-    Mins = GetInt(TS + 3, 2);
-    Secs = GetInt(TS + 6, 2);
-
-    if (TS[2] != ':' || TS[5] != ':' ||
-            Hour >= 24 || Mins >= 60 || Secs >= 60) {
-        return -1;
-    }
-
-    return Hour * 3600 + Mins * 60 + Secs;
-}
-
-
-//used
-
-void SetTSBase(int y)
-/*   ---------  */ {
-    y -= 15;
-    TSBase = y * 365 + y / 4 - y / 100 + y / 400 + (367 * 4) / 12 + 1 - 30;
-}
-
-int TStampToMins(String TS)
-/*  ------------  */ {
-    int Day, Sec, i;
-
-    /*  Check for reasonable length and space between date and time  */
-
-    if (strlen(TS) < 19 || !Space(TS[10])) return (1 << 30);
-
-    /*  Read date part  */
-
-    TS[10] = '\00';
-    Day = DateToDay(TS);
-    TS[10] = ' ';
-
-    /*  Skip one or more spaces  */
-
-    for (i = 11; TS[i] && Space(TS[i]); i++)
-        ;
-
-    /*  Read time part  */
-
-    Sec = TimeToSecs(TS + i);
-
-    /*  Return a long time in the future if there is an error  */
-
-    return ( Day < 1 || Sec < 0 ? (1 << 30) :
-            (Day - TSBase) * 1440 + (Sec + 30) / 60);
-}
-
-
-
-/*************************************************************************/
-/*									 */
-/*	Free case space							 */
-/*									 */
-
-/*************************************************************************/
-
-
-void FreeLastCase(DataRec DVec)
-/*   ------------  */ {
-    free(&DVec[-1]);
-    IValsOffset = 0;
-}
-
 
 
 /*************************************************************************/
@@ -2433,8 +723,6 @@ void FreeLastCase(DataRec DVec)
 /*	Deallocate the space used to perform classification		 */
 /*									 */
 /*************************************************************************/
-
-//used
 
 void FreeGlobals()
 /*   -----------  */ {
@@ -2458,7 +746,7 @@ void FreeGlobals()
         free(Pruned);
     }
 
-    FreeUnlessNil(PropVal);
+    //FreeUnlessNil(PropVal);
 
     /*  Free memory allocated for cost matrix  */
 
@@ -2476,160 +764,8 @@ void FreeGlobals()
     free(GCEnv);
 }
 
-
-
-/*************************************************************************/
-/*									 */
-/*	Free up all space allocated by GetNames()			 */
-/*									 */
-/*************************************************************************/
-
-//used
-
-void FreeNames()
-/*   ---------  */ {
-    Attribute a, t;
-
-    if (!AttName) return;
-
-    ForEach(a, 1, MaxAtt) {
-        if (a != ClassAtt && Discrete(a)) {
-            FreeVector((void **) AttValName[a], 1, MaxAttVal[a]);
-        }
-    }
-    FreeUnlessNil(AttValName);
-    AttValName = Nil;
-    FreeUnlessNil(MaxAttVal);
-    MaxAttVal = Nil;
-    FreeUnlessNil(ClassThresh);
-    ClassThresh = Nil;
-    FreeVector((void **) AttName, 1, MaxAtt);
-    AttName = Nil;
-    FreeVector((void **) ClassName, 1, MaxClass);
-    ClassName = Nil;
-
-    FreeUnlessNil(SpecialStatus);
-    SpecialStatus = Nil;
-
-    /*  Definitions (if any)  */
-
-    if (AttDef) {
-
-        ForEach(a, 1, MaxAtt) {
-            if (AttDef[a]) {
-                for (t = 0; DefOp(AttDef[a][t]) != OP_END; t++) {
-                    if (DefOp(AttDef[a][t]) == OP_STR) {
-                        Free(DefSVal(AttDef[a][t]));
-                    }
-                }
-
-                Free(AttDef[a]);
-            }
-        }
-        Free(AttDef);
-        AttDef = Nil;
-    }
-}
-
-
-
-/*************************************************************************/
-/*									 */
-/*	Free up space taken up by tree Node				 */
-/*									 */
-/*************************************************************************/
-
-//used
-
-void FreeTree(Tree T)
-/*   --------  */ {
-    DiscrValue v;
-
-    if (!T) return;
-
-    if (T->NodeType) {
-
-        ForEach(v, 1, T->Forks) {
-            FreeTree(T->Branch[v]);
-        }
-
-        Free(T->Branch);
-
-        if (T->NodeType == BrSubset) {
-            FreeVector((void **) T->Subset, 1, T->Forks);
-        }
-
-    }
-
-    Free(T->ClassDist);
-    Free(T);
-}
-
-
-
-/*************************************************************************/
-/*									 */
-/*	Deallocate the space used to store rules			 */
-/*									 */
-
-/*************************************************************************/
-
-
-void FreeRule(CRule R)
-/*   --------  */ {
-    int d;
-
-    ForEach(d, 1, R->Size) {
-        if (R->Lhs[d]->NodeType == BrSubset) {
-            FreeUnlessNil(R->Lhs[d]->Subset);
-        }
-        FreeUnlessNil(R->Lhs[d]);
-    }
-    FreeUnlessNil(R->Lhs);
-    FreeUnlessNil(R);
-}
-
-void FreeRuleTree(RuleTree RT)
+void c5DecoderFreeLastCase(DataRec DVec)
 /*   ------------  */ {
-    int b;
-
-    if (!RT) return;
-
-    if (RT->Branch) {
-
-        ForEach(b, 0, RT->Forks) {
-            FreeRuleTree(RT->Branch[b]);
-        }
-        Free(RT->Branch);
-    }
-
-    /*  Don't free RT->Cond since this is just a pointer to a condition
-        in one of the rules  */
-
-    FreeUnlessNil(RT->Fire);
-    Free(RT);
-}
-
-void FreeRules(CRuleSet RS)
-/*   ---------  */ {
-    int ri;
-
-    ForEach(ri, 1, RS->SNRules) {
-        FreeRule(RS->SRule[ri]);
-    }
-    Free(RS->SRule);
-    FreeRuleTree(RS->RT);
-    Free(RS);
-}
-
-void FreeVector(void **V, int First, int Last)
-/*   ----------  */ {
-    if (V) {
-        while (First <= Last) {
-            FreeUnlessNil(V[First]);
-            First++;
-        }
-
-        Free(V);
-    }
+    free(&DVec[-1]);
+    IValsOffset = 0;
 }

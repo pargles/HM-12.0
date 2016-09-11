@@ -712,7 +712,7 @@
       </item>
       <item path="../../source/Lib/libc5/c50.c" ex="false" tool="0" flavor2="2">
       </item>
-      <item path="../../source/Lib/libc5/c5decoder.c" ex="false" tool="1" flavor2="0">
+      <item path="../../source/Lib/libc5/c5decoder.c" ex="false" tool="1" flavor2="4">
         <ccTool flags="0">
         </ccTool>
       </item>

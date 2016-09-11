@@ -38,8 +38,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#define	MAXLINEBUFFER	10000
-int	Delimiter;
 char	LineBuffer[MAXLINEBUFFER], *LBp=LineBuffer;
 
 
@@ -60,7 +58,7 @@ char	LineBuffer[MAXLINEBUFFER], *LBp=LineBuffer;
 /*************************************************************************/
 
 
-Boolean ReadName(FILE *file, String s, int n, char ColonOpt)
+Boolean ReadName(FILE *f, String s, int n, char ColonOpt)
 /*      --------  */
 {
     register char *Sp=s;
@@ -69,9 +67,9 @@ Boolean ReadName(FILE *file, String s, int n, char ColonOpt)
 
     /*  Skip to first non-space character  */
 
-    while ( (c = InChar(file)) == '|' || Space(c) )
+    while ( (c = InChar(f)) == '|' || Space(c) )
     {
-	if ( c == '|' ) SkipComment1;
+	if ( c == '|' ) SkipComment;
     }
 
     /*  Return false if no names to read  */
@@ -93,31 +91,31 @@ Boolean ReadName(FILE *file, String s, int n, char ColonOpt)
 
 	if ( c == '.' )
 	{
-	    if ( (c = InChar(file)) == '|' || Space(c) || c == EOF ) break;
+	    if ( (c = InChar(f)) == '|' || Space(c) || c == EOF ) break;
 	    *Sp++ = '.';
 	    continue;
 	}
 
 	if ( c == '\\' )
 	{
-	    c = InChar(file);
+	    c = InChar(f);
 	}
 
 	if ( Space(c) )
 	{
 	    *Sp++ = ' ';
 
-	    while ( ( c = InChar(file) ) == ' ' || c == '\t' )
+	    while ( ( c = InChar(f) ) == ' ' || c == '\t' )
 		;
 	}
 	else
 	{
 	    *Sp++ = c;
-	    c = InChar(file);
+	    c = InChar(f);
 	}
     }
 
-    if ( c == '|' ) SkipComment1;
+    if ( c == '|' ) SkipComment;
     Delimiter = c;
 
     /*  Special case for ':='  */
@@ -170,7 +168,7 @@ Boolean ReadNameC(char **fileChar, String s, int n, char ColonOpt)
 
    while ( (c = InCharC(fileChar)) == '|' || Space(c) )
     {
-	if ( c == '|' ) SkipComment;
+	if ( c == '|' ) SkipCommentC;
     }
 
     /*  Return false if no names to read  */
@@ -216,7 +214,7 @@ Boolean ReadNameC(char **fileChar, String s, int n, char ColonOpt)
 	}
     }
 
-    if ( c == '|' ) SkipComment;
+    if ( c == '|' ) SkipCommentC;
     Delimiter = c;
 
     /*  Special case for ':='  */

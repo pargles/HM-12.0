@@ -254,7 +254,7 @@ void ReadDefinition(FILE *f)
     {
 	c = InChar(f);
 
-	//if ( c == '|' ) SkipComment;
+	if ( c == '|' ) SkipComment;
 
 	if ( c == EOF || c == '\n' && LastWasPeriod )
 	{

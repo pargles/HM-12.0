@@ -461,20 +461,20 @@ void ReadHeader()
 	    case IDP:
 		/*  Recover year run and set base date for timestamps  */
 
-		/*if ( sscanf(PropVal + strlen(PropVal) - 11,
+		if ( sscanf(PropVal + strlen(PropVal) - 11,
 			    "%d-%d-%d\"", &Year, &Month, &Day) == 3 )
 		{
 		    SetTSBase(Year);
 		}
-		break;*/
+		break;
 
 	    case COSTSP:
 		/*  Recover costs file used to generate model  */
 
-		/*if ( (F = GetFile(".costs", "r")) )
+		if ( (F = GetFile(".costs", "r")) )
 		{
 		    GetMCosts(F);
-		}*/
+		}
 		break;
 	    case SAMPLEP:
 		sscanf(PropVal, "\"%f\"", &SAMPLE);
@@ -495,7 +495,7 @@ void ReadHeader()
 
 	    case ELTSP:
 		MaxAttVal[Att] = 1;
-		//AttValName[Att][1] = strdup("N/A");
+		AttValName[Att][1] = strdup("N/A");
 
 		for ( p = PropVal ; *p ; )
 		{
@@ -503,8 +503,7 @@ void ReadHeader()
 		    v = ++MaxAttVal[Att];
 		    //AttValName[Att][v] = strdup(p);
 
-		    //for ( p += strlen(p) ; *p != '"' ; p++ )
-			//;
+		    for ( p += strlen(p) ; *p != '"' ; p++ );
 		    p++;
 		    if ( *p == ',' ) p++;
 		}
@@ -929,8 +928,8 @@ Set MakeSubset(Attribute Att)
 	if ( ! b ) Error(MODELFILE, E_MFATTVAL, p);
 	SetBit(b, S);
 
-	//for ( p += strlen(p) ; *p != '"' ; p++ )
-	  //  ;
+	for ( p += strlen(p) ; *p != '"' ; p++ )
+	    ;
 	p++;
 	if ( *p == ',' ) p++;
     }

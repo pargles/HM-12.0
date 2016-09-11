@@ -170,8 +170,8 @@
 
 #define  Space(s)	(s == ' ' || s == '\n' || s == '\r' || s == '\t')
 #define  SkipComment		while ( ( c = InChar(f) ) != '\n' && c != EOF )
-//#define  SkipComment	while ( ( c = InCharC(c) ) != '\n' )
-#define  SkipComment1	while ( ( c = InChar(f) ) != '\n' )
+#define  SkipCommentC	while ( ( c = InCharC(fileChar) ) != '\n' )
+//#define  SkipComment1	while ( ( c = InChar(f) ) != '\n' )
 
 #define	 P1(x)		(rint((x)*10) / 10)
 
@@ -237,6 +237,7 @@
 #define	 RESULTS	12
 #define	 READXDATA	13
 
+#define	MAXLINEBUFFER	10000
 
 /*************************************************************************/
 /*									 */
@@ -694,6 +695,11 @@ ClassNo SelectClassCase(ClassNo Default, Boolean UseCosts, double *Prob);
 void	    FreeGlobals();
 ClassNo ClassifyCase(DataRec Case, CEnv E);
 void FindLeafCase(DataRec Case, Tree T, Tree PT, float Fraction, double *Prob,Boolean *AttUsed);
+ClassNo TreeClassifyCase(DataRec Case, Tree DecisionTree, CEnv E);
+void FollowAllBranchesCase(DataRec Case, Tree T, float Fraction, double *Prob,Boolean *AttUsed);
+ClassNo BoostClassifyCase(DataRec Case, int MaxTrial, CEnv E);
+DataRec c5DecoderGetDataRec(FILE *Df, Boolean Train);
+void c5DecoderFreeLastCase(DataRec DVec);
 
 	/* c50.c */
 

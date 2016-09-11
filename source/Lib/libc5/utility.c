@@ -62,7 +62,7 @@ void PrintHeader(String Title)
 /*************************************************************************/
 
 
-String	OptArg, Option;
+//String	OptArg, Option;
 int	OptNo;
 
 char ProcessOption(int Argc, char *Argv[], char *Options)
