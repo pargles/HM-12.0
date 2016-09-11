@@ -7,7 +7,7 @@
         <activeConfTypeElem>0</activeConfTypeElem>
         <activeConfIndexElem>0</activeConfIndexElem>
     </data>
-    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="1"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group name="GACI">
             <file>file:/home/pargles/Documents/codificador/HM-12.0/source/Lib/libc5/getnames.c</file>
@@ -21,6 +21,12 @@
             <file>file:/home/pargles/Documents/codificador/HM-12.0/source/Lib/libc5/modelfiles.c</file>
             <file>file:/home/pargles/Documents/codificador/HM-12.0/source/Lib/TLibEncoder/TEncCu.cpp</file>
         </group>
-        <group/>
+        <group>
+            <file>file:/home/pargles/Documents/codificador/HM-12.0/source/Lib/libc5/C5.h</file>
+            <file>file:/home/pargles/Documents/codificador/HM-12.0/source/Lib/TLibEncoder/TEncCu.cpp</file>
+            <file>file:/home/pargles/Documents/codificador/HM-12.0/source/Lib/TLibEncoder/TEncSlice.cpp</file>
+            <file>file:/home/pargles/Documents/codificador/HM-12.0/source/App/TAppEncoder/encmain.cpp</file>
+            <file>file:/home/pargles/Documents/codificador/HM-12.0/source/Lib/libc5/libc5.h</file>
+        </group>
     </open-files>
 </project-private>

@@ -62,7 +62,6 @@ extern char filename_C5data_64x64[100];
 extern char filename_C5data_32x32[100];
 extern char filename_C5data_16x16[100];
 extern Char*  relation;
-//extern C5Decoder c5Decoder;
 
 extern C5Decoder c5_64_decoder;
 extern C5Decoder c5_32_decoder;

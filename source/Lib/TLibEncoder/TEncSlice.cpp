@@ -38,15 +38,15 @@
 #include "TEncTop.h"
 #include "TEncSlice.h"
 #include <math.h>
-//#include "libc5/C5.h"
+#include "libc5/C5.h"
 #include "libc5/C5Decoder.h"
 //gcorrea: 17/10/2013
 extern int count_frame;
 //gcorrea: 17/10/2013 END
 //pargles
-//extern C5 c5_64;
-//extern C5 c5_32;
-//extern C5 c5_16;
+extern C5 c5_64;
+extern C5 c5_32;
+extern C5 c5_16;
 extern C5Decoder c5_64_decoder;
 extern C5Decoder c5_32_decoder;
 extern C5Decoder c5_16_decoder;

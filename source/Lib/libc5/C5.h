@@ -6,7 +6,6 @@
 class C5
 {
 public:
-const char a_delim='\n';
   /**
    * compute digest over buf of length len.
    * multiple calls may extend the digest over more data.
