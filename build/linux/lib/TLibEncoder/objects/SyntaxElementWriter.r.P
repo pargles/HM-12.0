@@ -1,0 +1,15 @@
+objects/SyntaxElementWriter.r.o: \
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibEncoder/SyntaxElementWriter.cpp \
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibCommon/CommonDef.h \
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibCommon/TypeDef.h \
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibEncoder/SyntaxElementWriter.h \
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibCommon/TComBitStream.h \
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibCommon/CommonDef.h \
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibCommon/TComRom.h
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibEncoder/SyntaxElementWriter.cpp :
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibCommon/CommonDef.h :
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibCommon/TypeDef.h :
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibEncoder/SyntaxElementWriter.h :
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibCommon/TComBitStream.h :
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibCommon/CommonDef.h :
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibCommon/TComRom.h :
