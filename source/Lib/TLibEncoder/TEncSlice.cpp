@@ -38,6 +38,30 @@
 #include "TEncTop.h"
 #include "TEncSlice.h"
 #include <math.h>
+#include "libc5/C5.h"
+#include "libc5/C5Decoder.h"
+//gcorrea: 17/10/2013
+extern int count_frame;
+//gcorrea: 17/10/2013 END
+//pargles
+extern C5 c5_64;
+extern C5 c5_32;
+extern C5 c5_16;
+extern C5Decoder c5_64_decoder;
+extern C5Decoder c5_32_decoder;
+extern C5Decoder c5_16_decoder;
+extern bool onlineTrainingIsDone;
+extern string cu64x64forC5;
+extern string cu32x32forC5;
+extern string cu16x16forC5;
+extern char filename_C5data_64x64[100];
+extern char filename_C5data_32x32[100];
+extern char filename_C5data_16x16[100];
+extern ofstream C5dataFileCU64x64;
+extern ofstream C5dataFileCU32x32;
+extern ofstream C5dataFileCU16x16;
+extern int GOPforC5;
+//END pargles
 
 //! \ingroup TLibEncoder
 //! \{
@@ -1278,6 +1302,43 @@ Void TEncSlice::compressSlice( TComPic*& rpcPic )
     m_pcRateCtrl->updateFrameData(m_uiPicTotalBits);
   }
 #endif
+   // pargles April 28th, 2015
+    if (count_frame == GOPforC5 ) {
+        C5dataFileCU64x64.open(filename_C5data_64x64, ios::out);
+        if (C5dataFileCU64x64.is_open()) {
+            C5dataFileCU64x64 <<  cu64x64forC5;
+            C5dataFileCU64x64.close();
+        }
+        char *param64[] = {"./c5.0", "-f", "/home/pargles/Documents/codificador/HM-12.0/C5hevc_64x64"};
+        // makes the tree for 64x64 CUs
+        c5_64.runC5(param64);
+        c5_64_decoder.loadC5Tree(param64);
+        
+        C5dataFileCU32x32.open(filename_C5data_32x32, ios::out);
+        if (C5dataFileCU32x32.is_open()) {
+            C5dataFileCU32x32 <<  cu32x32forC5;
+            C5dataFileCU32x32.close();
+        }
+        char *param32[] = {"./c5.0", "-f", "/home/pargles/Documents/codificador/HM-12.0/C5hevc_32x32", NULL};
+      //makes the tree for 32x32 CUs
+        c5_32.runC5(param32);
+        c5_32_decoder.loadC5Tree(param32);
+        C5dataFileCU16x16.open(filename_C5data_16x16, ios::out);
+        if (C5dataFileCU16x16.is_open()) {
+            C5dataFileCU16x16 <<  cu16x16forC5;
+            C5dataFileCU16x16.close();
+        }
+        char *param16[] = {"./c5.0", "-f", "/home/pargles/Documents/codificador/HM-12.0/C5hevc_16x16", NULL};
+        // makes the tree for 16x16 CUs
+        c5_16.runC5(param16);
+        c5_16_decoder.loadC5Tree(param16);
+        
+        onlineTrainingIsDone = true;
+    }
+// pargles April 28th, 2015
+    //gcorrea: 17/10/2013 END
+    count_frame++;
+    //gcorrea: 17/10/2013 END
 }
 
 /**

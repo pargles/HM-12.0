@@ -47,6 +47,36 @@
 
 using namespace std;
 
+//gcorrea 29/08/2013
+extern ofstream CU64x64data;
+extern ofstream CU32x32data;
+extern ofstream CU16x16data;
+extern ofstream CU8x8data;
+extern char filename_64x64[100];
+extern char filename_32x32[100];
+extern char filename_16x16[100];
+extern char filename_8x8[100];
+extern Char*  relation;
+extern Pel **saveLumaPel;
+extern Pel **saveHorGrad;
+extern Pel **saveVerGrad;
+extern int count_frame;
+extern int saveResData2Nx2N;
+extern double sumRes2Nx2N, medRes2Nx2N, sqdRes2Nx2N, varRes2Nx2N;
+extern double res_sum_VP1, res_sum_VP2, res_med_VP1, res_med_VP2, res_sqd_VP1, res_sqd_VP2, res_var_VP1, res_var_VP2;
+extern double res_sum_HP1, res_sum_HP2, res_med_HP1, res_med_HP2, res_sqd_HP1, res_sqd_HP2, res_var_HP1, res_var_HP2;
+extern double ResHorGrad, ResVerGrad, ResGrad, res_RHV_grad;
+extern double res_rhi_V, res_rhi_H, res_rhi_Q;
+extern double res_RHV_sum, res_RHV_med, res_RHV_var, res_RHV_HI;
+extern int curr_uiDepth;
+extern int frameWidth, frameHeight;
+extern int nCU_hor, nCU_ver, nCU32x32_hor, nCU32x32_ver, nCU16x16_hor, nCU16x16_ver, nCU8x8_hor, nCU8x8_ver, nCU;
+extern long int count_64x64_MSM, count_64x64_MERGE, count_64x64_2Nx2N_MERGE, count_64x64_SKIP, count_64x64_2Nx2N_SKIP, count_64x64_2Nx2N_nonMSM, count_64x64_2Nx2N, count_64x64_2NxN, count_64x64_Nx2N, count_64x64_NxN, count_64x64_2NxnU, count_64x64_2NxnD, count_64x64_nLx2N, count_64x64_nRx2N;
+extern long int count_32x32_MSM, count_32x32_MERGE, count_32x32_2Nx2N_MERGE, count_32x32_SKIP, count_32x32_2Nx2N_SKIP, count_32x32_2Nx2N_nonMSM, count_32x32_2Nx2N, count_32x32_2NxN, count_32x32_Nx2N, count_32x32_NxN, count_32x32_2NxnU, count_32x32_2NxnD, count_32x32_nLx2N, count_32x32_nRx2N;
+extern long int count_16x16_MSM, count_16x16_MERGE, count_16x16_2Nx2N_MERGE, count_16x16_SKIP, count_16x16_2Nx2N_SKIP, count_16x16_2Nx2N_nonMSM, count_16x16_2Nx2N, count_16x16_2NxN, count_16x16_Nx2N, count_16x16_NxN, count_16x16_2NxnU, count_16x16_2NxnD, count_16x16_nLx2N, count_16x16_nRx2N;
+extern long int count_8x8_MSM, count_8x8_MERGE, count_8x8_2Nx2N_MERGE, count_8x8_SKIP, count_8x8_2Nx2N_SKIP, count_8x8_2Nx2N_nonMSM, count_8x8_2Nx2N, count_8x8_2NxN, count_8x8_Nx2N, count_8x8_NxN, count_8x8_2NxnU, count_8x8_2NxnD, count_8x8_nLx2N, count_8x8_nRx2N;
+//gcorrea 29/08/2013 END
+
 //! \ingroup TAppEncoder
 //! \{
 
@@ -405,6 +435,44 @@ Void TAppEncTop::encode()
   {
     pcPicYuvOrg->create( m_iSourceWidth, m_iSourceHeight, m_uiMaxCUWidth, m_uiMaxCUHeight, m_uiMaxCUDepth );
   }
+  
+  //gcorrea 17/10/2013
+    count_frame = 0;
+    saveResData2Nx2N = curr_uiDepth = -1;
+    sumRes2Nx2N = medRes2Nx2N = sqdRes2Nx2N = varRes2Nx2N = 0;
+    res_sum_VP1 = res_sum_VP2 = res_med_VP1 = res_med_VP2 = res_sqd_VP1 = res_sqd_VP2 = res_var_VP1 = res_var_VP2 = 0;
+    res_sum_HP1 = res_sum_HP2 = res_med_HP1 = res_med_HP2 = res_sqd_HP1 = res_sqd_HP2 = res_var_HP1 = res_var_HP2 = 0;
+    ResHorGrad = ResVerGrad = ResGrad = res_RHV_grad = 0;
+    res_rhi_V = res_rhi_H = res_rhi_Q = 0;
+    res_RHV_sum = res_RHV_med = res_RHV_var = res_RHV_HI = 0;
+
+    count_64x64_MSM = count_64x64_MERGE = count_64x64_2Nx2N_MERGE = count_64x64_SKIP = count_64x64_2Nx2N_SKIP = count_64x64_2Nx2N_nonMSM = count_64x64_2Nx2N = count_64x64_2NxN = count_64x64_Nx2N = count_64x64_NxN = count_64x64_2NxnU = count_64x64_2NxnD = count_64x64_nLx2N = count_64x64_nRx2N = 0;
+    count_32x32_MSM = count_32x32_MERGE = count_32x32_2Nx2N_MERGE = count_32x32_SKIP = count_32x32_2Nx2N_SKIP = count_32x32_2Nx2N_nonMSM = count_32x32_2Nx2N = count_32x32_2NxN = count_32x32_Nx2N = count_32x32_NxN = count_32x32_2NxnU = count_32x32_2NxnD = count_32x32_nLx2N = count_32x32_nRx2N = 0;
+    count_16x16_MSM = count_16x16_MERGE = count_16x16_2Nx2N_MERGE = count_16x16_SKIP = count_16x16_2Nx2N_SKIP = count_16x16_2Nx2N_nonMSM = count_16x16_2Nx2N = count_16x16_2NxN = count_16x16_Nx2N = count_16x16_NxN = count_16x16_2NxnU = count_16x16_2NxnD = count_16x16_nLx2N = count_16x16_nRx2N = 0;
+    count_8x8_MSM = count_8x8_MERGE = count_8x8_2Nx2N_MERGE = count_8x8_SKIP = count_8x8_2Nx2N_SKIP = count_8x8_2Nx2N_nonMSM = count_8x8_2Nx2N = count_8x8_2NxN = count_8x8_Nx2N = count_8x8_NxN = count_8x8_2NxnU = count_8x8_2NxnD = count_8x8_nLx2N = count_8x8_nRx2N = 0;
+    // write header in the variance and splitting stats file
+
+    CU64x64data.open(filename_64x64, ios::out | ios::app);
+    if(CU64x64data.is_open()) {
+                      CU64x64data << "@relation "<<relation<<'\n'<<'\n'<<"@attribute RDcost_MSM numeric" << '\n' << "@attribute RDcost_2Nx2N numeric" << '\n' << "@attribute RDcost_2NxN numeric"  << '\n' <<  "@attribute RDcost_Nx2N numeric"  << '\n' <<  "@attribute part {0,1,2,3,4,5,6,7}"  << '\n' <<  "@attribute MergeFlag {0,1}"  << '\n' <<  "@attribute SkipMergeFlag {0,1}"  << '\n' <<  "@attribute med_med numeric"  << '\n' <<  "@attribute neighDepth_diff numeric"  << '\n' << "@attribute SplitQuadtree {0,1}"<<'\n'<<'\n'<<"@data"<<endl;
+                      CU64x64data.close();
+    }
+    CU32x32data.open(filename_32x32, ios::out | ios::app);
+    if(CU32x32data.is_open()) {
+                      CU32x32data << "@relation "<<relation<< '\n'<<'\n'<<"@attribute RDcost_MSM numeric" << '\n' << "@attribute RDcost_2Nx2N numeric" << '\n' << "@attribute RDcost_2NxN numeric"  << '\n' <<  "@attribute RDcost_Nx2N numeric"  << '\n' <<  "@attribute part {0,1,2,3,4,5,6,7}"  << '\n' <<  "@attribute MergeFlag {0,1}"  << '\n' <<  "@attribute SkipMergeFlag {0,1}"  << '\n' <<  "@attribute med_med numeric"  << '\n' <<  "@attribute neighDepth_diff numeric"  << '\n' << "@attribute SplitQuadtree {0,1}"<<'\n'<<'\n'<<"@data"<<endl;
+                      CU32x32data.close();
+    }
+    CU16x16data.open(filename_16x16, ios::out | ios::app);
+    if(CU16x16data.is_open()) {
+                      CU16x16data << "@relation "<<relation<<'\n'<<'\n'<< "@attribute RDcost_MSM numeric" << '\n' << "@attribute RDcost_2Nx2N numeric" << '\n' << "@attribute RDcost_2NxN numeric"  << '\n' <<  "@attribute RDcost_Nx2N numeric"  << '\n' <<  "@attribute part {0,1,2,3,4,5,6,7}"  << '\n' <<  "@attribute MergeFlag {0,1}"  << '\n' <<  "@attribute SkipMergeFlag {0,1}"  << '\n' <<  "@attribute med_med numeric"  << '\n' <<  "@attribute neighDepth_diff numeric"  << '\n' << "@attribute SplitQuadtree {0,1}"<<'\n'<<'\n'<<"@data"<<endl;
+                      CU16x16data.close();
+    }
+    CU8x8data.open(filename_8x8, ios::out | ios::app);
+    if(CU8x8data.is_open()) {
+                      CU8x8data << "@relation "<<relation<< '\n'<<'\n'<<"@attribute RDcost_MSM numeric" << '\n' << "@attribute RDcost_2Nx2N numeric" << '\n' << "@attribute RDcost_2NxN numeric"  << '\n' <<  "@attribute RDcost_Nx2N numeric"  << '\n' <<  "@attribute part {0,1,2,3,4,5,6,7}"  << '\n' <<  "@attribute MergeFlag {0,1}"  << '\n' <<  "@attribute SkipMergeFlag {0,1}"  << '\n' <<  "@attribute med_med numeric"  << '\n' <<  "@attribute neighDepth_diff numeric"  << '\n' << "@attribute SplitQuadtree {0,1}"<<'\n'<<'\n'<<"@data"<<endl;
+                      CU8x8data.close();
+    }
+    //gcorrea: 29/08/2013 END
   
   while ( !bEos )
   {
