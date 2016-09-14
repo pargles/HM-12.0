@@ -69,7 +69,10 @@ objects/TEncCu.d.o: \
  /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibEncoder/SEIwrite.h \
  /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibEncoder/TEncAnalyze.h \
  /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibEncoder/TEncPreanalyzer.h \
- /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibEncoder/TEncPic.h
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibEncoder/TEncPic.h \
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/libc5/C5Decoder.h \
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/libc5/libc5.h \
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/libc5/text.h
  /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibEncoder/TEncCu.cpp :
  /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibEncoder/TEncTop.h :
  /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibCommon/TComList.h :
@@ -141,3 +144,6 @@ objects/TEncCu.d.o: \
  /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibEncoder/TEncAnalyze.h :
  /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibEncoder/TEncPreanalyzer.h :
  /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/TLibEncoder/TEncPic.h :
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/libc5/C5Decoder.h :
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/libc5/libc5.h :
+ /home/pargles/Documents/codificador/HM-12.0/build/linux/lib/TLibEncoder/../../../../source/Lib/libc5/text.h :
