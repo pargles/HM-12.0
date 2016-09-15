@@ -38,12 +38,8 @@
       </df>
       <df name="utils">
         <df name="annexBbytecount">
-          <df name="objects">
-          </df>
         </df>
         <df name="convert_NtoMbit_YCbCr">
-          <df name="objects">
-          </df>
         </df>
       </df>
       <in>defns.i</in>

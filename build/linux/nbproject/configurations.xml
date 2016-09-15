@@ -15,6 +15,7 @@
         <itemPath>../../source/Lib/libc5/confmat.c</itemPath>
         <itemPath>../../source/Lib/libc5/construct.c</itemPath>
         <itemPath>../../source/Lib/libc5/contin.c</itemPath>
+        <itemPath>../../source/Lib/libc5/defns.h</itemPath>
         <itemPath>../../source/Lib/libc5/discr.c</itemPath>
         <itemPath>../../source/Lib/libc5/formrules.c</itemPath>
         <itemPath>../../source/Lib/libc5/formtree.c</itemPath>

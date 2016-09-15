@@ -41,6 +41,7 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <assert.h>
+#include <math.h>
 
 #include "TAppEncTop.h"
 #include "TLibEncoder/AnnexBwrite.h"
@@ -436,6 +437,42 @@ Void TAppEncTop::encode()
     pcPicYuvOrg->create( m_iSourceWidth, m_iSourceHeight, m_uiMaxCUWidth, m_uiMaxCUHeight, m_uiMaxCUDepth );
   }
   
+  //gcorrea 17/10/2013
+  nCU_hor = ceil((float)m_iSourceWidth/64);			// number of CUs in a horizontal line
+  
+  nCU_ver = ceil((float)m_iSourceHeight/64);		// number of CUs in a vertical column
+  
+  int new_SourceWidth = nCU_hor*64;
+  
+  int new_SourceHeight = nCU_ver*64;
+  
+  nCU32x32_hor = ceil((float)m_iSourceWidth/32);			// number of CUs in a horizontal line
+  nCU32x32_ver = ceil((float)m_iSourceHeight/32);		// number of CUs in a vertical column
+  nCU16x16_hor = ceil((float)m_iSourceWidth/16);			// number of CUs in a horizontal line
+	nCU16x16_ver = ceil((float)m_iSourceHeight/16);		// number of CUs in a vertical column
+	nCU8x8_hor = ceil((float)m_iSourceWidth/8);			// number of CUs in a horizontal line
+	nCU8x8_ver = ceil((float)m_iSourceHeight/8);		// number of CUs in a vertical column
+	nCU = nCU_ver * nCU_hor;
+	int CTB_width = m_uiMaxCUWidth;
+	int CTB_height = m_uiMaxCUHeight;
+	frameWidth = nCU_hor * CTB_width;
+	frameHeight = nCU_ver * CTB_height;
+	saveLumaPel = new Pel* [frameHeight];
+	for(int y = 0; y < frameHeight; y++)
+		saveLumaPel[y] = new Pel[frameWidth];
+	saveHorGrad = new Pel* [frameHeight];
+	for(int y = 0; y < frameHeight; y++)
+		saveHorGrad[y] = new Pel[frameWidth];
+	saveVerGrad = new Pel* [frameHeight];
+	for(int y = 0; y < frameHeight; y++)
+		saveVerGrad[y] = new Pel[frameWidth];
+	
+	// initialize matrices before encoding
+	for (int y = 0; y < frameHeight; y++) {
+		for (int x = 0; x < frameWidth; x++) {
+			saveLumaPel[y][x] = saveHorGrad[y][x] = saveVerGrad[y][x] = 0;
+		}
+	}
   //gcorrea 17/10/2013
     count_frame = 0;
     saveResData2Nx2N = curr_uiDepth = -1;
