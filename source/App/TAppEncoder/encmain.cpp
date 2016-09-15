@@ -127,11 +127,10 @@ int main(int argc, char* argv[])
 {
     onlineTrainingIsDone= false;//set to true on TEncCu after N frames
     
-    GOPforC5 = 3;//TODO - get this number as a parameter
+    GOPforC5 = 5;//TODO - get this number as a parameter
     string C5header;
             
   TAppEncTop  cTAppEncTop;
-  relation = "defaultRelation";
   // print information
   fprintf( stdout, "\n" );
  // fprintf( stdout, cfg.getInputFile() );
