@@ -321,8 +321,6 @@ public:
   Void  create    ();                                         ///< create option handling class
   Void  destroy   ();                                         ///< destroy option handling class
   Bool  parseCfg  ( Int argc, Char* argv[] );                 ///< parse configuration file to fill member variables
-  Char* getInputFile();
-  Double getQP();
   
 };// END CLASS DEFINITION TAppEncCfg
 

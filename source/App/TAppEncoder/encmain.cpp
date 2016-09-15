@@ -131,11 +131,9 @@ int main(int argc, char* argv[])
     string C5header;
             
   TAppEncTop  cTAppEncTop;
-  relation = "defaultRelation";
+  
   // print information
   fprintf( stdout, "\n" );
- // fprintf( stdout, cfg.getInputFile() );
-  //fprintf( stdout, cfg.getQP());
   fprintf( stdout, "HM software: Encoder Version [%s]", NV_VERSION );
   fprintf( stdout, NVM_ONOS );
   fprintf( stdout, NVM_COMPILEDBY );
@@ -195,42 +193,6 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-Double aux = cTAppEncTop.getQP();
-
-Char * videoName = argv[2];
-//Char * videoName = cTAppEncTop.getInputFile();
-string String = static_cast<ostringstream*>( &(ostringstream() << aux) )->str();
-//Char * qpValue = String.c_str();
-Char * qp = new char [String.length()+1];
-std::strcpy (qp, String.c_str());
-videoName = strrchr ( videoName, '/' );
-videoName = &videoName[1];
-//memmove (s, s+1, strlen (s+1));
-//charAux = strncpy(charAux,charAux,sizeof(charAux));
-  //gcorrea: 04/09/2013
-/*
-  strcpy(filename_64x64,videoName);
-  strcat(filename_64x64,"_64x64");
-  strcat(filename_64x64,"_QP" );
-  strcat(filename_64x64, qp);
-  strcat(filename_64x64, ".arff");
-  strcpy(filename_32x32,videoName);
-  strcat(filename_32x32,"_32x32");
-  strcat(filename_32x32,"_QP" );
-  strcat(filename_32x32, qp);
-  strcat(filename_32x32, ".arff");
-  strcpy(filename_16x16,videoName);
-  strcat(filename_16x16,"_16x16");
-  strcat(filename_16x16,"_QP" );
-  strcat(filename_16x16, qp);
-  strcat(filename_16x16, ".arff");
-  strcpy(filename_8x8,videoName);
-  strcat(filename_8x8,"_8x8");
-  strcat(filename_8x8,"_QP" );
-  strcat(filename_8x8, qp);
-  strcat(filename_8x8, ".arff");*/
-  //gcorrea END
-
   // starting time
   double dResult;
   long lBefore = clock();
@@ -241,70 +203,6 @@ videoName = &videoName[1];
   // ending time
   dResult = (double)(clock()-lBefore) / CLOCKS_PER_SEC;
   printf("\n Total Time: %12.3f sec.\n", dResult);
-
-  cout << "\n\n64x64:" << endl;
-  cout << "MSM\t" << count_64x64_MSM << endl;
-  cout << "MERGE\t" << count_64x64_MERGE << endl;
-  cout << "2Nx2N_MERGE\t" << count_64x64_2Nx2N_MERGE << endl;
-  cout << "SKIP\t" << count_64x64_SKIP << endl;
-  cout << "2Nx2N_SKIP\t" << count_64x64_2Nx2N_SKIP << endl;
-  cout << "2Nx2N_nonMSM\t" << count_64x64_2Nx2N_nonMSM << endl;
-  cout << "2Nx2N\t" << count_64x64_2Nx2N << endl;
-  cout << "2NxN\t" << count_64x64_2NxN << endl;
-  cout << "Nx2N\t" << count_64x64_Nx2N << endl;
-  cout << "NxN\t" << count_64x64_NxN << endl;
-  cout << "2NxnU\t" << count_64x64_2NxnU << endl;
-  cout << "2NxnD\t" << count_64x64_2NxnD << endl;
-  cout << "nLx2N\t" << count_64x64_nLx2N << endl;
-  cout << "nRx2N\t" << count_64x64_nRx2N << endl;
-
-  cout << "\n\n32x32:" << endl;
-  cout << "MSM\t" << count_32x32_MSM << endl;
-  cout << "MERGE\t" << count_32x32_MERGE << endl;
-  cout << "2Nx2N_MERGE\t" << count_32x32_2Nx2N_MERGE << endl;
-  cout << "SKIP\t" << count_32x32_SKIP << endl;
-  cout << "2Nx2N_SKIP\t" << count_32x32_2Nx2N_SKIP << endl;
-  cout << "2Nx2N_nonMSM\t" << count_32x32_2Nx2N_nonMSM << endl;
-  cout << "2Nx2N\t" << count_32x32_2Nx2N << endl;
-  cout << "2NxN\t" << count_32x32_2NxN << endl;
-  cout << "Nx2N\t" << count_32x32_Nx2N << endl;
-  cout << "NxN\t" << count_32x32_NxN << endl;
-  cout << "2NxnU\t" << count_32x32_2NxnU << endl;
-  cout << "2NxnD\t" << count_32x32_2NxnD << endl;
-  cout << "nLx2N\t" << count_32x32_nLx2N << endl;
-  cout << "nRx2N\t" << count_32x32_nRx2N << endl;
-
-  cout << "\n\n16x16:" << endl;
-  cout << "MSM\t" << count_16x16_MSM << endl;
-  cout << "MERGE\t" << count_16x16_MERGE << endl;
-  cout << "2Nx2N_MERGE\t" << count_16x16_2Nx2N_MERGE << endl;
-  cout << "SKIP\t" << count_16x16_SKIP << endl;
-  cout << "2Nx2N_SKIP\t" << count_16x16_2Nx2N_SKIP << endl;
-  cout << "2Nx2N_nonMSM\t" << count_16x16_2Nx2N_nonMSM << endl;
-  cout << "2Nx2N\t" << count_16x16_2Nx2N << endl;
-  cout << "2NxN\t" << count_16x16_2NxN << endl;
-  cout << "Nx2N\t" << count_16x16_Nx2N << endl;
-  cout << "NxN\t" << count_16x16_NxN << endl;
-  cout << "2NxnU\t" << count_16x16_2NxnU << endl;
-  cout << "2NxnD\t" << count_16x16_2NxnD << endl;
-  cout << "nLx2N\t" << count_16x16_nLx2N << endl;
-  cout << "nRx2N\t" << count_16x16_nRx2N << endl;
-
-  cout << "\n\n8x8:" << endl;
-  cout << "MSM\t" << count_8x8_MSM << endl;
-  cout << "MERGE\t" << count_8x8_MERGE << endl;
-  cout << "2Nx2N_MERGE\t" << count_8x8_2Nx2N_MERGE << endl;
-  cout << "SKIP\t" << count_8x8_SKIP << endl;
-  cout << "2Nx2N_SKIP\t" << count_8x8_2Nx2N_SKIP << endl;
-  cout << "2Nx2N_nonMSM\t" << count_8x8_2Nx2N_nonMSM << endl;
-  cout << "2Nx2N\t" << count_8x8_2Nx2N << endl;
-  cout << "2NxN\t" << count_8x8_2NxN << endl;
-  cout << "Nx2N\t" << count_8x8_Nx2N << endl;
-  cout << "NxN\t" << count_8x8_NxN << endl;
-  cout << "2NxnU\t" << count_8x8_2NxnU << endl;
-  cout << "2NxnD\t" << count_8x8_2NxnD << endl;
-  cout << "nLx2N\t" << count_8x8_nLx2N << endl;
-  cout << "nRx2N\t" << count_8x8_nRx2N << endl;
 
   // destroy application encoder class
   cTAppEncTop.destroy();

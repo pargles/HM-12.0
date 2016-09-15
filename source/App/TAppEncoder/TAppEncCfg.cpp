@@ -1538,12 +1538,4 @@ Bool confirmPara(Bool bflag, const Char* message)
   return true;
 }
 
-Char* TAppEncCfg:: getInputFile(){
-    return m_pchInputFile;
-}
-
-Double TAppEncCfg::getQP (){
-    return m_fQP;
-}
-
 //! \}
