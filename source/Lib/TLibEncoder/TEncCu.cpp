@@ -511,9 +511,9 @@ Void TEncCu::xCompressCU( TComDataCU*& rpcBestCU, TComDataCU*& rpcTempCU, UInt u
         if(m_pcEncCfg->getUseEarlySkipDetection())
         {
 		  //gcorrea: 06/09/2013
-			saveResData2Nx2N=1;
+			//saveResData2Nx2N=1;
 			xCheckRDCostInter( rpcBestCU, rpcTempCU, SIZE_2Nx2N );  rpcTempCU->initEstData( uiDepth, iQP );//by Competition for inter_2Nx2N
-			saveResData2Nx2N=0;
+			//saveResData2Nx2N=0;
 		  //gcorrea: 06/09/2013 END
         }
         // SKIP
@@ -527,9 +527,9 @@ Void TEncCu::xCompressCU( TComDataCU*& rpcBestCU, TComDataCU*& rpcTempCU, UInt u
         {
           // 2Nx2N, NxN
 			//gcorrea: 06/09/2013
-			saveResData2Nx2N=1;
+			//saveResData2Nx2N=1;
 			xCheckRDCostInter( rpcBestCU, rpcTempCU, SIZE_2Nx2N );  rpcTempCU->initEstData( uiDepth, iQP );
-			saveResData2Nx2N=0;
+			//saveResData2Nx2N=0;
 			//gcorrea: 06/09/2013 END
           if(m_pcEncCfg->getUseCbfFastMode())
           {
@@ -601,13 +601,13 @@ Void TEncCu::xCompressCU( TComDataCU*& rpcBestCU, TComDataCU*& rpcTempCU, UInt u
           {
 #if AMP_ENC_SPEEDUP        
 			  //gcorrea 01/11/2013
-            //Bool bTestAMP_Hor = false, bTestAMP_Ver = false;
-			  Bool bTestAMP_Hor = true, bTestAMP_Ver = true;
+            Bool bTestAMP_Hor = false, bTestAMP_Ver = false;
+            //Bool bTestAMP_Hor = true, bTestAMP_Ver = true;
 #if AMP_MRG
             Bool bTestMergeAMP_Hor = false, bTestMergeAMP_Ver = false;
 
 			//gcorrea 01/11/2013
-            //deriveTestModeAMP (rpcBestCU, eParentPartSize, bTestAMP_Hor, bTestAMP_Ver, bTestMergeAMP_Hor, bTestMergeAMP_Ver);
+            deriveTestModeAMP (rpcBestCU, eParentPartSize, bTestAMP_Hor, bTestAMP_Ver, bTestMergeAMP_Hor, bTestMergeAMP_Ver);
 #else
             deriveTestModeAMP (rpcBestCU, eParentPartSize, bTestAMP_Hor, bTestAMP_Ver);
 #endif
@@ -833,7 +833,7 @@ Void TEncCu::xCompressCU( TComDataCU*& rpcBestCU, TComDataCU*& rpcTempCU, UInt u
 int mode = rpcBestCU->getPredictionMode( 0 );
 int part = rpcBestCU->getPartitionSize( 0 );
 int divide;
-int split;
+int split = 1;
 
 //mode 0 means inter prediction
 //mode 1 means intra prediction
@@ -1038,8 +1038,11 @@ if(onlineTrainingIsDone){
 
            split = c5_16_decoder.classifyCurrentLine(cstr);
             
+        }else{
+            //uiDepth == 3, split = 1
+            split = 1;
         }
-        //uiDepth == 3, setting split == 1 wont make any difference    
+           
     }
     //gcorrea: 03/03/2014 END 
 }else{
@@ -1267,7 +1270,7 @@ if(onlineTrainingIsDone){
 
     // further split
     // gcorrea: 04/03/2014		
-   if( ! onlineTrainingIsDone || split == 1) {		
+  if( split == 1) {		
    // gcorrea: 04/03/2014 END
     if( bSubBranch && uiDepth < g_uiMaxCUDepth - g_uiAddCUDepth )
     {
@@ -1390,11 +1393,11 @@ if(onlineTrainingIsDone){
       }
 	  //gcorrea: 19/02/2014
       //Temp: CU dividida; Best: CU nao dividida
-	  if( rpcTempCU->getTotalCost() < rpcBestCU->getTotalCost() ){
+	/*  if( rpcTempCU->getTotalCost() < rpcBestCU->getTotalCost() ){
               div = 1;
           }else{
                div = 0;
-          }
+          }*/
       
 	  //(int) (rpcTempCU->getCUAbove())->getDepth();
 	  //gcorrea: 19/02/2014 END

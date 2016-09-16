@@ -443,57 +443,6 @@ Void TAppEncTop::encode()
     pcPicYuvOrg->create( m_iSourceWidth, m_iSourceHeight, m_uiMaxCUWidth, m_uiMaxCUHeight, m_uiMaxCUDepth );
   }
 
-
-	//gcorrea 17/10/2013
-	nCU_hor = ceil((float)m_iSourceWidth/64);			// number of CUs in a horizontal line
-	nCU_ver = ceil((float)m_iSourceHeight/64);		// number of CUs in a vertical column
-
-	int new_SourceWidth = nCU_hor*64;
-	int new_SourceHeight = nCU_ver*64;
-
-	nCU32x32_hor = ceil((float)m_iSourceWidth/32);			// number of CUs in a horizontal line
-	nCU32x32_ver = ceil((float)m_iSourceHeight/32);		// number of CUs in a vertical column
-
-	nCU16x16_hor = ceil((float)m_iSourceWidth/16);			// number of CUs in a horizontal line
-	nCU16x16_ver = ceil((float)m_iSourceHeight/16);		// number of CUs in a vertical column
-
-	nCU8x8_hor = ceil((float)m_iSourceWidth/8);			// number of CUs in a horizontal line
-	nCU8x8_ver = ceil((float)m_iSourceHeight/8);		// number of CUs in a vertical column
-
-	nCU = nCU_ver * nCU_hor;
-
-	int CTB_width = m_uiMaxCUWidth;
-	int CTB_height = m_uiMaxCUHeight;
-
-	frameWidth = nCU_hor * CTB_width;
-	frameHeight = nCU_ver * CTB_height;
-
-	saveLumaPel = new Pel* [frameHeight];
-	for(int y = 0; y < frameHeight; y++)
-		saveLumaPel[y] = new Pel[frameWidth];
-	saveHorGrad = new Pel* [frameHeight];
-	for(int y = 0; y < frameHeight; y++)
-		saveHorGrad[y] = new Pel[frameWidth];
-	saveVerGrad = new Pel* [frameHeight];
-	for(int y = 0; y < frameHeight; y++)
-		saveVerGrad[y] = new Pel[frameWidth];
-	
-	// initialize matrices before encoding
-	for (int y = 0; y < frameHeight; y++) {
-		for (int x = 0; x < frameWidth; x++) {
-			saveLumaPel[y][x] = saveHorGrad[y][x] = saveVerGrad[y][x] = 0;
-		}
-	}
-
-	count_frame = 0;
-	saveResData2Nx2N = curr_uiDepth = -1;
-	sumRes2Nx2N = medRes2Nx2N = sqdRes2Nx2N = varRes2Nx2N = 0;
-	res_sum_VP1 = res_sum_VP2 = res_med_VP1 = res_med_VP2 = res_sqd_VP1 = res_sqd_VP2 = res_var_VP1 = res_var_VP2 = 0;
-	res_sum_HP1 = res_sum_HP2 = res_med_HP1 = res_med_HP2 = res_sqd_HP1 = res_sqd_HP2 = res_var_HP1 = res_var_HP2 = 0;
-	ResHorGrad = ResVerGrad = ResGrad = res_RHV_grad = 0;
-	res_rhi_V = res_rhi_H = res_rhi_Q = 0;
-	res_RHV_sum = res_RHV_med = res_RHV_var = res_RHV_HI = 0;
-	
 	count_64x64_MSM = count_64x64_MERGE = count_64x64_2Nx2N_MERGE = count_64x64_SKIP = count_64x64_2Nx2N_SKIP = count_64x64_2Nx2N_nonMSM = count_64x64_2Nx2N = count_64x64_2NxN = count_64x64_Nx2N = count_64x64_NxN = count_64x64_2NxnU = count_64x64_2NxnD = count_64x64_nLx2N = count_64x64_nRx2N = 0;
 	count_32x32_MSM = count_32x32_MERGE = count_32x32_2Nx2N_MERGE = count_32x32_SKIP = count_32x32_2Nx2N_SKIP = count_32x32_2Nx2N_nonMSM = count_32x32_2Nx2N = count_32x32_2NxN = count_32x32_Nx2N = count_32x32_NxN = count_32x32_2NxnU = count_32x32_2NxnD = count_32x32_nLx2N = count_32x32_nRx2N = 0;
 	count_16x16_MSM = count_16x16_MERGE = count_16x16_2Nx2N_MERGE = count_16x16_SKIP = count_16x16_2Nx2N_SKIP = count_16x16_2Nx2N_nonMSM = count_16x16_2Nx2N = count_16x16_2NxN = count_16x16_Nx2N = count_16x16_NxN = count_16x16_2NxnU = count_16x16_2NxnD = count_16x16_nLx2N = count_16x16_nRx2N = 0;
@@ -503,64 +452,23 @@ Void TAppEncTop::encode()
        
 	CU64x64data.open(filename_64x64, ios::out | ios::app);
 	if(CU64x64data.is_open()) {
-			  /*CU64x64data << "sum_CB" << '\t' << "sum_HP1" << '\t' << "sum_HP2" << '\t' << "sum_VP1" << '\t' << "sum_VP2" << '\t' << "RHV_sum" << '\t';
-			  CU64x64data << "med_CB" << '\t' << "med_HP1" << '\t' << "med_HP2" << '\t' << "med_VP1" << '\t' << "med_VP2" << '\t' << "RHV_med" << '\t';
-			  CU64x64data << "var_CB" << '\t' << "var_HP1" << '\t' << "var_HP2" << '\t' << "var_VP1" << '\t' << "var_VP2" << '\t' << "RHV_var" << '\t';
-			  CU64x64data << "Hgrad_CB" << '\t' << "Vgrad_CB" << '\t' << "grad_CB" << '\t' << "RHV_grad" << '\t';
-			  CU64x64data << "HHI_CB" << '\t' << "VHI_CB" << '\t' << "RHV_HI" << '\t';
-			  CU64x64data << "sumRes2Nx2N" << '\t' << "res_sum_HP1" << '\t' << "res_sum_HP2" << '\t' << "res_sum_VP1" << '\t' << "res_sum_VP2" << '\t' << "res_RHV_sum" << '\t';
-			  CU64x64data << "medRes2Nx2N" << '\t' << "res_med_HP1" << '\t' << "res_med_HP2" << '\t' << "res_med_VP1" << '\t' << "res_med_VP2" << '\t' << "res_RHV_med" << '\t';
-			  CU64x64data << "varRes2Nx2N" << '\t' << "res_var_HP1" << '\t' << "res_var_HP2" << '\t' << "res_var_VP1" << '\t' << "res_var_VP2" << '\t' << "res_RHV_var" << '\t';
-			  CU64x64data << "res_rhi_H" << '\t' << "res_rhi_V" << '\t' << "res_rhi_Q" << '\t' << "res_RHV_HI" << '\t';
-			  CU64x64data << "count_frame" << '\t' << "part" << endl;
-			  */
-                          CU64x64data << "@relation "<<relation<<'\n'<<'\n'<<"@attribute RDcost_MSM numeric" << '\n' << "@attribute RDcost_2Nx2N numeric" << '\n' << "@attribute RDcost_2NxN numeric"  << '\n' <<  "@attribute RDcost_Nx2N numeric"  << '\n' <<  "@attribute part {0,1,2,3,4,5,6,7}"  << '\n' <<  "@attribute MergeFlag {0,1}"  << '\n' <<  "@attribute SkipMergeFlag {0,1}"  << '\n' <<  "@attribute med_med numeric"  << '\n' <<  "@attribute neighDepth_diff numeric"  << '\n' << "@attribute SplitQuadtree {0,1}"<<'\n'<<'\n'<<"@data"<<endl;
-			  CU64x64data.close();
+            CU64x64data << "@relation "<<relation<<'\n'<<'\n'<<"@attribute RDcost_MSM numeric" << '\n' << "@attribute RDcost_2Nx2N numeric" << '\n' << "@attribute RDcost_2NxN numeric"  << '\n' <<  "@attribute RDcost_Nx2N numeric"  << '\n' <<  "@attribute part {0,1,2,3,4,5,6,7}"  << '\n' <<  "@attribute MergeFlag {0,1}"  << '\n' <<  "@attribute SkipMergeFlag {0,1}"  << '\n' <<  "@attribute med_med numeric"  << '\n' <<  "@attribute neighDepth_diff numeric"  << '\n' << "@attribute SplitQuadtree {0,1}"<<'\n'<<'\n'<<"@data"<<endl;
+            CU64x64data.close();
 	}
 	CU32x32data.open(filename_32x32, ios::out | ios::app);
 	if(CU32x32data.is_open()) {
-			  /*CU32x32data << "sum_CB" << '\t' << "sum_HP1" << '\t' << "sum_HP2" << '\t' << "sum_VP1" << '\t' << "sum_VP2" << '\t' << "RHV_sum" << '\t';
-			  CU32x32data << "med_CB" << '\t' << "med_HP1" << '\t' << "med_HP2" << '\t' << "med_VP1" << '\t' << "med_VP2" << '\t' << "RHV_med" << '\t';
-			  CU32x32data << "var_CB" << '\t' << "var_HP1" << '\t' << "var_HP2" << '\t' << "var_VP1" << '\t' << "var_VP2" << '\t' << "RHV_var" << '\t';
-			  CU32x32data << "Hgrad_CB" << '\t' << "Vgrad_CB" << '\t' << "grad_CB" << '\t' << "RHV_grad" << '\t';
-			  CU32x32data << "HHI_CB" << '\t' << "VHI_CB" << '\t' << "RHV_HI" << '\t';
-			  CU32x32data << "sumRes2Nx2N" << '\t' << "res_sum_HP1" << '\t' << "res_sum_HP2" << '\t' << "res_sum_VP1" << '\t' << "res_sum_VP2" << '\t' << "res_RHV_sum" << '\t';
-			  CU32x32data << "medRes2Nx2N" << '\t' << "res_med_HP1" << '\t' << "res_med_HP2" << '\t' << "res_med_VP1" << '\t' << "res_med_VP2" << '\t' << "res_RHV_med" << '\t';
-			  CU32x32data << "varRes2Nx2N" << '\t' << "res_var_HP1" << '\t' << "res_var_HP2" << '\t' << "res_var_VP1" << '\t' << "res_var_VP2" << '\t' << "res_RHV_var" << '\t';
-			  CU32x32data << "res_rhi_H" << '\t' << "res_rhi_V" << '\t' << "res_rhi_Q" << '\t' << "res_RHV_HI" << '\t';
-			  CU32x32data << "count_frame" << '\t' << "part" << endl;*/
-                          CU32x32data << "@relation "<<relation<< '\n'<<'\n'<<"@attribute RDcost_MSM numeric" << '\n' << "@attribute RDcost_2Nx2N numeric" << '\n' << "@attribute RDcost_2NxN numeric"  << '\n' <<  "@attribute RDcost_Nx2N numeric"  << '\n' <<  "@attribute part {0,1,2,3,4,5,6,7}"  << '\n' <<  "@attribute MergeFlag {0,1}"  << '\n' <<  "@attribute SkipMergeFlag {0,1}"  << '\n' <<  "@attribute med_med numeric"  << '\n' <<  "@attribute neighDepth_diff numeric"  << '\n' << "@attribute SplitQuadtree {0,1}"<<'\n'<<'\n'<<"@data"<<endl;
-			  CU32x32data.close();
+            CU32x32data << "@relation "<<relation<< '\n'<<'\n'<<"@attribute RDcost_MSM numeric" << '\n' << "@attribute RDcost_2Nx2N numeric" << '\n' << "@attribute RDcost_2NxN numeric"  << '\n' <<  "@attribute RDcost_Nx2N numeric"  << '\n' <<  "@attribute part {0,1,2,3,4,5,6,7}"  << '\n' <<  "@attribute MergeFlag {0,1}"  << '\n' <<  "@attribute SkipMergeFlag {0,1}"  << '\n' <<  "@attribute med_med numeric"  << '\n' <<  "@attribute neighDepth_diff numeric"  << '\n' << "@attribute SplitQuadtree {0,1}"<<'\n'<<'\n'<<"@data"<<endl;
+            CU32x32data.close();
 	}
 	CU16x16data.open(filename_16x16, ios::out | ios::app);
 	if(CU16x16data.is_open()) {
-			  /*CU16x16data << "sum_CB" << '\t' << "sum_HP1" << '\t' << "sum_HP2" << '\t' << "sum_VP1" << '\t' << "sum_VP2" << '\t' << "RHV_sum" << '\t';
-			  CU16x16data << "med_CB" << '\t' << "med_HP1" << '\t' << "med_HP2" << '\t' << "med_VP1" << '\t' << "med_VP2" << '\t' << "RHV_med" << '\t';
-			  CU16x16data << "var_CB" << '\t' << "var_HP1" << '\t' << "var_HP2" << '\t' << "var_VP1" << '\t' << "var_VP2" << '\t' << "RHV_var" << '\t';
-			  CU16x16data << "Hgrad_CB" << '\t' << "Vgrad_CB" << '\t' << "grad_CB" << '\t' << "RHV_grad" << '\t';
-			  CU16x16data << "HHI_CB" << '\t' << "VHI_CB" << '\t' << "RHV_HI" << '\t';
-			  CU16x16data << "sumRes2Nx2N" << '\t' << "res_sum_HP1" << '\t' << "res_sum_HP2" << '\t' << "res_sum_VP1" << '\t' << "res_sum_VP2" << '\t' << "res_RHV_sum" << '\t';
-			  CU16x16data << "medRes2Nx2N" << '\t' << "res_med_HP1" << '\t' << "res_med_HP2" << '\t' << "res_med_VP1" << '\t' << "res_med_VP2" << '\t' << "res_RHV_med" << '\t';
-			  CU16x16data << "varRes2Nx2N" << '\t' << "res_var_HP1" << '\t' << "res_var_HP2" << '\t' << "res_var_VP1" << '\t' << "res_var_VP2" << '\t' << "res_RHV_var" << '\t';
-			  CU16x16data << "res_rhi_H" << '\t' << "res_rhi_V" << '\t' << "res_rhi_Q" << '\t' << "res_RHV_HI" << '\t';
-			  CU16x16data << "count_frame" << '\t' << "part" << endl;*/
-                          CU16x16data << "@relation "<<relation<<'\n'<<'\n'<< "@attribute RDcost_MSM numeric" << '\n' << "@attribute RDcost_2Nx2N numeric" << '\n' << "@attribute RDcost_2NxN numeric"  << '\n' <<  "@attribute RDcost_Nx2N numeric"  << '\n' <<  "@attribute part {0,1,2,3,4,5,6,7}"  << '\n' <<  "@attribute MergeFlag {0,1}"  << '\n' <<  "@attribute SkipMergeFlag {0,1}"  << '\n' <<  "@attribute med_med numeric"  << '\n' <<  "@attribute neighDepth_diff numeric"  << '\n' << "@attribute SplitQuadtree {0,1}"<<'\n'<<'\n'<<"@data"<<endl;
-			  CU16x16data.close();
+            CU16x16data << "@relation "<<relation<<'\n'<<'\n'<< "@attribute RDcost_MSM numeric" << '\n' << "@attribute RDcost_2Nx2N numeric" << '\n' << "@attribute RDcost_2NxN numeric"  << '\n' <<  "@attribute RDcost_Nx2N numeric"  << '\n' <<  "@attribute part {0,1,2,3,4,5,6,7}"  << '\n' <<  "@attribute MergeFlag {0,1}"  << '\n' <<  "@attribute SkipMergeFlag {0,1}"  << '\n' <<  "@attribute med_med numeric"  << '\n' <<  "@attribute neighDepth_diff numeric"  << '\n' << "@attribute SplitQuadtree {0,1}"<<'\n'<<'\n'<<"@data"<<endl;
+            CU16x16data.close();
 	}
 	CU8x8data.open(filename_8x8, ios::out | ios::app);
 	if(CU8x8data.is_open()) {
-			 /* CU8x8data << "sum_CB" << '\t' << "sum_HP1" << '\t' << "sum_HP2" << '\t' << "sum_VP1" << '\t' << "sum_VP2" << '\t' << "RHV_sum" << '\t';
-			  CU8x8data << "med_CB" << '\t' << "med_HP1" << '\t' << "med_HP2" << '\t' << "med_VP1" << '\t' << "med_VP2" << '\t' << "RHV_med" << '\t';
-			  CU8x8data << "var_CB" << '\t' << "var_HP1" << '\t' << "var_HP2" << '\t' << "var_VP1" << '\t' << "var_VP2" << '\t' << "RHV_var" << '\t';
-			  CU8x8data << "Hgrad_CB" << '\t' << "Vgrad_CB" << '\t' << "grad_CB" << '\t' << "RHV_grad" << '\t';
-			  CU8x8data << "HHI_CB" << '\t' << "VHI_CB" << '\t' << "RHV_HI" << '\t';
-			  CU8x8data << "sumRes2Nx2N" << '\t' << "res_sum_HP1" << '\t' << "res_sum_HP2" << '\t' << "res_sum_VP1" << '\t' << "res_sum_VP2" << '\t' << "res_RHV_sum" << '\t';
-			  CU8x8data << "medRes2Nx2N" << '\t' << "res_med_HP1" << '\t' << "res_med_HP2" << '\t' << "res_med_VP1" << '\t' << "res_med_VP2" << '\t' << "res_RHV_med" << '\t';
-			  CU8x8data << "varRes2Nx2N" << '\t' << "res_var_HP1" << '\t' << "res_var_HP2" << '\t' << "res_var_VP1" << '\t' << "res_var_VP2" << '\t' << "res_RHV_var" << '\t';
-			  CU8x8data << "res_rhi_H" << '\t' << "res_rhi_V" << '\t' << "res_rhi_Q" << '\t' << "res_RHV_HI" << '\t';
-			  CU8x8data << "count_frame" << '\t' << "part" << endl;*/
-                          CU8x8data << "@relation "<<relation<< '\n'<<'\n'<<"@attribute RDcost_MSM numeric" << '\n' << "@attribute RDcost_2Nx2N numeric" << '\n' << "@attribute RDcost_2NxN numeric"  << '\n' <<  "@attribute RDcost_Nx2N numeric"  << '\n' <<  "@attribute part {0,1,2,3,4,5,6,7}"  << '\n' <<  "@attribute MergeFlag {0,1}"  << '\n' <<  "@attribute SkipMergeFlag {0,1}"  << '\n' <<  "@attribute med_med numeric"  << '\n' <<  "@attribute neighDepth_diff numeric"  << '\n' << "@attribute SplitQuadtree {0,1}"<<'\n'<<'\n'<<"@data"<<endl;
-			  CU8x8data.close();
+            CU8x8data << "@relation "<<relation<< '\n'<<'\n'<<"@attribute RDcost_MSM numeric" << '\n' << "@attribute RDcost_2Nx2N numeric" << '\n' << "@attribute RDcost_2NxN numeric"  << '\n' <<  "@attribute RDcost_Nx2N numeric"  << '\n' <<  "@attribute part {0,1,2,3,4,5,6,7}"  << '\n' <<  "@attribute MergeFlag {0,1}"  << '\n' <<  "@attribute SkipMergeFlag {0,1}"  << '\n' <<  "@attribute med_med numeric"  << '\n' <<  "@attribute neighDepth_diff numeric"  << '\n' << "@attribute SplitQuadtree {0,1}"<<'\n'<<'\n'<<"@data"<<endl;
+            CU8x8data.close();
 	}
 	//gcorrea: 29/08/2013 END
 
@@ -572,57 +480,6 @@ Void TAppEncTop::encode()
 
     // read input YUV file
     m_cTVideoIOYuvInputFile.read( pcPicYuvOrg, m_aiPad );
-
-
-	 //gcorrea: 29/08/2013
-
-	 // save LUMA frame into saveLumaPel matrix
-	 Pel *dst = pcPicYuvOrg->getLumaAddr();
-
-	 for (int y = 0; y < frameHeight; y++)
-	 {
-		for (int x = 0; x < frameWidth; x++)
-		{
-			saveLumaPel[y][x] = dst[x];
-		}
-		dst += m_aiPad[0];
-		dst += pcPicYuvOrg->getStride();
-	 }
-	 
-	 // save HORIZONTAL GRADIENT frame into saveHorGrad matrix
-	 int min = 255;
-	 int max = -255;
-	 for (int y = 0; y < frameHeight; y++)
-	 {
-		for (int x = 0; x < frameWidth; x++)
-		{
-			if(x==0)
-				saveHorGrad[y][x] = saveLumaPel[y][x+1] - saveLumaPel[y][x];
-			else if(x==frameWidth-1)
-				saveHorGrad[y][x] = saveLumaPel[y][x] - saveLumaPel[y][x-1];
-			else
-				saveHorGrad[y][x] = saveLumaPel[y][x+1] - saveLumaPel[y][x-1];
-			saveHorGrad[y][x] = abs(saveHorGrad[y][x]);
-		}
-	 }
-
-	 // save VERTICAL GRADIENT frame into saveVerGrad matrix
-	 min = 255;
-	 max = -255;
-	 for (int y = 0; y < frameHeight; y++)
-	 {
-		for (int x = 0; x < frameWidth; x++)
-		{
-			if(y==0)
-				saveVerGrad[y][x] = saveLumaPel[y+1][x] - saveLumaPel[y][x];
-			else if(y==frameHeight-1)
-				saveVerGrad[y][x] = saveLumaPel[y][x] - saveLumaPel[y-1][x];
-			else
-				saveVerGrad[y][x] = saveLumaPel[y+1][x] - saveLumaPel[y-1][x];
-			saveVerGrad[y][x] = abs(saveVerGrad[y][x]);
-		}
-	 }
-	 //gcorrea: 29/08/2013 END
 
     // increase number of received frames
     m_iFrameRcvd++;
