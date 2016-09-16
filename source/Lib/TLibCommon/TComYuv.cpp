@@ -35,6 +35,7 @@
     \brief    general YUV buffer class
     \todo     this should be merged with TComPicYuv
 */
+
 #include <stdlib.h>
 #include <memory.h>
 #include <assert.h>

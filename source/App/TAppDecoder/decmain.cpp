@@ -40,44 +40,6 @@
 #include <time.h>
 #include "TAppDecTop.h"
 
-//gcorrea 17/10/2013
-ofstream CU64x64data;
-ofstream CU32x32data;
-ofstream CU16x16data;
-ofstream CU8x8data;
-
-char filename_64x64[100];
-char filename_32x32[100];
-char filename_16x16[100];
-char filename_8x8[100];
-
-Pel **saveLumaPel;
-Pel **saveHorGrad;
-Pel **saveVerGrad;
-
-int count_frame;
-
-int saveResData2Nx2N;
-double sumRes2Nx2N, medRes2Nx2N, sqdRes2Nx2N, varRes2Nx2N;
-double res_sum_VP1, res_sum_VP2, res_med_VP1, res_med_VP2, res_sqd_VP1, res_sqd_VP2, res_var_VP1, res_var_VP2;
-double res_sum_HP1, res_sum_HP2, res_med_HP1, res_med_HP2, res_sqd_HP1, res_sqd_HP2, res_var_HP1, res_var_HP2;
-double ResHorGrad, ResVerGrad, ResGrad, res_RHV_grad;
-double res_rhi_V, res_rhi_H, res_rhi_Q;
-double res_RHV_sum, res_RHV_med, res_RHV_var, res_RHV_HI;
-double res_HP2Sobel, res_HP1Sobel, res_VP2Sobel, res_VP1Sobel;
-double res_TotalSobelVer_CB, res_TotalSobelHor_CB, res_TotalSobel_CB, res_RHV_Sobel, res_RHV_TotalSobel;
-double res_HP2grad, res_HP1grad, res_VP2grad, res_VP1grad;
-double res_TotalGradVer_CB, res_TotalGradHor_CB, res_TotalGrad_CB, res_RHV_TotalGrad_CB ;
-double res_RHV_sumCoef;
-double res_RHV_sumVar3x3, res_RVH_sumVar3x3, res_sumVar3x3_HP2, res_sumVar3x3_HP1, res_sumVar3x3_VP2, res_sumVar3x3_VP1;
-double ResHorAccGrad, ResVerAccGrad;
-
-int curr_uiDepth;
-
-int frameWidth, frameHeight;
-int nCU_hor, nCU_ver, nCU32x32_hor, nCU32x32_ver, nCU16x16_hor, nCU16x16_ver, nCU8x8_hor, nCU8x8_ver, nCU;
-//gcorrea 17/10/2013 END
-
 //! \ingroup TAppDecoder
 //! \{
 
