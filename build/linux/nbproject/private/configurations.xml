@@ -96,8 +96,9 @@
           <runcommandpicklistitem>"${OUTPUT_PATH}" -c /home/pargles/Documents/codificador/HM-12.0/cfg/per-sequence/RaceHorses.cfg -c /home/pargles/Documents/codificador/HM-12.0/cfg/encoder_randomaccess_main.cfg relation</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" -c /home/pargles/Documents/codificador/HM-12.0/cfg/per-sequence/RaceHorses.cfg -c /home/pargles/Documents/codificador/HM-12.0/cfg/encoder_randomaccess_main.cfg</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" -c /home/pargles/Documents/codificador/HM-12.0/cfg/per-sequence/BasketballDrill.cfg -c /home/pargles/Documents/codificador/HM-12.0/cfg/encoder_randomaccess_main.cfg</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" -c /home/pargles/Documents/codificador/HM-12.0/cfg/per-sequence/BasketballPass.cfg -c /home/pargles/Documents/codificador/HM-12.0/cfg/encoder_randomaccess_main.cfg</runcommandpicklistitem>
         </runcommandpicklist>
-        <runcommand>"${OUTPUT_PATH}" -c /home/pargles/Documents/codificador/HM-12.0/cfg/per-sequence/BasketballDrill.cfg -c /home/pargles/Documents/codificador/HM-12.0/cfg/encoder_randomaccess_main.cfg</runcommand>
+        <runcommand>"${OUTPUT_PATH}" -c /home/pargles/Documents/codificador/HM-12.0/cfg/per-sequence/BasketballPass.cfg -c /home/pargles/Documents/codificador/HM-12.0/cfg/encoder_randomaccess_main.cfg</runcommand>
         <rundir>.</rundir>
         <buildfirst>false</buildfirst>
         <terminal-type>0</terminal-type>
