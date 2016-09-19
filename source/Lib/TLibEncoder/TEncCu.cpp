@@ -1582,7 +1582,7 @@ if(onlineTrainingIsDone){
             convert << div;
             currentLineVector += convert.str() + '\n';
             
-            /*if(div == 1){
+            if(div == 1){
                 
                 splitCuOrNotCounter ++;
                 lastSplitLineVector = currentLineVector;
@@ -1605,7 +1605,7 @@ if(onlineTrainingIsDone){
                 //copy last vector with split
                 currentLineVector = lastSplitLineVector;
                 splitCuOrNotCounter ++;
-            }*/
+            }
           }
             
         if (uiDepth == 0) {

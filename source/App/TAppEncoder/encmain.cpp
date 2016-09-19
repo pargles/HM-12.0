@@ -135,6 +135,8 @@ int main(int argc, char* argv[])
     string C5header;
     splitCuOrNotCounter = 0;
     disparityLimitOfLineBeforeBalance = 10;
+    lastSplitLineVector ="";
+    lastNonSplitLineVector="";
             
   TAppEncTop  cTAppEncTop;
   relation = "defaultRelation";
