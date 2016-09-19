@@ -71,6 +71,11 @@ extern string cu64x64forC5;
 extern string cu32x32forC5;
 extern string cu16x16forC5;
 
+extern string lastSplitLineVector;
+extern string lastNonSplitLineVector;
+extern int splitCuOrNotCounter;
+extern int disparityLimitOfLineBeforeBalance;
+
 extern Pel **saveLumaPel;
 extern Pel **saveHorGrad;
 extern Pel **saveVerGrad;
@@ -833,7 +838,7 @@ Void TEncCu::xCompressCU( TComDataCU*& rpcBestCU, TComDataCU*& rpcTempCU, UInt u
 int mode = rpcBestCU->getPredictionMode( 0 );
 int part = rpcBestCU->getPartitionSize( 0 );
 int divide;
-int split;
+int split = 1;
 
 //mode 0 means inter prediction
 //mode 1 means intra prediction
@@ -1267,7 +1272,7 @@ if(onlineTrainingIsDone){
 
     // further split
     // gcorrea: 04/03/2014		
-   if( ! onlineTrainingIsDone || split == 1) {		
+   if( split == 1) {		
    // gcorrea: 04/03/2014 END
     if( bSubBranch && uiDepth < g_uiMaxCUDepth - g_uiAddCUDepth )
     {
@@ -1538,108 +1543,82 @@ if(onlineTrainingIsDone){
       // pargles April 28th, 2015
       
       if (count_frame < GOPforC5) {
+        
+          string currentLineVector;
+        
+        if(uiDepth == 0 || uiDepth == 1 || uiDepth == 2 ){
+              
+          stringstream convert;
+            convert << RDcost_MSM;
+            currentLineVector += convert.str() + ',';
+            convert.str("");
+            convert << RDcost_2Nx2N;
+            currentLineVector += convert.str() + ',';
+            convert.str("");
+            convert << RDcost_2NxN;
+            currentLineVector += convert.str() + ',';
+            convert.str("");
+            convert << RDcost_Nx2N;
+            currentLineVector += convert.str() + ',';
+            convert.str("");
+            convert << part;
+            currentLineVector += convert.str() + ',';
+            convert.str("");
+            convert << rpcBestCU->getMergeFlag(0);
+            currentLineVector += convert.str() + ',';
+            convert.str("");
+            convert << (rpcBestCU->isSkipped(0) && rpcBestCU->getMergeFlag(0));
+            currentLineVector += convert.str() + ',';
+            convert.str("");
+            convert << diff_NeiDepth;
+            currentLineVector += convert.str() + ',';
+            convert.str("");
+            convert << fabs(RDcost_2Nx2N-RDcost_MSM)/RDcost_MSM;
+            currentLineVector += convert.str() + ',';
+            convert.str("");
+            convert << RDcost_2Nx2N/RDcost_MSM;
+            currentLineVector += convert.str() + ',';
+            convert.str("");
+            convert << div;
+            currentLineVector += convert.str() + '\n';
+            
+            /*if(div == 1){
+                
+                splitCuOrNotCounter ++;
+                lastSplitLineVector = currentLineVector;
+            }else{
+                
+                splitCuOrNotCounter --;
+                lastNonSplitLineVector = currentLineVector;
+            }
+            
+            // example 11 splits in the last 11 vectors
+            //positive numbers count splits and negative numbers counts non split
+            if(splitCuOrNotCounter > disparityLimitOfLineBeforeBalance){
+                
+                //copy last vector with non split
+                currentLineVector =  lastNonSplitLineVector;
+                splitCuOrNotCounter --;
+                
+            }else if(splitCuOrNotCounter < -disparityLimitOfLineBeforeBalance){
+                
+                //copy last vector with split
+                currentLineVector = lastSplitLineVector;
+                splitCuOrNotCounter ++;
+            }*/
+          }
+            
         if (uiDepth == 0) {
-            stringstream convert;
-            convert << RDcost_MSM;
-            cu64x64forC5 += convert.str() + ',';
-            convert.str("");
-            convert << RDcost_2Nx2N;
-            cu64x64forC5 += convert.str() + ',';
-            convert.str("");
-            convert << RDcost_2NxN;
-            cu64x64forC5 += convert.str() + ',';
-            convert.str("");
-            convert << RDcost_Nx2N;
-            cu64x64forC5 += convert.str() + ',';
-            convert.str("");
-            convert << part;
-            cu64x64forC5 += convert.str() + ',';
-            convert.str("");
-            convert << rpcBestCU->getMergeFlag(0);
-            cu64x64forC5 += convert.str() + ',';
-            convert.str("");
-            convert << (rpcBestCU->isSkipped(0) && rpcBestCU->getMergeFlag(0));
-            cu64x64forC5 += convert.str() + ',';
-            convert.str("");
-            convert << diff_NeiDepth;
-            cu64x64forC5 += convert.str() + ',';
-            convert.str("");
-            convert << fabs(RDcost_2Nx2N-RDcost_MSM)/RDcost_MSM;
-            cu64x64forC5 += convert.str() + ',';
-            convert.str("");
-            convert << RDcost_2Nx2N/RDcost_MSM;
-            cu64x64forC5 += convert.str() + ',';
-            convert.str("");
-            convert << div;
-            cu64x64forC5 += convert.str() + '\n';
+            
+            cu64x64forC5 += currentLineVector;
+            
         } else if (uiDepth == 1) {
-            stringstream convert;
-            convert << RDcost_MSM;
-            cu32x32forC5 += convert.str() + ',';
-            convert.str("");
-            convert << RDcost_2Nx2N;
-            cu32x32forC5 += convert.str() + ',';
-            convert.str("");
-            convert << RDcost_2NxN;
-            cu32x32forC5 += convert.str() + ',';
-            convert.str("");
-            convert << RDcost_Nx2N;
-            cu32x32forC5 += convert.str() + ',';
-            convert.str("");
-            convert << part;
-            cu32x32forC5 += convert.str() + ',';
-            convert.str("");
-            convert << rpcBestCU->getMergeFlag(0);
-            cu32x32forC5 += convert.str() + ',';
-            convert.str("");
-            convert << (rpcBestCU->isSkipped(0) && rpcBestCU->getMergeFlag(0));
-            cu32x32forC5 += convert.str() + ',';
-            convert.str("");
-            convert << diff_NeiDepth;
-            cu32x32forC5 += convert.str() + ',';
-            convert.str("");
-            convert << fabs(RDcost_2Nx2N-RDcost_MSM)/RDcost_MSM;
-            cu32x32forC5 += convert.str() + ',';
-            convert.str("");
-            convert << RDcost_2Nx2N/RDcost_MSM;
-            cu32x32forC5 += convert.str() + ',';
-            convert.str("");
-            convert << div;
-            cu32x32forC5 += convert.str() + '\n';
+            
+            cu32x32forC5 += currentLineVector;
+            
         } else if (uiDepth == 2) {
-            stringstream convert;
-            convert << RDcost_MSM;
-            cu16x16forC5 += convert.str() + ',';
-            convert.str("");
-            convert << RDcost_2Nx2N;
-            cu16x16forC5 += convert.str() + ',';
-            convert.str("");
-            convert << RDcost_2NxN;
-            cu16x16forC5 += convert.str() + ',';
-            convert.str("");
-            convert << RDcost_Nx2N;
-            cu16x16forC5 += convert.str() + ',';
-            convert.str("");
-            convert << part;
-            cu16x16forC5 += convert.str() + ',';
-            convert.str("");
-            convert << rpcBestCU->getMergeFlag(0);
-            cu16x16forC5 += convert.str() + ',';
-            convert.str("");
-            convert << (rpcBestCU->isSkipped(0) && rpcBestCU->getMergeFlag(0));
-            cu16x16forC5 += convert.str() + ',';
-            convert.str("");
-            convert << diff_NeiDepth;
-            cu16x16forC5 += convert.str() + ',';
-            convert.str("");
-            convert << fabs(RDcost_2Nx2N-RDcost_MSM)/RDcost_MSM;
-            cu16x16forC5 += convert.str() + ',';
-            convert.str("");
-            convert << RDcost_2Nx2N/RDcost_MSM;
-            cu16x16forC5 += convert.str() + ',';
-            convert.str("");
-            convert << div;
-            cu16x16forC5 += convert.str() + '\n';
+            
+            cu16x16forC5 += currentLineVector;
         }
       }
       // END pargles April 28th, 2015

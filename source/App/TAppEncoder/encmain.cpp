@@ -79,6 +79,10 @@ Char*  relation;
 string cu64x64forC5;
 string cu32x32forC5;
 string cu16x16forC5;
+string lastSplitLineVector;
+string lastNonSplitLineVector;
+int splitCuOrNotCounter;
+int disparityLimitOfLineBeforeBalance;
 
 
 Pel **saveLumaPel;
@@ -129,6 +133,8 @@ int main(int argc, char* argv[])
     
     GOPforC5 = 5;//TODO - get this number as a parameter
     string C5header;
+    splitCuOrNotCounter = 0;
+    disparityLimitOfLineBeforeBalance = 10;
             
   TAppEncTop  cTAppEncTop;
   relation = "defaultRelation";
