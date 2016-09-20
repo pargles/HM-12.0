@@ -79,9 +79,19 @@ Char*  relation;
 string cu64x64forC5;
 string cu32x32forC5;
 string cu16x16forC5;
-string lastSplitLineVector;
-string lastNonSplitLineVector;
-int splitCuOrNotCounter;
+
+string last64x64SplitLineVector;
+string last64x64NonSplitLineVector;
+int split64x64CuOrNotCounter;
+
+string last32x32SplitLineVector;
+string last32x32NonSplitLineVector;
+int split32x32CuOrNotCounter;
+
+string last16x16SplitLineVector;
+string last16x16NonSplitLineVector;
+int split16x16CuOrNotCounter;
+
 int disparityLimitOfLineBeforeBalance;
 
 
@@ -131,12 +141,22 @@ int main(int argc, char* argv[])
 {
     onlineTrainingIsDone= false;//set to true on TEncCu after N frames
     
-    GOPforC5 = 5;//TODO - get this number as a parameter
+    GOPforC5 = 10;//TODO - get this number as a parameter
     string C5header;
-    splitCuOrNotCounter = 0;
+    
     disparityLimitOfLineBeforeBalance = 10;
-    lastSplitLineVector ="";
-    lastNonSplitLineVector="";
+    
+    split64x64CuOrNotCounter = 0;
+    last64x64SplitLineVector ="";
+    last64x64NonSplitLineVector="";
+    
+    split32x32CuOrNotCounter = 0;
+    last32x32SplitLineVector ="";
+    last32x32NonSplitLineVector="";
+    
+    split16x16CuOrNotCounter = 0;
+    last16x16SplitLineVector ="";
+    last16x16NonSplitLineVector="";
             
   TAppEncTop  cTAppEncTop;
   relation = "defaultRelation";

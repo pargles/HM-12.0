@@ -71,9 +71,18 @@ extern string cu64x64forC5;
 extern string cu32x32forC5;
 extern string cu16x16forC5;
 
-extern string lastSplitLineVector;
-extern string lastNonSplitLineVector;
-extern int splitCuOrNotCounter;
+extern string last64x64SplitLineVector;
+extern string last64x64NonSplitLineVector;
+extern int split64x64CuOrNotCounter;
+
+extern string last32x32SplitLineVector;
+extern string last32x32NonSplitLineVector;
+extern int split32x32CuOrNotCounter;
+
+extern string last16x16SplitLineVector;
+extern string last16x16NonSplitLineVector;
+extern int split16x16CuOrNotCounter;
+
 extern int disparityLimitOfLineBeforeBalance;
 
 extern Pel **saveLumaPel;
@@ -1582,41 +1591,106 @@ if(onlineTrainingIsDone){
             convert << div;
             currentLineVector += convert.str() + '\n';
             
+          }
+          
+          //todo, what if lasSplitLine or lasNonSplit is empty? What if you get a non split just after 50 split?
+            
+        if (uiDepth == 0) {
+            
             if(div == 1){
                 
-                splitCuOrNotCounter ++;
-                lastSplitLineVector = currentLineVector;
+                split64x64CuOrNotCounter ++;
+                last64x64SplitLineVector = currentLineVector;
             }else{
                 
-                splitCuOrNotCounter --;
-                lastNonSplitLineVector = currentLineVector;
+                split64x64CuOrNotCounter --;
+                last64x64NonSplitLineVector = currentLineVector;
             }
             
             // example 11 splits in the last 11 vectors
             //positive numbers count splits and negative numbers counts non split
-            if(splitCuOrNotCounter > disparityLimitOfLineBeforeBalance){
+            if(split64x64CuOrNotCounter > disparityLimitOfLineBeforeBalance){
                 
                 //copy last vector with non split
-                currentLineVector =  lastNonSplitLineVector;
-                splitCuOrNotCounter --;
-                
-            }else if(splitCuOrNotCounter < -disparityLimitOfLineBeforeBalance){
+                if(!last64x64NonSplitLineVector.empty()){
+                    currentLineVector =  last64x64NonSplitLineVector;
+                    split64x64CuOrNotCounter -= 2;
+                }
+                 
+            }else if(split64x64CuOrNotCounter < -disparityLimitOfLineBeforeBalance){
                 
                 //copy last vector with split
-                currentLineVector = lastSplitLineVector;
-                splitCuOrNotCounter ++;
+                if(!last64x64SplitLineVector.empty()){
+                    currentLineVector = last64x64SplitLineVector;
+                    split64x64CuOrNotCounter += 2;
+                }
             }
-          }
-            
-        if (uiDepth == 0) {
             
             cu64x64forC5 += currentLineVector;
             
         } else if (uiDepth == 1) {
             
+            if(div == 1){
+                
+                split32x32CuOrNotCounter ++;
+                last32x32SplitLineVector = currentLineVector;
+            }else{
+                
+                split32x32CuOrNotCounter --;
+                last32x32NonSplitLineVector = currentLineVector;
+            }
+            
+            // example 11 splits in the last 11 vectors
+            //positive numbers count splits and negative numbers counts non split
+            if(split32x32CuOrNotCounter > disparityLimitOfLineBeforeBalance){
+                
+                //copy last vector with non split
+                if(!last32x32NonSplitLineVector.empty()){
+                    currentLineVector =  last32x32NonSplitLineVector;
+                    split32x32CuOrNotCounter -= 2;
+                }
+                
+            }else if(split32x32CuOrNotCounter < -disparityLimitOfLineBeforeBalance){
+                
+                //copy last vector with split
+                if(!last32x32SplitLineVector.empty()){
+                    currentLineVector = last32x32SplitLineVector;
+                    split32x32CuOrNotCounter += 2;
+                } 
+            }
+            
             cu32x32forC5 += currentLineVector;
             
         } else if (uiDepth == 2) {
+            
+            if(div == 1){
+                
+                split16x16CuOrNotCounter ++;
+                last16x16SplitLineVector = currentLineVector;
+            }else{
+                
+                split16x16CuOrNotCounter --;
+                last16x16NonSplitLineVector = currentLineVector;
+            }
+            
+            // example 11 splits in the last 11 vectors
+            //positive numbers count splits and negative numbers counts non split
+            if(split16x16CuOrNotCounter > disparityLimitOfLineBeforeBalance){
+                
+                //copy last vector with non split
+                if(!last16x16NonSplitLineVector.empty()){
+                    currentLineVector =  last16x16NonSplitLineVector;
+                    split16x16CuOrNotCounter -= 2;
+                } 
+                
+            }else if(split16x16CuOrNotCounter < -disparityLimitOfLineBeforeBalance){
+                
+                //copy last vector with split
+                if(!last16x16SplitLineVector.empty()){
+                    currentLineVector = last16x16SplitLineVector;
+                    split16x16CuOrNotCounter += 2;
+                }
+            }
             
             cu16x16forC5 += currentLineVector;
         }
