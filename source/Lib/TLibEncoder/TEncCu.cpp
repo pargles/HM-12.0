@@ -615,13 +615,13 @@ Void TEncCu::xCompressCU( TComDataCU*& rpcBestCU, TComDataCU*& rpcTempCU, UInt u
           {
 #if AMP_ENC_SPEEDUP        
 			  //gcorrea 01/11/2013
-            //Bool bTestAMP_Hor = false, bTestAMP_Ver = false;
-			  Bool bTestAMP_Hor = true, bTestAMP_Ver = true;    
+            Bool bTestAMP_Hor = false, bTestAMP_Ver = false;
+			  //Bool bTestAMP_Hor = true, bTestAMP_Ver = true;    
 #if AMP_MRG
             Bool bTestMergeAMP_Hor = false, bTestMergeAMP_Ver = false;
 
 			//gcorrea 01/11/2013
-            //deriveTestModeAMP (rpcBestCU, eParentPartSize, bTestAMP_Hor, bTestAMP_Ver, bTestMergeAMP_Hor, bTestMergeAMP_Ver);
+            deriveTestModeAMP (rpcBestCU, eParentPartSize, bTestAMP_Hor, bTestAMP_Ver, bTestMergeAMP_Hor, bTestMergeAMP_Ver);
 #else
             deriveTestModeAMP (rpcBestCU, eParentPartSize, bTestAMP_Hor, bTestAMP_Ver);
 #endif
