@@ -225,7 +225,8 @@ int main(int argc, char* argv[])
 
   // starting time
   double dResult;
-  long lBefore = clock();
+  //@see http://www.cplusplus.com/forum/general/57254/
+  clock_t lBefore = clock();
 
   // call encoding function
   cTAppEncTop.encode();
