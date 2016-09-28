@@ -1312,9 +1312,9 @@ Void TEncSlice::compressSlice( TComPic*& rpcPic )
             C5dataFileCU64x64 <<  cu64x64forC5;
             C5dataFileCU64x64.close();
         }
-        char *param64[] = {"./c5.0", "-f", "/home/pargles/Documents/codificador/HM-12.0/C5hevc_64x64"};
+        char *param64[] = {"./c5.0", "-f", "/home/pargles/Documents/codificador/HM-12.0/C5hevc_64x64","-m","30",NULL};
         // makes the tree for 64x64 CUs
-        c5_64.runC5(param64);
+        c5_64.runC5(5,param64);
         c5_64_decoder.loadC5Tree(param64);
         
         C5dataFileCU32x32.open(filename_C5data_32x32, ios::out);
@@ -1322,9 +1322,9 @@ Void TEncSlice::compressSlice( TComPic*& rpcPic )
             C5dataFileCU32x32 <<  cu32x32forC5;
             C5dataFileCU32x32.close();
         }
-        char *param32[] = {"./c5.0", "-f", "/home/pargles/Documents/codificador/HM-12.0/C5hevc_32x32", NULL};
+        char *param32[] = {"./c5.0", "-f", "/home/pargles/Documents/codificador/HM-12.0/C5hevc_32x32", "-m","100",NULL};
       //makes the tree for 32x32 CUs
-        c5_32.runC5(param32);
+        c5_32.runC5(5,param32);
         c5_32_decoder.loadC5Tree(param32);
 
         C5dataFileCU16x16.open(filename_C5data_16x16, ios::out);
@@ -1332,9 +1332,9 @@ Void TEncSlice::compressSlice( TComPic*& rpcPic )
             C5dataFileCU16x16 <<  cu16x16forC5;
             C5dataFileCU16x16.close();
         }
-        char *param16[] = {"./c5.0", "-f", "/home/pargles/Documents/codificador/HM-12.0/C5hevc_16x16", NULL};
+        char *param16[] = {"./c5.0", "-f", "/home/pargles/Documents/codificador/HM-12.0/C5hevc_16x16", "-m","350",NULL};
         // makes the tree for 16x16 CUs
-        c5_16.runC5(param16);
+        c5_16.runC5(5,param16);
         c5_16_decoder.loadC5Tree(param16);
         
         onlineTrainingIsDone = true;

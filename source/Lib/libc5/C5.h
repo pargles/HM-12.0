@@ -30,8 +30,9 @@ public:
       
   }
   
-  void runC5(char *Argv[]){
-      mainFunction(3,  Argv);
+  //todo, get argv automaticaly 
+  void runC5(int argc,char *Argv[]){
+      mainFunction(argc,  Argv);
   }
 
 };

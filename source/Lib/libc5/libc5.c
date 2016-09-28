@@ -119,6 +119,11 @@ int mainFunction(int Argc, char *Argv[])
 		    fprintf(Of, T_OptSubsets);
 		    ArgOK = true;
 		    break;
+                    
+        case 'm':   SetFOpt(MINITEMS);
+                    fprintf(Of, T_OptMinCases, MINITEMS);
+                    Check(MINITEMS, 1, 1000000);
+                    break;
 	
 	case 'r':   RULES = true;
 		    fprintf(Of, T_OptRules);

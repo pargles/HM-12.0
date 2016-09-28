@@ -41,6 +41,7 @@
 #include "TAppCommon/program_options_lite.h"
 #include "libc5/C5.h"
 #include "libc5/C5Decoder.h"
+#define BILLION  1000000000L
 using namespace std;
 namespace po = df::program_options_lite;
 
@@ -141,7 +142,7 @@ int main(int argc, char* argv[])
 {
     onlineTrainingIsDone= false;//set to true on TEncCu after N frames
     
-    GOPforC5 = 10;//TODO - get this number as a parameter
+    GOPforC5 = 40;//TODO - get this number as a parameter
     string C5header;
     
     disparityLimitOfLineBeforeBalance = 10;
@@ -224,16 +225,30 @@ int main(int argc, char* argv[])
   }
 
   // starting time
-  double dResult;
-  //@see http://www.cplusplus.com/forum/general/57254/
-  clock_t lBefore = clock();
+  
+  //@see http://users.pja.edu.pl/~jms/qnx/help/watcom/clibref/qnx/clock_gettime.html
+  
+  struct timespec start, stop;
+  double totalTime;
+
+  if( clock_gettime( CLOCK_REALTIME, &start) == -1 ) {
+      perror( "clock gettime" );
+      exit( EXIT_FAILURE );
+    }
 
   // call encoding function
   cTAppEncTop.encode();
 
-  // ending time
-  dResult = (double)(clock()-lBefore) / CLOCKS_PER_SEC;
-  printf("\n Total Time: %12.3f sec.\n", dResult);
+  if( clock_gettime( CLOCK_REALTIME, &stop) == -1 ) {
+      perror( "clock gettime" );
+      exit( EXIT_FAILURE );
+    }
+  
+  totalTime = ( stop.tv_sec - start.tv_sec )
+          + ( stop.tv_nsec - start.tv_nsec )
+            / BILLION;
+    printf("\n Total Time: %.2f sec.\n", totalTime );
+  
 
   // destroy application encoder class
   cTAppEncTop.destroy();

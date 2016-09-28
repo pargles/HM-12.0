@@ -274,7 +274,7 @@ int splitCU(char attributes[], GlobalValues *globals) {
     Case = c5DecoderGetDataRec(F, false);
 
     Predict = ClassifyCase(Case, GCEnv);
-    printf("%s\n", ClassName[Predict]);
+    //printf("%s\n", ClassName[Predict]);
 
     //Predict = class number, 1..MaxClass 
     //String *ClassName -> char *String

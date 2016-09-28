@@ -1032,7 +1032,7 @@ if(onlineTrainingIsDone){
             SplitQuadtree: 0,1.
             */
             //@see http://www.cplusplus.com/reference/string/string/c_str/
-          cout << currentLine;
+          //cout << currentLine;
           char * cstr = new char [currentLine.length()+1];
             strcpy (cstr, currentLine.c_str());
             
