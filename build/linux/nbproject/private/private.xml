@@ -24,12 +24,7 @@
         <group>
             <file>file:/home/pargles/Documents/codificador/HM-12.0/source/Lib/libc5/C5Decoder.h</file>
         </group>
-        <group name="future HM">
-            <file>file:/home/pargles/Documents/codificador/HM-12.0/source/Lib/TLibEncoder/TEncSlice.cpp</file>
-            <file>file:/home/pargles/Documents/codificador/HM-12.0/source/App/TAppEncoder/encmain.cpp</file>
-            <file>file:/home/pargles/Documents/codificador/HM-12.0/source/Lib/TLibEncoder/TEncCu.cpp</file>
-            <file>file:/home/pargles/Documents/codificador/HM-12.0/source/Lib/libc5/C5.h</file>
-            <file>file:/home/pargles/Documents/codificador/HM-12.0/source/Lib/libc5/c5decoder.c</file>
-        </group>
+        <group name="future HM"/>
+        <group name="online HM"/>
     </open-files>
 </project-private>
