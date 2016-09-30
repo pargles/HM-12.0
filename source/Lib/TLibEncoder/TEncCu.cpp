@@ -1582,10 +1582,21 @@ if(onlineTrainingIsDone){
             convert << diff_NeiDepth;
             currentLineVector += convert.str() + ',';
             convert.str("");
-            convert << fabs(RDcost_2Nx2N-RDcost_MSM)/RDcost_MSM;
-            currentLineVector += convert.str() + ',';
-            convert.str("");
-            convert << RDcost_2Nx2N/RDcost_MSM;
+            if(RDcost_MSM == 0.0){
+                
+                convert << 0.0;
+                currentLineVector += convert.str() + ',';
+                convert.str("");
+                convert << 0.0;
+                
+            }else{
+                
+                convert << fabs(RDcost_2Nx2N-RDcost_MSM)/RDcost_MSM;
+                currentLineVector += convert.str() + ',';
+                convert.str("");
+                convert << RDcost_2Nx2N/RDcost_MSM;
+            }
+            
             currentLineVector += convert.str() + ',';
             convert.str("");
             convert << div;
