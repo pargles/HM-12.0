@@ -1009,10 +1009,21 @@ if(onlineTrainingIsDone){
             convert << diff_NeiDepth;
             currentLine += convert.str() + ',';
             convert.str("");
-            convert << fabs(RDcost_2Nx2N-RDcost_MSM)/RDcost_MSM;
-            currentLine += convert.str() + ',';
-            convert.str("");
-            convert << RDcost_2Nx2N/RDcost_MSM;
+            if(RDcost_MSM == 0.0){
+                
+                convert << 0.0;
+                currentLine += convert.str() + ',';
+                convert.str("");
+                convert << 0.0;
+                
+            }else{
+                
+                convert << fabs(RDcost_2Nx2N-RDcost_MSM)/RDcost_MSM;
+                currentLine += convert.str() + ',';
+                convert.str("");
+                convert << RDcost_2Nx2N/RDcost_MSM;
+            }
+            
             currentLine += convert.str() + ',';
             currentLine +='?';
             //question mark works as a wild card
