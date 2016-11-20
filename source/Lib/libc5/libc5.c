@@ -129,7 +129,13 @@ int mainFunction(int Argc, char *Argv[])
 		    fprintf(Of, T_OptRules);
 		    ArgOK = true;
 		    break;
-	
+                    
+	case 'S':   SetFOpt(SAMPLE);
+		    fprintf(Of, T_OptSampling, SAMPLE);
+		    Check(SAMPLE, 0.1, 99.9);
+		    SAMPLE /= 100;
+		    break;
+                    
 	case 'e':   NOCOSTS = true;
 		    fprintf(Of, T_OptNoCosts);
 		    ArgOK = true;

@@ -616,7 +616,7 @@ Void TEncCu::xCompressCU( TComDataCU*& rpcBestCU, TComDataCU*& rpcTempCU, UInt u
 #if AMP_ENC_SPEEDUP        
 			  //gcorrea 01/11/2013
             Bool bTestAMP_Hor = false, bTestAMP_Ver = false;
-			  //Bool bTestAMP_Hor = true, bTestAMP_Ver = true;    
+			 // Bool bTestAMP_Hor = true, bTestAMP_Ver = true;    
 #if AMP_MRG
             Bool bTestMergeAMP_Hor = false, bTestMergeAMP_Ver = false;
 
