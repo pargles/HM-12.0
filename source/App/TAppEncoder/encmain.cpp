@@ -56,6 +56,9 @@ ofstream C5headerFileCU16x16;
 ofstream C5dataFileCU64x64;
 ofstream C5dataFileCU32x32;
 ofstream C5dataFileCU16x16;
+ofstream C5costsFileCU64x64;
+ofstream C5costsFileCU32x32;
+ofstream C5costsFileCU16x16;
 
 C5 c5_64;
 C5 c5_32;
@@ -70,6 +73,11 @@ char filename_64x64[100];
 char filename_32x32[100];
 char filename_16x16[100];
 char filename_8x8[100];
+
+char filename_C5Costs_64x64[100];
+char filename_C5Costs_32x32[100];
+char filename_C5Costs_16x16[100];
+
 char filename_C5header_64x64[100];
 char filename_C5header_32x32[100];
 char filename_C5header_16x16[100];
@@ -144,6 +152,11 @@ int main(int argc, char* argv[])
     
     GOPforC5 = 30;//TODO - get this number as a parameter
     string C5header;
+    //predicted class, true class : cost
+    // the costs file penalizes if the predicted class
+    // was to not split the CU, but it was supposed to be
+    //split
+    string C5costs = "0, 1: 10\n";
     
     disparityLimitOfLineBeforeBalance = 10;
     
@@ -184,7 +197,7 @@ int main(int argc, char* argv[])
     C5header+= "a2/a1: continuous.\n";
     C5header+= "SplitQuadtree: 0,1.\n";
     
-     
+    
     strcpy(filename_C5header_64x64,"/home/pargles/Documents/codificador/HM-12.0/C5hevc_64x64.names");
     strcpy(filename_C5data_64x64,"/home/pargles/Documents/codificador/HM-12.0/C5hevc_64x64.data");
     C5headerFileCU64x64.open(filename_C5header_64x64, ios::out);
@@ -205,6 +218,28 @@ int main(int argc, char* argv[])
     if(C5headerFileCU16x16.is_open()){
         C5headerFileCU16x16 << C5header; 
         C5headerFileCU16x16.close();
+    }
+    
+    //-------------------- COSTS FILE ---------------------------------
+    strcpy(filename_C5Costs_64x64,"/home/pargles/Documents/codificador/HM-12.0/C5hevc_64x64.costs");
+    C5costsFileCU64x64.open(filename_C5Costs_64x64, ios::out);
+    if(C5costsFileCU64x64.is_open()){
+        C5costsFileCU64x64 << C5costs; 
+        C5costsFileCU64x64.close();
+    }
+    
+    strcpy(filename_C5Costs_32x32,"/home/pargles/Documents/codificador/HM-12.0/C5hevc_32x32.costs");
+    C5costsFileCU32x32.open(filename_C5Costs_32x32, ios::out);
+    if(C5costsFileCU32x32.is_open()){
+        C5costsFileCU32x32 << C5costs; 
+        C5costsFileCU32x32.close();
+    }
+    
+    strcpy(filename_C5Costs_16x16,"/home/pargles/Documents/codificador/HM-12.0/C5hevc_16x16.costs");
+    C5costsFileCU16x16.open(filename_C5Costs_16x16, ios::out);
+    if(C5costsFileCU16x16.is_open()){
+        C5costsFileCU16x16 << C5costs; 
+        C5costsFileCU16x16.close();
     }
   // create application encoder class
   cTAppEncTop.create();
